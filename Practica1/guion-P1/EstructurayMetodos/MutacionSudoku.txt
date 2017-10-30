@@ -1,0 +1,86 @@
+
+bool checkColumna(int col[], int * check, int tam){
+     bool repe=false;
+     
+     for(int i=0;i<tam;i++) check[i]=0;
+     
+     for(int i=0;i<tam;i++) 
+             check[col[i]-1]++;
+     for(int i=0;i<tam;i++) if (check[i]>1) repe=true;
+     
+     return repe;       
+}
+ 
+
+int MutacionSudoku(GAGenome& g,float pmut){
+    
+     //*******************************************************//
+     //*******************************************************//
+     // Hacer el casting correspondiente para obtener genome  //
+     //*******************************************************//
+     //*******************************************************//
+    
+    struct plantilla * plantilla1;
+    plantilla1 = (struct plantilla *) genome.userData();
+    int nmut=0;
+    int aux,aux1;
+    int fil;
+    bool fila;
+    
+    int caux[plantilla1->tam];
+    int *checkC=new int[plantilla1->tam];
+    
+    if (pmut<=0.0) return 0;
+    
+    for(int f=0; f<plantilla1->tam; f++)
+       for(int c=0; c<plantilla1->tam; c++)
+          if (plantilla1->fijo[(f*plantilla1->tam)+c]==0){ 
+           if (GAFlipCoin(pmut) ){ 
+                if (GAFlipCoin(0.5)) fila = true; 
+                else fila = false;  
+                
+                if (!fila){ 
+                
+                      for(int j=0;j<plantilla1->tam;j++) caux[j]=genome.gene((j*plantilla1->tam)+c); 
+                      if (checkColumna(caux,checkC,plantilla1->tam)){ 
+                         int v1 = GARandomInt(0,plantilla1->tam-1); 
+                         while (checkC[v1]<=1) v1=(v1+1)%plantilla1->tam;  
+                         v1++;
+                         int v2 = GARandomInt(0,plantilla1->tam-1); 
+                         while (checkC[v2]!=0) v2=(v2+1)%plantilla1->tam; 
+                         v2++;
+                         
+                         bool encontrado = false;
+                         for(int j=0;j<plantilla1->tam && !encontrado;j++) 
+                                 if ((plantilla1->fijo[j*(plantilla1->tam)+c]==0)&&(genome.gene(j*(plantilla1->tam)+c)==v1)){
+                                    encontrado = true;
+                                    genome.gene((j*plantilla1->tam)+c,v2);
+                                    fil = j;                                                       
+                                 }                                                     
+                         
+                         int col=(c+1)%plantilla1->tam;
+                         while(genome.gene((fil*plantilla1->tam)+col)!=v2) col=(col+1)%plantilla1->tam;
+                         if (plantilla1->fijo[(fil*plantilla1->tam)+col]==0) { 
+                                nmut++; 
+                                genome.gene((fil*plantilla1->tam)+col,v1);                         
+                         }
+                         else { 
+                              genome.gene((fil*plantilla1->tam)+c,v1);
+                         }
+                          
+                      } 
+                
+                }
+                else{ 
+                   int v1 = (c + 1) %plantilla1->tam;
+                   while ((plantilla1->fijo[(f*plantilla1->tam)+v1]!=0)) v1=(v1+1)%plantilla1->tam; 
+                   aux = genome.gene((f*plantilla1->tam)+c);
+                   genome.gene((f*plantilla1->tam)+c,genome.gene((f*plantilla1->tam)+v1));
+                   genome.gene((f*plantilla1->tam)+v1,aux);
+                   nmut++;
+                }               
+           } 
+          } 
+    
+    return nmut;   
+}

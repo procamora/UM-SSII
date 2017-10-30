@@ -1,0 +1,48 @@
+void InicioSudoku(GAGenome& g){
+     
+     //*******************************************************//   
+     //*******************************************************//
+     // Hacer el casting correspondiente para obtener genome  //
+     //*******************************************************//
+     //*******************************************************//
+
+     struct plantilla * plantilla1;
+     plantilla1 = (struct plantilla *) genome.userData();
+     
+     int aux[plantilla1->tam];
+     
+     for(int f=0;f<plantilla1->tam;f++){ 
+          
+          for(int j=0;j<plantilla1->tam;j++) aux[j]=0;
+          
+          for(int j=1;j<=plantilla1->tam;j++){
+            int v=GARandomInt(0,plantilla1->tam-1);
+            while (aux[v]!=0) v=(v+1)%plantilla1->tam;
+            aux[v]=j;
+          }
+            
+          int i=0;
+          
+          while(i<plantilla1->tam){
+          
+              while((plantilla1->fijo[(f*plantilla1->tam)+i]==0) && (i<plantilla1->tam)) i++; 
+              
+              if (i<plantilla1->tam){ 
+                                
+                     bool encontrado=false;
+                     for(int j=0;(j<plantilla1->tam) && (!encontrado);j++) 
+                             if (aux[j]==plantilla1->fijo[(f*plantilla1->tam)+i]) {
+                                encontrado=true;
+                                aux[j]=aux[i];
+                             }
+                     
+                     aux[i]=plantilla1->fijo[(f*plantilla1->tam)+i];             
+              }
+              i++;
+          
+          }
+          
+          for(int c=0;c<plantilla1->tam;c++)
+                  genome.gene((f*plantilla1->tam)+c,aux[c]);   
+     }        
+}

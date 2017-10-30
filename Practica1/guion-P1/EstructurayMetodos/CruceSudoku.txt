@@ -1,0 +1,43 @@
+int CruceSudoku(const GAGenome& p1,const GAGenome & p2,GAGenome* c1,GAGenome* c2){
+    
+     //******************************************************//
+     //******************************************************//
+     // Hacer el casting correspondiente para obtener m y p  //
+     //******************************************************//
+     //******************************************************//
+    
+    struct plantilla * plantilla1 = (struct plantilla *) m.userData();
+    int n=0;
+     
+    int punto1=GARandomInt(0,m.length()); 
+    while ((punto1%plantilla1->tam)!=0) punto1++;
+    int punto2=m.length()-punto1;
+    
+    if (c1){
+     	      //***************************************************//
+              //***************************************************//
+              // Hacer el casting correspondiente para obtener h1  //
+              //***************************************************//
+              //***************************************************//
+              
+             h1.copy(m,0,0,punto1);
+             h1.copy(p,punto1,punto1,punto2);
+             n++;
+    }
+    
+    if (c2){
+              //***************************************************//
+              //***************************************************//
+              // Hacer el casting correspondiente para obtener h2  //
+              //***************************************************//
+              //***************************************************//
+              
+             h2.copy(p,0,0,punto1);
+             h2.copy(m,punto1,punto1,punto2);
+             n++;
+    }
+    
+    return n;
+    
+}
+
