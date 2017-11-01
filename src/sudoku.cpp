@@ -14,9 +14,10 @@ struct plantilla {
 	int *fijo;
 };
 
-void leerSudoku(struct plantilla *S, char *nombreF);
+void leerSudoku(struct plantilla *S, const char *nombreF);
 
 int main(int argc, char **argv) {
+    
 	int nreinas = 9; //atoi(argv[1]);
 	cout << "Problema de las " << nreinas << " reinas \n\n";
 
@@ -27,14 +28,14 @@ int main(int argc, char **argv) {
 	float pcross = 10; //atof(argv[4]);
 	float pmut = 10; //atof(argv[5]);
 
-	cout << "Par\240metros:    - Tama\xA4o poblaci\242n: " << popsize << endl;
-	cout << "               - N\243mero de generaciones: " << ngen << endl;
+	cout << "Parametros:    - Tamano poblacion: " << popsize << endl;
+	cout << "               - Numero de generaciones: " << ngen << endl;
 	cout << "               - Probabilidad cruce: " << pcross << endl;
-	cout << "               - Probabilidad mutaci\242n: " << pmut << endl
-			<< endl;
+	cout << "               - Probabilidad mutacion: " << pmut << endl;
+	cout << endl;
 
-	struct plantilla *plantilla1;
-	char *nombreF = "Caso-A1.txt";
+	struct plantilla *plantilla1 = new plantilla;
+	const char *nombreF = "Caso-A1.txt";
 	leerSudoku(plantilla1, nombreF);
 	cout << plantilla1->tam << endl;
 	cout << plantilla1->fijo << endl;
@@ -70,7 +71,7 @@ int main(int argc, char **argv) {
 
 	// Imprimimos el mejor individuo que encuentra el GA y su valor fitness
 
-	cout << "El GA encuentra la soluci\242n ( "
+	cout << "El GA encuentra la solucion ( "
 			<< ga.statistics().bestIndividual() << ")" << endl;
 	cout << "con valor fitness " << ga.statistics().minEver() << endl;
 }
@@ -90,7 +91,6 @@ float Objective(GAGenome& g) {
 
 	// jaques en diagonal
 	for (int en_est = 0; en_est < genome.length(); en_est++) {
-
 		// diagonal derecha abajo
 		c = en_est + 1;
 		f = genome.gene(en_est) + 1;
@@ -123,15 +123,11 @@ GABoolean Termina(GAGeneticAlgorithm & ga) {
 		return gaFalse;
 }
 
-void leerSudoku(struct plantilla *S, char *nombreF) {
+void leerSudoku(struct plantilla *S, const char *nombreF) {
 	ifstream f(nombreF);
-
 	f >> S->tam;
-
 	S->fijo = new int[S->tam * S->tam];
-
 	for (int i = 0; i < S->tam * S->tam; i++)
 		f >> S->fijo[i];
-
 	f.close();
 }
