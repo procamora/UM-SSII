@@ -1,6 +1,6 @@
- #! /usr/bin/make -f
-#g++.exe -Wall -fexceptions -g -Igalib247-c2014/galib247-c2014 -c C:/Users/procamora/pablojoserocamora@gmail.com/Universidad/SSII/UM-SSII/nreinas.cpp -o obj/Debug/nreinas.o
-#g++.exe -o bin/Debug/UM-SSII.exe obj/Debug/nreinas.o galib247-c2014/galib.a
+#! /usr/bin/make -f
+#g++.exe -Wall -fexceptions -g -Igalib247-c2014/galib247-c2014 -c src/sudoku.cpp -o Debug/src/sudoku.o
+#g++.exe -o Debug/UM-SSII.exe Debug/src/sudoku.o galib247-c2014/galib.a
 
 CC = g++
 CFLAGS = -ggdb3 -Wall -Wno-unused -fexceptions -g -std=c++14
@@ -10,7 +10,7 @@ OBJ = nreinas.o
 OBJ_OUT = Debug/src/sudoku.o
 
 ifeq ($(OS),Windows_NT)
-LIB_COMPILED = galib247-c2014/galib.a
+LIB_COMPILED = galib247-c2014/galib_windows.a
 TARGET = Debug/UM-SSII.exe
 RM = del /Q
 else
@@ -32,5 +32,8 @@ clean:
 	$(RM) $(call TARGET)
 	$(RM) $(call OBJ_OUT)
 
+run:
+	./$(TARGET)
+
 	
-.PHONY: clean all
+.PHONY: clean all tun

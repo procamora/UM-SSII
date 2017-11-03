@@ -17,13 +17,18 @@ struct plantilla {
 void leerSudoku(struct plantilla *S, const char *nombreF);
 
 int main(int argc, char **argv) {
-    
-	int nreinas = 9; //atoi(argv[1]);
+	struct plantilla *plantillaSudoku = new plantilla;
+	const char *nombreF = argv[1];
+	leerSudoku(plantillaSudoku, nombreF);
+	cout << "tam: " << plantillaSudoku->tam << endl;
+	cout << "fijo " << sizeof(plantillaSudoku->fijo)/ sizeof(int) << endl;
+
+	int nreinas = plantillaSudoku->tam; //atoi(argv[1]);
 	cout << "Problema de las " << nreinas << " reinas \n\n";
 
 	// Declaramos variables para los parametros del GA y las inicializamos
 
-	int popsize = 9 * 9; //atoi(argv[2]);
+	int popsize = plantillaSudoku->tam * plantillaSudoku->tam; //atoi(argv[2]);
 	int ngen = 10; //atoi(argv[3]);
 	float pcross = 10; //atof(argv[4]);
 	float pmut = 10; //atof(argv[5]);
@@ -34,21 +39,14 @@ int main(int argc, char **argv) {
 	cout << "               - Probabilidad mutacion: " << pmut << endl;
 	cout << endl;
 
-	struct plantilla *plantilla1 = new plantilla;
-	const char *nombreF = "Caso-A1.txt";
-	leerSudoku(plantilla1, nombreF);
-	cout << plantilla1->tam << endl;
-	cout << plantilla1->fijo << endl;
 	// Conjunto enumerado de alelos --> valores posibles de cada gen del genoma
-
 	GAAlleleSet<int> alelos;
 	for (int i = 0; i < nreinas; i++)
 		alelos.add(i);
 
 	// Creamos el genoma y definimos operadores de inicio, cruce y mutación
-
-	//FIXME CAMBIAR NULL POR UN PUNTERO AL FICHERO
-	GA1DArrayAlleleGenome<int> genome(nreinas, alelos, Objective, plantilla1);
+	GA1DArrayAlleleGenome<int> genome(nreinas, alelos, Objective,
+			plantillaSudoku);
 	genome.crossover(GA1DArrayAlleleGenome<int>::OnePointCrossover);
 	genome.mutator(GA1DArrayAlleleGenome<int>::FlipMutator);
 
@@ -71,8 +69,8 @@ int main(int argc, char **argv) {
 
 	// Imprimimos el mejor individuo que encuentra el GA y su valor fitness
 
-	cout << "El GA encuentra la solucion ( "
-			<< ga.statistics().bestIndividual() << ")" << endl;
+	cout << "El GA encuentra la solucion ( " << ga.statistics().bestIndividual()
+			<< ")" << endl;
 	cout << "con valor fitness " << ga.statistics().minEver() << endl;
 }
 
@@ -125,6 +123,12 @@ GABoolean Termina(GAGeneticAlgorithm & ga) {
 
 void leerSudoku(struct plantilla *S, const char *nombreF) {
 	ifstream f(nombreF);
+	if (!f.is_open()) {
+		cerr << "Fichero: " << nombreF << " no ha podido ser abierto" << endl;
+		cout << "Terminando programa..." << endl;
+		exit(-1);
+	}
+
 	f >> S->tam;
 	S->fijo = new int[S->tam * S->tam];
 	for (int i = 0; i < S->tam * S->tam; i++)
