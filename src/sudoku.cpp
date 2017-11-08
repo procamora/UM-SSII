@@ -6,6 +6,7 @@
 using namespace std;
 
 float fitnes(GAGenome &); // Funcion objetivo --> al final
+float fitnes2(GAGenome& g);
 GABoolean termina(GAGeneticAlgorithm &); // Funcion de terminacion --> al final
 void leerSudoku(struct plantilla *S, const char *nombreF);
 void imprimirSudoku(struct plantilla *S);
@@ -15,8 +16,8 @@ bool checkColumna(int col[], int * check, int tam);
 int mutacionSudoku(GAGenome& g, float pmut);
 
 struct plantilla {
-        int tam;
-        int *fijo;
+    int tam;
+    int *fijo;
 };
 
 int main(int argc, char **argv) {
@@ -51,17 +52,11 @@ int main(int argc, char **argv) {
     for (int i = 0; i < plantillaSudoku->tam; i++)
         alelos.add(i);
 
-    cout << "size alelos " << alelos.size() << endl;
     // Creamos el genoma y definimos operadores de inicio, cruce y mutación
-    GA1DArrayAlleleGenome<int> genome(plantillaSudoku->tam, alelos, fitnes, plantillaSudoku);
+    GA1DArrayAlleleGenome<int> genome(plantillaSudoku->tam * plantillaSudoku->tam, alelos, fitnes2, plantillaSudoku);
     genome.initializer(::inicioSudoku);
     genome.crossover(::cruceSudoku);
     genome.mutator(::mutacionSudoku);
-    //ANTIGUOS NREINAS
-    //GA1DArrayAlleleGenome<int> genome(9,alelos,objective,NULL);
-    //genome.crossover(GA1DArrayAlleleGenome<int>::OnePointCrossover);
-    //genome.mutator(GA1DArrayAlleleGenome<int>::FlipMutator);
-
 
     // Creamos el algoritmo genetico
     GASimpleGA ga(genome);
@@ -93,9 +88,23 @@ int main(int argc, char **argv) {
 
 // Funcion objetivo.
 
+float fitnes2(GAGenome& g) {
+    GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
+
+    float jaques = 0;
+    int c, f;
+
+    // jaques de misma fila
+    for (int i = 0; i < genome.length(); i++)
+        for (int j = i + 1; j < genome.length(); j++)
+            if (genome.gene(i) == genome.gene(j))
+                jaques++;
+
+    return jaques;
+}
+
 float fitnes(GAGenome& g) {
     GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
-    cout << "objective" << endl;
     return 69;
 
     float jaques = 0;
@@ -129,14 +138,12 @@ float fitnes(GAGenome& g) {
             f--;
         }
     }
-    cout << "fin objective" << endl;
 
     return jaques;
 }
 
 // Funcion de terminacion
 GABoolean termina(GAGeneticAlgorithm & ga) {
-    cout << "termina" << endl;
 
     if ((ga.statistics().minEver() == 0) || (ga.statistics().generation() == ga.nGenerations()))
         return gaTrue;
@@ -145,7 +152,6 @@ GABoolean termina(GAGeneticAlgorithm & ga) {
 }
 
 void leerSudoku(struct plantilla *S, const char *nombreF) {
-    cout << "leerSudoku" << endl;
 
     ifstream f(nombreF);
     if (!f.is_open()) {
@@ -159,8 +165,6 @@ void leerSudoku(struct plantilla *S, const char *nombreF) {
     for (int i = 0; i < S->tam * S->tam; i++)
         f >> S->fijo[i];
     f.close();
-    cout << "fin leerSudoku" << endl;
-
 }
 
 void imprimirSudoku(struct plantilla *S) {
@@ -180,7 +184,6 @@ void imprimirSudoku(struct plantilla *S) {
 
 void inicioSudoku(GAGenome& g) {
     GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
-    cout << "inicioSudoku" << endl;
 
     struct plantilla * plantilla1;	// = new plantilla;
     plantilla1 = (struct plantilla *) genome.userData();
@@ -218,8 +221,6 @@ void inicioSudoku(GAGenome& g) {
         for (int c = 0; c < plantilla1->tam; c++)
             genome.gene((f * plantilla1->tam) + c, aux[c]);
     }
-    cout << "fin inicioSudoku" << endl;
-
 }
 
 int cruceSudoku(const GAGenome& p1, const GAGenome & p2, GAGenome* c1, GAGenome* c2) {
@@ -231,7 +232,6 @@ int cruceSudoku(const GAGenome& p1, const GAGenome & p2, GAGenome* c1, GAGenome*
 //******************************************************//
     GA1DArrayAlleleGenome<int> & m = (GA1DArrayAlleleGenome<int> &) p1;
     GA1DArrayAlleleGenome<int> & p = (GA1DArrayAlleleGenome<int> &) p2;
-    cout << "cruceSudoku" << endl;
 
     struct plantilla * plantilla1 = (struct plantilla *) m.userData();
     int n = 0;
@@ -265,7 +265,6 @@ int cruceSudoku(const GAGenome& p1, const GAGenome & p2, GAGenome* c1, GAGenome*
         h2.copy(m, punto1, punto1, punto2);
         n++;
     }
-    cout << "fin cruceSudoku" << endl;
 
     return n;
 }
@@ -293,7 +292,6 @@ int mutacionSudoku(GAGenome& g, float pmut) {
 //*******************************************************//
 //*******************************************************//
     GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
-    cout << "mutacionSudoku" << endl;
 
     struct plantilla * plantilla1 = (struct plantilla *) genome.userData();
     int nmut = 0;
@@ -348,7 +346,6 @@ int mutacionSudoku(GAGenome& g, float pmut) {
                             } else {
                                 genome.gene((fil * plantilla1->tam) + c, v1);
                             }
-
                         }
                     } else {
                         int v1 = (c + 1) % plantilla1->tam;
@@ -361,8 +358,6 @@ int mutacionSudoku(GAGenome& g, float pmut) {
                     }
                 }
             }
-    cout << "fin mutacionSudoku" << endl;
-
     return nmut;
 }
 
