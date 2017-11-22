@@ -16,8 +16,8 @@ bool checkColumna(int col[], int * check, int tam);
 int mutacionSudoku(GAGenome& g, float pmut);
 
 struct plantilla {
-    int tam;
-    int *fijo;
+        int tam;
+        int *fijo;
 };
 
 int main(int argc, char **argv) {
@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
 
     // Conjunto enumerado de alelos --> valores posibles de cada gen del genoma
     GAAlleleSet<int> alelos;
-    for (int i = 0; i < plantillaSudoku->tam; i++)
+    for (int i = 1; i <= plantillaSudoku->tam; i++)
         alelos.add(i);
 
     // Creamos el genoma y definimos operadores de inicio, cruce y mutación
@@ -93,14 +93,37 @@ float fitnes2(GAGenome& g) {
 
     float jaques = 0;
     int c, f;
+    int huecosVacios = 0;
+    int *t1 = new int[genome.length()];
 
-    // jaques de misma fila
+    memset(t1, 0, sizeof(int) * genome.length());
+    // coincidencias misma fila
     for (int i = 0; i < genome.length(); i++)
         for (int j = i + 1; j < genome.length(); j++)
-            if (genome.gene(i) == genome.gene(j))
-                jaques++;
+            t1[genome.gene(i)] = genome.gene(i);
 
-    return jaques;
+    //comprobamos las posiciones en las que no hay ningun numero y aumentamos contador ya que seran los huecos que faltan
+    for (int i = 1; i <= genome.length(); i++) {
+        //cout << t1[i] << " ";
+        if (t1[i] == 0)
+            huecosVacios++;
+    }
+
+    //coincidencias misma cuadricula 3x3
+    /*
+     memset(t1, 0, sizeof(int) * genome.length());
+
+
+    //comprobamos las posiciones en las que no hay ningun numero y aumentamos contador ya que seran los huecos que faltan
+    for (int i = 1; i <= genome.length(); i++) {
+        //cout << t1[i] << " ";
+        if (t1[i] == 0)
+            huecosVacios++;
+    }
+    */
+
+    delete[] t1;
+    return huecosVacios;
 }
 
 float fitnes(GAGenome& g) {
