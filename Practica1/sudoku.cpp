@@ -3,17 +3,20 @@
 #include <ga/GA1DArrayGenome.h> // Genoma --> array de enteros (dim. 1) alelos
 #include <iostream>
 #include <fstream>
+#include <cmath>
 using namespace std;
 
-float fitnes(GAGenome &); // Funcion objetivo --> al final
-float fitnes2(GAGenome& g);
-GABoolean termina(GAGeneticAlgorithm &); // Funcion de terminacion --> al final
+float fitnes(GAGenome &);  // Funcion objetivo --> al final
+GABoolean termina(GAGeneticAlgorithm &);  // Funcion de terminacion --> al final
 void leerSudoku(struct plantilla *S, const char *nombreF);
 void imprimirSudoku(struct plantilla *S);
 void inicioSudoku(GAGenome& g);
 int cruceSudoku(const GAGenome& p1, const GAGenome & p2, GAGenome* c1, GAGenome* c2);
 bool checkColumna(int col[], int * check, int tam);
 int mutacionSudoku(GAGenome& g, float pmut);
+void calculaFilas(GAGenome& g, int inicioFila, int *t1);
+void calculaColumnas(GAGenome& g, int inicioColumna, int *t1);
+void calculaSubBloque(GAGenome& g, int bloque, int *t1);
 
 struct plantilla {
         int tam;
@@ -32,7 +35,7 @@ int main(int argc, char **argv) {
     const char *nombreF = argv[1];
     int popsize = atoi(argv[2]);
     const char *selectorString = argv[3];
-    int ngen = 12000; //atoi(argv[3]);
+    int ngen = 12000;  //atoi(argv[3]);
     float pcross = atof(argv[4]);
     float pmut = atof(argv[5]);
 
@@ -53,7 +56,7 @@ int main(int argc, char **argv) {
         alelos.add(i);
 
     // Creamos el genoma y definimos operadores de inicio, cruce y mutación
-    GA1DArrayAlleleGenome<int> genome(plantillaSudoku->tam * plantillaSudoku->tam, alelos, fitnes2, plantillaSudoku);
+    GA1DArrayAlleleGenome<int> genome(plantillaSudoku->tam * plantillaSudoku->tam, alelos, fitnes, plantillaSudoku);
     genome.initializer(::inicioSudoku);
     genome.crossover(::cruceSudoku);
     genome.mutator(::mutacionSudoku);
@@ -88,81 +91,140 @@ int main(int argc, char **argv) {
 
 // Funcion objetivo.
 
-float fitnes2(GAGenome& g) {
+float fitnes(GAGenome& g) {
     GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
 
     float jaques = 0;
     int c, f;
     int huecosVacios = 0;
-    int *t1 = new int[genome.length()];
+    int tamSudoku = sqrt(genome.length());
+    int *t1 = new int[tamSudoku];  //FIXME +1 NECESARIO??
 
-    memset(t1, 0, sizeof(int) * genome.length());
-    // coincidencias misma fila
-    for (int i = 0; i < genome.length(); i++)
-        for (int j = i + 1; j < genome.length(); j++)
-            t1[genome.gene(i)] = genome.gene(i);
+    //coincidencias misma filas
+    for (int i = 0; i < tamSudoku; i++) {
+        memset(t1, 0, sizeof(int) * tamSudoku);
+        calculaFilas(g, i * tamSudoku, t1);
+        //cout << "recuento" << endl;
+        for (int i = 1; i <= tamSudoku; i++) {
+            //cout << t1[i] << " ";
+            if (t1[i] == 0)
+                huecosVacios++;
+        }
+        //cout <<  endl <<"recuento" << endl;
+    }
 
-    //comprobamos las posiciones en las que no hay ningun numero y aumentamos contador ya que seran los huecos que faltan
-    for (int i = 1; i <= genome.length(); i++) {
-        //cout << t1[i] << " ";
-        if (t1[i] == 0)
-            huecosVacios++;
+    //coincidencias misma columna
+    for (int i = 0; i < tamSudoku; i++) {
+        memset(t1, 0, sizeof(int) * tamSudoku);
+        calculaColumnas(g, i, t1);
+        //cout << "recuento" << endl;
+        for (int i = 1; i <= tamSudoku; i++) {
+            //cout << t1[i] << " ";
+            if (t1[i] == 0)
+                huecosVacios++;
+        }
+        //cout <<  endl <<"recuento" << endl;
     }
 
     //coincidencias misma cuadricula 3x3
-    /*
-     memset(t1, 0, sizeof(int) * genome.length());
+    for (int i = 0; i < tamSudoku; i++) {
+        memset(t1, 0, sizeof(int) * tamSudoku);
+        calculaSubBloque(g, i, t1);
 
-
-    //comprobamos las posiciones en las que no hay ningun numero y aumentamos contador ya que seran los huecos que faltan
-    for (int i = 1; i <= genome.length(); i++) {
-        //cout << t1[i] << " ";
-        if (t1[i] == 0)
-            huecosVacios++;
+        for (int i = 1; i <= tamSudoku; i++) {
+            if (t1[i] == 0)
+                huecosVacios++;
+        }
     }
-    */
 
     delete[] t1;
     return huecosVacios;
 }
 
-float fitnes(GAGenome& g) {
-    GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
-    return 69;
-
-    float jaques = 0;
-    int c, f;
-
-    // jaques de misma fila
-    for (int i = 0; i < genome.length(); i++)
-        for (int j = i + 1; j < genome.length(); j++)
-            if (genome.gene(i) == genome.gene(j))
-                jaques++;
-
-    // jaques en diagonal
-    for (int en_est = 0; en_est < genome.length(); en_est++) {
-        // diagonal derecha abajo
-        c = en_est + 1;
-        f = genome.gene(en_est) + 1;
-        while ((c < genome.length()) && (f < genome.length())) {
-            if (genome.gene(c) == f)
-                jaques++;
-            c++;
-            f++;
-        }
-
-        // diagonal derecha arriba
-        c = en_est + 1;
-        f = genome.gene(en_est) - 1;
-        while ((c < genome.length()) && (f >= 0)) {
-            if (genome.gene(c) == f)
-                jaques++;
-            c++;
-            f--;
-        }
+int getInicioFilaBloque(int bloque) {
+    int inicioFila;
+    switch (bloque) {
+        case 0:
+            inicioFila = 0;
+            break;
+        case 1:
+            inicioFila = 3;
+            break;
+        case 2:
+            inicioFila = 6;
+            break;
+        case 3:
+            inicioFila = 27;
+            break;
+        case 4:
+            inicioFila = 30;
+            break;
+        case 5:
+            inicioFila = 33;
+            break;
+        case 6:
+            inicioFila = 54;
+            break;
+        case 7:
+            inicioFila = 57;
+            break;
+        case 8:
+            inicioFila = 60;
+            break;
+        default:
+            cerr << "Bloque erroneo: " << bloque << endl;
+            break;
     }
+    return inicioFila;
+}
 
-    return jaques;
+void calculaSubBloque(GAGenome& g, int bloque, int *t1) {
+    GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
+
+    int inicioFila = getInicioFilaBloque(bloque);
+    int tamSudoku = sqrt(genome.length());
+
+    int filas = 0;
+    int finFila = inicioFila + 3;
+    //  cout << "#### BLOQUE " << bloque << " ####" << endl;
+    while (filas != 3) {
+        for (int i = inicioFila; i < finFila; i++) {
+            t1[genome.gene(i)] = genome.gene(i);
+            //cout << S->fijo[i] << " ";
+        }
+
+        inicioFila += tamSudoku;
+        finFila = inicioFila + 3;
+        filas++;
+    }
+    //cout << endl << "#################" << endl;
+}
+
+void calculaFilas(GAGenome& g, int inicioFila, int *t1) {
+    GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
+
+    int tamSudoku = sqrt(genome.length());
+    int finFila = inicioFila + tamSudoku;
+    //cout << "#### FILA " << inicioFila << " ####" << endl;
+    for (int i = inicioFila; i < finFila; i++) {
+        // cout << S->fijo[i] << " ";
+        t1[genome.gene(i)] = genome.gene(i);
+    }
+    // cout << endl << "#################" << endl;
+}
+
+void calculaColumnas(GAGenome& g, int inicioColumna, int *t1) {
+    GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
+
+    int tamSudoku = sqrt(genome.length());
+    int finFila = inicioColumna + (tamSudoku * (tamSudoku - 1));
+    // cout << "#### COLUM " << inicioColumna << " ####" << endl;
+    for (int i = 0; i < tamSudoku; i++) {
+        //  cout << S->fijo[inicioColumna] << " ";
+        t1[genome.gene(inicioColumna)] = genome.gene(inicioColumna);
+        inicioColumna += tamSudoku;
+    }
+    //  cout << endl << "#################" << endl;
 }
 
 // Funcion de terminacion
