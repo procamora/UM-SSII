@@ -53,15 +53,9 @@ def imprimeArgumentos(argumentos):
     print("verbose: " + str(argumentos.verbose))
 
 
-
 def write(arg, texto, tipo):
      with open(arg.output, tipo) as f:
-        f.write(texto)
-
-
-def writeCabecera(arg, texto):
-     with open(arg.output, 'w') as f:
-        f.write(texto)
+        f.write(texto.replace(".", ","))
 
 
 def ejecutaBinario(arg, argumentosBinario):
@@ -69,20 +63,24 @@ def ejecutaBinario(arg, argumentosBinario):
     Metodo encargado de ejecutar el binario
     '''
 
-    comando = '/usr/bin/time -f "%E" ./{binario} {argumentos} > {salida}'.format(binario=arg.program, salida=salidaTemp, argumentos=argumentosBinario)
+    comando = '/usr/bin/time -f "%e" ./{binario} {argumentos} > {salida}'.format(binario=arg.program, salida=salidaTemp, argumentos=argumentosBinario)
     if arg.verbose:
         print("comando time: " + comando)
 
     ejecucion = subprocess.Popen(comando, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     stdout, stderr = ejecucion.communicate()
 
-    return stderr
+    return stderr.decode("utf-8").replace("\n", "")
+
 
 def leerResultado():
     with open('{salida}'.format(salida=salidaTemp), 'r') as f:
         content = f.read()
-        print(content)
-        return re.findall('fitness: \d', content)[0].replace("fitness: ", "")
+        #print(content)
+        retorno = re.findall('fitness: \d', content)
+        #print(retorno)
+        return retorno[0].replace("fitness: ", "")
+
 
 def main():
     arg = CrearArgParseo()
@@ -91,20 +89,22 @@ def main():
         imprimeArgumentos(arg)
 
 
-    write(arg, "SELECTOR;POBLACION;PROB CRUCE;PROB MUTAC;C1;C2;C3;C4;C5\n", "w")
-
+    write(arg, "SELECTOR;POBLACION;PROB CRUCE;PROB MUTAC;C1;C2;C3;C4;C5;;Tiempo C1;Tiempo C2;Tiempo C3;Tiempo C4;Tiempo C5\n", "w")
+    cont = 1
     for iSeleccion in operadorSeleccion:
         for iPoblacion in poblacion:
             for iCruce in cruce:
                 for iMutacion in mutacion:
                     resultados = str()
+                    tiempos = str()
                     for iCasoAjuste in casosAjuste:
                         argumentos = "{} {} {} {} {}".format(iCasoAjuste, iPoblacion, iSeleccion, iCruce, iMutacion)
-                        ejecutaBinario(arg, argumentos)
+                        tiempos += "{};".format(ejecutaBinario(arg, argumentos))
                         resultados += "{};".format(leerResultado())
-                    write(arg, "{};{};{};{};{}\n".format(iSeleccion, iPoblacion, iCruce, iMutacion, resultados), "a")
-        print("Terminado interacion")
+                    write(arg, "{};{};{};{};{};{}\n".format(iSeleccion, iPoblacion, iCruce, iMutacion, resultados, tiempos), "a")
+                    print("Terminado interacion: {} de {}".format(cont, "80"))
+                    cont += 1
 
 
-
+#=SI(SUMA(E2:I2)=0; PROMEDIO(K2:O2);)
 main()

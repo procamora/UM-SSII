@@ -1,27 +1,10 @@
-/* ------------------------- PROBLEMA DE LAS N REINAS ----------------------- */
-#include <ga/GASimpleGA.h> //  Algoritmo Genetico simple
-#include <ga/GA1DArrayGenome.h> // Genoma --> array de enteros (dim. 1) alelos
-#include <iostream>
-#include <fstream>
-#include <cmath>
-using namespace std;
+/*
+ * sudoku.cpp
+ *
+ *      Author: procamora
+ */
 
-float fitnes(GAGenome &);  // Funcion objetivo --> al final
-GABoolean termina(GAGeneticAlgorithm &);  // Funcion de terminacion --> al final
-void leerSudoku(struct plantilla *S, const char *nombreF);
-void imprimirSudoku(struct plantilla *S);
-void inicioSudoku(GAGenome& g);
-int cruceSudoku(const GAGenome& p1, const GAGenome & p2, GAGenome* c1, GAGenome* c2);
-bool checkColumna(int col[], int * check, int tam);
-int mutacionSudoku(GAGenome& g, float pmut);
-void calculaFilas(GAGenome& g, int inicioFila, int *t1);
-void calculaColumnas(GAGenome& g, int inicioColumna, int *t1);
-void calculaSubBloque(GAGenome& g, int bloque, int *t1);
-
-struct plantilla {
-        int tam;
-        int *fijo;
-};
+#include "sudoku.hpp"
 
 int main(int argc, char **argv) {
     struct plantilla *plantillaSudoku = new plantilla;
@@ -84,13 +67,12 @@ int main(int argc, char **argv) {
     ga.evolve(1);
 
     // Imprimimos el mejor individuo que encuentra el GA y su valor fitness
-
+    //FIXME pasar esto a un array e imprimirlo como matriz
     cout << "El GA encuentra la solucion ( " << ga.statistics().bestIndividual() << ")" << endl;
-    cout << "con valor fitness " << ga.statistics().minEver() << endl;
+    cout << "fitness: " << ga.statistics().minEver() << endl;
 }
 
 // Funcion objetivo.
-
 float fitnes(GAGenome& g) {
     GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
 
@@ -98,7 +80,7 @@ float fitnes(GAGenome& g) {
     int c, f;
     int huecosVacios = 0;
     int tamSudoku = sqrt(genome.length());
-    int *t1 = new int[tamSudoku];  //FIXME +1 NECESARIO??
+    int *t1 = new int[tamSudoku];
 
     //coincidencias misma filas
     for (int i = 0; i < tamSudoku; i++) {
@@ -141,65 +123,10 @@ float fitnes(GAGenome& g) {
     return huecosVacios;
 }
 
-int getInicioFilaBloque(int bloque) {
-    int inicioFila;
-    switch (bloque) {
-        case 0:
-            inicioFila = 0;
-            break;
-        case 1:
-            inicioFila = 3;
-            break;
-        case 2:
-            inicioFila = 6;
-            break;
-        case 3:
-            inicioFila = 27;
-            break;
-        case 4:
-            inicioFila = 30;
-            break;
-        case 5:
-            inicioFila = 33;
-            break;
-        case 6:
-            inicioFila = 54;
-            break;
-        case 7:
-            inicioFila = 57;
-            break;
-        case 8:
-            inicioFila = 60;
-            break;
-        default:
-            cerr << "Bloque erroneo: " << bloque << endl;
-            break;
-    }
-    return inicioFila;
-}
-
-void calculaSubBloque(GAGenome& g, int bloque, int *t1) {
-    GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
-
-    int inicioFila = getInicioFilaBloque(bloque);
-    int tamSudoku = sqrt(genome.length());
-
-    int filas = 0;
-    int finFila = inicioFila + 3;
-    //  cout << "#### BLOQUE " << bloque << " ####" << endl;
-    while (filas != 3) {
-        for (int i = inicioFila; i < finFila; i++) {
-            t1[genome.gene(i)] = genome.gene(i);
-            //cout << S->fijo[i] << " ";
-        }
-
-        inicioFila += tamSudoku;
-        finFila = inicioFila + 3;
-        filas++;
-    }
-    //cout << endl << "#################" << endl;
-}
-
+/**
+ * Metodo para comprobar una fila, recibe el inicio de la fila y la recorre añadiendo al array
+ * pasado por referencia los valores que encuentra para su posterior tratamiento
+ */
 void calculaFilas(GAGenome& g, int inicioFila, int *t1) {
     GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
 
@@ -213,6 +140,11 @@ void calculaFilas(GAGenome& g, int inicioFila, int *t1) {
     // cout << endl << "#################" << endl;
 }
 
+/**
+ * Metodo para comprobar una fila, recibe el inicio de la columna y va calculando los saltos que
+ * tiene que dar para recorrer la columna completa añadiendo al array pasado por referencia los .
+ * valores que encuentra para su posterior tratamiento
+ */
 void calculaColumnas(GAGenome& g, int inicioColumna, int *t1) {
     GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
 
@@ -225,6 +157,32 @@ void calculaColumnas(GAGenome& g, int inicioColumna, int *t1) {
         inicioColumna += tamSudoku;
     }
     //  cout << endl << "#################" << endl;
+}
+
+/**
+ * Metodo encargado de comprobar las submatrices del sudoku, recibe el numero de la submatriz y
+ * obtiene cual es el indice donde empieza con lo que va añadiendo al array pasado por referencia
+ * los valores que encuentra para su posterior tratamiento
+ */
+void calculaSubBloque(GAGenome& g, int bloque, int *t1) {
+    GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
+
+    int inicioFila = getInicioFilaBloque[bloque];
+    int tamSudoku = sqrt(genome.length());
+
+    int filas = 0;
+    int finFila = inicioFila + sqrt(tamSudoku);
+    //  cout << "#### BLOQUE " << bloque << " ####" << endl;
+    while (filas != sqrt(tamSudoku)) {
+        for (int i = inicioFila; i < finFila; i++) {
+            t1[genome.gene(i)] = genome.gene(i);
+            //cout << S->fijo[i] << " ";
+        }
+        inicioFila += tamSudoku;
+        finFila = inicioFila + sqrt(tamSudoku);
+        filas++;
+    }
+    //cout << endl << "#################" << endl;
 }
 
 // Funcion de terminacion
@@ -263,6 +221,25 @@ void imprimirSudoku(struct plantilla *S) {
         } else {
             cout << S->fijo[i] << endl;
             contFila = 1;
+        }
+    cout << "---------------------" << endl;
+}
+
+//FIXME BORRAR
+void imprimirSudokuResulto(char *solucion) {
+    int contFila = 1;
+
+    cout << "++++++++++++++++++++++" << endl;
+
+    for (unsigned int i = 0; i < strlen(solucion); i++)
+        if (solucion[0] != ' ') {
+            if (contFila < 9) {
+                cout << solucion[i] << " ";
+                contFila++;
+            } else {
+                cout << solucion[i] << endl;
+                contFila = 1;
+            }
         }
     cout << "---------------------" << endl;
 }
