@@ -26,7 +26,7 @@ poblacion = [100, 150]
 operadorSeleccion = ["GARouletteWheelSelector", "GATournamentSelector"]
 cruce = [0.8, 0.85, 0.9, 0.95]
 mutacion = [0.01,0.05, 0.1, 0.125, 0.15]
-casosAjuste = ["Casos/Caso-A1.txt", "Casos/Caso-A2.txt", "Casos/Caso-A3.txt", "Casos/Caso-A4.txt", "Casos/Caso-A5.txt"]
+casosAjuste = ["Casos/Caso-A1.txt", "Casos/Caso-A2.txt", "Casos/Caso-A3.txt", "Casos/Caso-A4.txt", "Casos/Caso-A5.txt", "Casos/MIO.txt"]
 
 salidaTemp = "tempp.txt"
 
@@ -89,7 +89,7 @@ def main():
         imprimeArgumentos(arg)
 
 
-    write(arg, "SELECTOR;POBLACION;PROB CRUCE;PROB MUTAC;C1;C2;C3;C4;C5;;Tiempo C1;Tiempo C2;Tiempo C3;Tiempo C4;Tiempo C5\n", "w")
+    write(arg, "SELECTOR;POBLACION;PROB CRUCE;PROB MUTAC;C1;C2;C3;C4;C5;Especial;;Tiempo C1;Tiempo C2;Tiempo C3;Tiempo C4;Tiempo C5;Tiempo Especial\n", "w")
     cont = 1
     for iSeleccion in operadorSeleccion:
         for iPoblacion in poblacion:

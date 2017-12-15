@@ -57,13 +57,47 @@ header-includes:
 # a) Explicación breve y completa de la técnica Algoritmo Genético (AG). Debe quedarse muy claro cuáles son los elementos y el proceso que sigue dicha técnica.
 
 Un algoritmo genético (AG) es una variante de la búsqueda de haz estocástica en el que los estados sucesores se generan combinando a dos estados padres, más que modificar un solo estado.
-Los AGs comienzan con un conjunto de k estados generados aleatoriamente Combillamados población.
-Cada estado (individuo o cromosoma), está representado (codificado) como una cadena sobre un alfabeto finito. Distintas codificaciones hacen que el AG se comporte de forma diferente.
-Cada elemento de un estado, individuo o cromosoma es denominado gen.
-El valor heurístico de un estado, individuo o cromosoma es denominado fitness, idoneidad o fenotipo. La función idoneidad o fitness mide la calidad de los estados nando buenos estados se obtienen estados mejores.
-Se necesita de un conjunto de operadores (denominados operadores genéticos) que permitan generar nuevos individuos.
-La codificación define el tamaño del espacio de búsqueda y el tipo de operadores de combinación necesarios.
 
+El algoritmo genético trata de encontrar la mejor solución por comparación de un conjunto de soluciones. 
+
+Las soluciones se generan a través del cruzamiento de generaciones o soluciones anteriores, esta cruzando generaciones para obtener una nueva generación de manera que podamos compararla para ver si estamos acercándonos a la solución final
+
+## Elementos
+
+#### Tenemos diferentes formas de codificar una población:
+
+- Codificación binaria
+- Codificación entera
+- Codificación real
+- Codificación en orden
+
+#### Tenemos distintos operadores genéticos:
+
+- Selección (escoge que individuos se reproducirán y cuales no)
+    - **Ruleta**: Se eligen con probabilidad proporcional a su función de idoneidad.
+    - **Torneo**: Se establecen k torneos aleatorios entre parejas de individuos y se eligen los que ganan en cada torneo (mejor función idoneidad).
+
+
+- Cruce (recombina individuos para producir descendencia)
+    - **Cruce por un punto**: Un padre ha partir de un gen intercambio el resto por el de otro padre
+    - **Cruce por dos puntos**: Un padre intercambio un rango de genes por el de otro padre
+
+- Mutación (provoca el cambio de valor de algunos genes del individuo)
+    - **Cambio de un gen aleatorio**
+    - **Intercambio entre dos genes**
+
+#### Tenemos que definir la función objetivo
+
+Es necesario crear la función fitness, es una función de adaptación que tiene que retornar: *>0*, es la forma de evaluar la población.
+
+## Proceso
+
+1. Codificamos el problema, en nuestro caso en forma de *Integer*
+2. Generanos una población inicial aleatoriamente de k estados  
+3. Seleccionamos k individuos a través del operador de selección para crear una nueva población.
+4. Elegimos individuos con una probabilidad (p~c~) para ser cruzados y crear una nueva población.
+5. Con una probabilidad (p~m~) mutamos los genes de los individuos de la población actual.
+6. Esta nueva población sustituye a la original y forma la nueva población inicial que se usara en la siguiente generación, volvemos al paso 3
 
 
 # b) Explicación detallada de todas las preguntas realizadas en la sección “Cuestiones para el diseño e implementación” de este guión (en concreto, las preguntas 3), 4), 7), 9), 10) y 12)).
