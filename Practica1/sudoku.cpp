@@ -50,7 +50,7 @@ int main(int argc, char **argv) {
     // Inicializamos - minimizar funcion objetivo, tamaño poblacion, nº generaciones,
     // pr. cruce y pr. mutacion, selección y le indicamos que evolucione.
 
-    ga.minimaxi(-1);
+    ga.minimaxi(-1);  // el objetivo del algoritmo genético consiste en minimizar
     ga.populationSize(popsize);
     ga.nGenerations(ngen);
     ga.pCrossover(pcross);
@@ -67,7 +67,6 @@ int main(int argc, char **argv) {
     ga.evolve(1);
 
     // Imprimimos el mejor individuo que encuentra el GA y su valor fitness
-    //FIXME pasar esto a un array e imprimirlo como matriz
     cout << "El GA encuentra la solucion ( " << ga.statistics().bestIndividual() << ")" << endl;
     cout << "fitness: " << ga.statistics().minEver() << endl;
 }
@@ -80,46 +79,42 @@ float fitnes(GAGenome& g) {
     int c, f;
     int huecosVacios = 0;
     int tamSudoku = sqrt(genome.length());
-    int *t1 = new int[tamSudoku];
+    int *arrayElementos = new int[tamSudoku];
 
     //coincidencias misma filas
     for (int i = 0; i < tamSudoku; i++) {
-        memset(t1, 0, sizeof(int) * tamSudoku);
-        calculaFilas(g, i * tamSudoku, t1);
-        //cout << "recuento" << endl;
-        for (int i = 1; i <= tamSudoku; i++) {
-            //cout << t1[i] << " ";
-            if (t1[i] == 0)
-                huecosVacios++;
-        }
-        //cout <<  endl <<"recuento" << endl;
+        memset(arrayElementos, 0, sizeof(int) * tamSudoku);
+        calculaFilas(g, i * tamSudoku, arrayElementos);
+        huecosVacios += compruebaHuecosVacios(arrayElementos, tamSudoku);
     }
 
     //coincidencias misma columna
     for (int i = 0; i < tamSudoku; i++) {
-        memset(t1, 0, sizeof(int) * tamSudoku);
-        calculaColumnas(g, i, t1);
-        //cout << "recuento" << endl;
-        for (int i = 1; i <= tamSudoku; i++) {
-            //cout << t1[i] << " ";
-            if (t1[i] == 0)
-                huecosVacios++;
-        }
-        //cout <<  endl <<"recuento" << endl;
+        memset(arrayElementos, 0, sizeof(int) * tamSudoku);
+        calculaColumnas(g, i, arrayElementos);
+        huecosVacios += compruebaHuecosVacios(arrayElementos, tamSudoku);
     }
 
-    //coincidencias misma cuadricula 3x3
+    //coincidencias misma subcuadricula 3x3
     for (int i = 0; i < tamSudoku; i++) {
-        memset(t1, 0, sizeof(int) * tamSudoku);
-        calculaSubBloque(g, i, t1);
-
-        for (int i = 1; i <= tamSudoku; i++) {
-            if (t1[i] == 0)
-                huecosVacios++;
-        }
+        memset(arrayElementos, 0, sizeof(int) * tamSudoku);
+        calculaSubBloque(g, i, arrayElementos);
+        huecosVacios += compruebaHuecosVacios(arrayElementos, tamSudoku);
     }
 
-    delete[] t1;
+    delete[] arrayElementos;
+    return huecosVacios;
+}
+
+/**
+ * Metodo que comprueba la cantidad de huecos que tiene el array con un 0
+ */
+int compruebaHuecosVacios(int *array, int tamSudoku) {
+    int huecosVacios = 0;
+    for (int i = 1; i <= tamSudoku; i++)
+        if (array[i] == 0)
+            huecosVacios++;
+
     return huecosVacios;
 }
 
@@ -127,17 +122,13 @@ float fitnes(GAGenome& g) {
  * Metodo para comprobar una fila, recibe el inicio de la fila y la recorre añadiendo al array
  * pasado por referencia los valores que encuentra para su posterior tratamiento
  */
-void calculaFilas(GAGenome& g, int inicioFila, int *t1) {
+void calculaFilas(GAGenome& g, int inicioFila, int *arrayElementos) {
     GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
 
     int tamSudoku = sqrt(genome.length());
     int finFila = inicioFila + tamSudoku;
-    //cout << "#### FILA " << inicioFila << " ####" << endl;
-    for (int i = inicioFila; i < finFila; i++) {
-        // cout << S->fijo[i] << " ";
-        t1[genome.gene(i)] = genome.gene(i);
-    }
-    // cout << endl << "#################" << endl;
+    for (int i = inicioFila; i < finFila; i++)
+        arrayElementos[genome.gene(i)] = genome.gene(i);
 }
 
 /**
@@ -145,18 +136,15 @@ void calculaFilas(GAGenome& g, int inicioFila, int *t1) {
  * tiene que dar para recorrer la columna completa añadiendo al array pasado por referencia los .
  * valores que encuentra para su posterior tratamiento
  */
-void calculaColumnas(GAGenome& g, int inicioColumna, int *t1) {
+void calculaColumnas(GAGenome& g, int inicioColumna, int *arrayElementos) {
     GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
 
     int tamSudoku = sqrt(genome.length());
     int finFila = inicioColumna + (tamSudoku * (tamSudoku - 1));
-    // cout << "#### COLUM " << inicioColumna << " ####" << endl;
     for (int i = 0; i < tamSudoku; i++) {
-        //  cout << S->fijo[inicioColumna] << " ";
-        t1[genome.gene(inicioColumna)] = genome.gene(inicioColumna);
+        arrayElementos[genome.gene(inicioColumna)] = genome.gene(inicioColumna);
         inicioColumna += tamSudoku;
     }
-    //  cout << endl << "#################" << endl;
 }
 
 /**
@@ -164,7 +152,7 @@ void calculaColumnas(GAGenome& g, int inicioColumna, int *t1) {
  * obtiene cual es el indice donde empieza con lo que va añadiendo al array pasado por referencia
  * los valores que encuentra para su posterior tratamiento
  */
-void calculaSubBloque(GAGenome& g, int bloque, int *t1) {
+void calculaSubBloque(GAGenome& g, int bloque, int *arrayElementos) {
     GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
 
     int inicioFila = getInicioFilaBloque[bloque];
@@ -172,22 +160,18 @@ void calculaSubBloque(GAGenome& g, int bloque, int *t1) {
 
     int filas = 0;
     int finFila = inicioFila + sqrt(tamSudoku);
-    //  cout << "#### BLOQUE " << bloque << " ####" << endl;
     while (filas != sqrt(tamSudoku)) {
-        for (int i = inicioFila; i < finFila; i++) {
-            t1[genome.gene(i)] = genome.gene(i);
-            //cout << S->fijo[i] << " ";
-        }
+        for (int i = inicioFila; i < finFila; i++)
+            arrayElementos[genome.gene(i)] = genome.gene(i);
+
         inicioFila += tamSudoku;
         finFila = inicioFila + sqrt(tamSudoku);
         filas++;
     }
-    //cout << endl << "#################" << endl;
 }
 
 // Funcion de terminacion
 GABoolean termina(GAGeneticAlgorithm & ga) {
-
     if ((ga.statistics().minEver() == 0) || (ga.statistics().generation() == ga.nGenerations()))
         return gaTrue;
     else
@@ -225,29 +209,10 @@ void imprimirSudoku(struct plantilla *S) {
     cout << "---------------------" << endl;
 }
 
-//FIXME BORRAR
-void imprimirSudokuResulto(char *solucion) {
-    int contFila = 1;
-
-    cout << "++++++++++++++++++++++" << endl;
-
-    for (unsigned int i = 0; i < strlen(solucion); i++)
-        if (solucion[0] != ' ') {
-            if (contFila < 9) {
-                cout << solucion[i] << " ";
-                contFila++;
-            } else {
-                cout << solucion[i] << endl;
-                contFila = 1;
-            }
-        }
-    cout << "---------------------" << endl;
-}
-
 void inicioSudoku(GAGenome& g) {
     GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
 
-    struct plantilla * plantilla1;	// = new plantilla;
+    struct plantilla * plantilla1;
     plantilla1 = (struct plantilla *) genome.userData();
 
     int aux[plantilla1->tam];
@@ -286,12 +251,6 @@ void inicioSudoku(GAGenome& g) {
 }
 
 int cruceSudoku(const GAGenome& p1, const GAGenome & p2, GAGenome* c1, GAGenome* c2) {
-
-//******************************************************//
-//******************************************************//
-// Hacer el casting correspondiente para obtener m y p  //
-//******************************************************//
-//******************************************************//
     GA1DArrayAlleleGenome<int> & m = (GA1DArrayAlleleGenome<int> &) p1;
     GA1DArrayAlleleGenome<int> & p = (GA1DArrayAlleleGenome<int> &) p2;
 
@@ -304,11 +263,6 @@ int cruceSudoku(const GAGenome& p1, const GAGenome & p2, GAGenome* c1, GAGenome*
     int punto2 = m.length() - punto1;
 
     if (c1) {
-        //***************************************************//
-        //***************************************************//
-        // Hacer el casting correspondiente para obtener h1  //
-        //***************************************************//
-        //***************************************************//
         GA1DArrayGenome<int> & h1 = (GA1DArrayGenome<int> &) *c1;
         h1.copy(m, 0, 0, punto1);
         h1.copy(p, punto1, punto1, punto2);
@@ -316,11 +270,6 @@ int cruceSudoku(const GAGenome& p1, const GAGenome & p2, GAGenome* c1, GAGenome*
     }
 
     if (c2) {
-        //***************************************************//
-        //***************************************************//
-        // Hacer el casting correspondiente para obtener h2  //
-        //***************************************************//
-        //***************************************************//
         GA1DArrayGenome<int> & h2 = (GA1DArrayGenome<int> &) *c2;
 
         h2.copy(p, 0, 0, punto1);
@@ -347,12 +296,6 @@ bool checkColumna(int col[], int * check, int tam) {
 }
 
 int mutacionSudoku(GAGenome& g, float pmut) {
-
-//*******************************************************//
-//*******************************************************//
-// Hacer el casting correspondiente para obtener genome  //
-//*******************************************************//
-//*******************************************************//
     GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
 
     struct plantilla * plantilla1 = (struct plantilla *) genome.userData();

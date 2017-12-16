@@ -79,7 +79,10 @@ def leerResultado():
         #print(content)
         retorno = re.findall('fitness: \d', content)
         #print(retorno)
-        return retorno[0].replace("fitness: ", "")
+        if len(retorno) == 0:
+            return -1
+        else:
+            return retorno[0].replace("fitness: ", "")
 
 
 def main():
@@ -98,9 +101,15 @@ def main():
                     resultados = str()
                     tiempos = str()
                     for iCasoAjuste in casosAjuste:
-                        argumentos = "{} {} {} {} {}".format(iCasoAjuste, iPoblacion, iSeleccion, iCruce, iMutacion)
-                        tiempos += "{};".format(ejecutaBinario(arg, argumentos))
-                        resultados += "{};".format(leerResultado())
+                        while True:
+                            argumentos = "{} {} {} {} {}".format(iCasoAjuste, iPoblacion, iSeleccion, iCruce, iMutacion)
+                            tiempoAux= ejecutaBinario(arg, argumentos)
+                            resulAux = leerResultado()
+                            if(resulAux != -1):
+                                tiempos += "{};".format(tiempoAux)
+                                resultados += "{};".format(resulAux)
+                                break
+                            print("fallo")
                     write(arg, "{};{};{};{};{};{}\n".format(iSeleccion, iPoblacion, iCruce, iMutacion, resultados, tiempos), "a")
                     print("Terminado interacion: {} de {}".format(cont, "80"))
                     cont += 1

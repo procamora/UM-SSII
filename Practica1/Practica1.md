@@ -49,18 +49,14 @@ header-includes:
 
 
 
-
-
-
-
-
-# a) Explicación breve y completa de la técnica Algoritmo Genético (AG). Debe quedarse muy claro cuáles son los elementos y el proceso que sigue dicha técnica.
+# Explicación breve y completa de la técnica Algoritmo Genético (AG). Debe quedarse muy claro cuáles son los elementos y el proceso que sigue dicha técnica.
 
 Un algoritmo genético (AG) es una variante de la búsqueda de haz estocástica en el que los estados sucesores se generan combinando a dos estados padres, más que modificar un solo estado.
 
 El algoritmo genético trata de encontrar la mejor solución por comparación de un conjunto de soluciones. 
 
-Las soluciones se generan a través del cruzamiento de generaciones o soluciones anteriores, esta cruzando generaciones para obtener una nueva generación de manera que podamos compararla para ver si estamos acercándonos a la solución final
+Las soluciones se generan a través del cruzamiento de generaciones o soluciones anteriores, esta cruzando generaciones para obtener una nueva generación de manera que podamos compararla para ver si estamos acercándonos a la solución final [@1].
+
 
 ## Elementos
 
@@ -73,16 +69,16 @@ Las soluciones se generan a través del cruzamiento de generaciones o soluciones
 
 #### Tenemos distintos operadores genéticos:
 
-- Selección (escoge que individuos se reproducirán y cuales no)
+- **Selección**: (escoge que individuos se reproducirán y cuales no)
     - **Ruleta**: Se eligen con probabilidad proporcional a su función de idoneidad.
     - **Torneo**: Se establecen k torneos aleatorios entre parejas de individuos y se eligen los que ganan en cada torneo (mejor función idoneidad).
 
 
-- Cruce (recombina individuos para producir descendencia)
-    - **Cruce por un punto**: Un padre ha partir de un gen intercambio el resto por el de otro padre
-    - **Cruce por dos puntos**: Un padre intercambio un rango de genes por el de otro padre
+- **Cruce**: (recombina individuos para producir descendencia)
+    - **Cruce por un punto**: Dos padres ha partir de un gen, se intercambian el resto de genes, creando 2 hijos nuevos
+    - **Cruce por dos puntos**:Dos padres ha partir de un rango de genes, se intercambian los genes de ese rango, creando 2 hijos nuevos
 
-- Mutación (provoca el cambio de valor de algunos genes del individuo)
+- **Mutación**: (provoca el cambio de valor de algunos genes del individuo)
     - **Cambio de un gen aleatorio**
     - **Intercambio entre dos genes**
 
@@ -100,32 +96,95 @@ Es necesario crear la función fitness, es una función de adaptación que tiene
 6. Esta nueva población sustituye a la original y forma la nueva población inicial que se usara en la siguiente generación, volvemos al paso 3
 
 
-# b) Explicación detallada de todas las preguntas realizadas en la sección “Cuestiones para el diseño e implementación” de este guión (en concreto, las preguntas 3), 4), 7), 9), 10) y 12)).
+# Explicación detallada de todas las preguntas realizadas en la sección “Cuestiones para el diseño e implementación” de este guión.
 
 
-## 3) Dada esa definición, explica de qué manera se están inicializando los individuos en el AG propuesto.
+## Explica de qué manera se están inicializando los individuos en el AG propuesto.
 
 
-## 4) Explica el funcionamiento de los operadores de selección indicados en la sección “Ajuste del Algoritmo Genético”.
+## Explica el funcionamiento de los operadores de selección indicados en la sección “Ajuste del Algoritmo Genético”.
+
+Tenemos disponibles en este caso 2 operadores de Selección:
+
+- GARouletteWheelSelector: Se asigna una probabilidad de selección proporcional al valor del fitness del cromosoma.
+- GATournamentSelector: Escoge al individuo de mejor fitness de entre N~ts~ individuos seleccionados aleatoriamente con reemplazamiento (N~ts~=2,3,...).
+
+[@2]
+
+## Explica de qué manera se están cruzando los individuos.
+
+Se hace un cruce por 2 puntos, el primer rango de genes corresponde a *p1* y el segundo rango a *p2*, el tamaño de los rangos es aleatorio por lo que a veces sera mas grande *p1* y otras mas pequeño.
 
 
-## 7) Dada esa definición, explica de qué manera se están cruzando los individuos.
+## Explica de qué manera se están mutando los individuos.
 
 
-## 9) Dada esa definición, explica de qué manera se están mutando los individuos.
+## Define y explica la condición de parada que utilizarás.
+
+Tenemos 2 condiciones de parada posibles: 
+
+1. La optima es que el fitness sea 0, lo que significa que el problema ha encontrado la solución y termina correctamente.
+2. Se ha llegado al numero máximo de generaciones, que en este caso son 12000, aquí llegaremos cuando no lleguemos a un fitness 0 y significara que la configuración que hayamos usado no es correcta.
 
 
-## 10) Define y explica la condición de parada que utilizarás.
+## Diseña y explica la función fitness que utilizarás. Recuerda, como se indica al comienzo de este guión, que una solución del sudoku no puede repetir en una misma fila, columna o subcuadrícula ninguno de los números
+
+La función fitness se compone de 3 partes, comprobar las filas, comprobar las columnas y comprobar las subcuadriculas
 
 
-## 12) Diseña y explica la función fitness que utilizarás. Recuerda, como se indica al comienzo de este guión, que una solución del sudoku no puede repetir en una misma fila, columna o subcuadrícula ninguno de los números
+- **Comprobar Filas**: Recorre todas las filas, para cada fila crea un array en el que introduce el numero que lee, usando como indice el valor del numero, por lo que al acabar de leer la fila tendremos un array de números ordenados en el que si están todos los números la fila es correcta y si falta algún numero habrá un 0 en el array, la cantidad de 0 indican la cantidad de números que hay mal en la fila. Una vez rellenado el array, llama a la función `compruebaHuecosVacios()` para que calcule la cantidad de números que hay mal en la fila y aumentar nuestro contador global de fallos.
+
+
+- **Comprobar columnas**: Recorre todas las columnas, para cada columna crea un array en el que introduce el numero que lee, usando como indice el valor del numero, por lo que al acabar de leer la columna tendremos un array de números ordenados en el que si están todos los números la columnas es correcta y si falta algún numero habrá un 0 en el array, la cantidad de 0 indican la cantidad de números que hay mal en la columna. Una vez rellenado el array, llama a la función `compruebaHuecosVacios()` para que calcule la cantidad de números que hay mal en la columna y aumentar nuestro contador global de fallos.
+
+
+- **Comprobar subcuadriculas**: Recorre todas las subcuadriculas, para cada subcuadrícula crea un array en el que introduce el numero que lee, usando como indice el valor del numero, por lo que al acabar de leer la subcuadrícula tendremos un array de números ordenados en el que si están todos los números la subcuadrícula es correcta y si falta algún numero habrá un 0 en el array, la cantidad de 0 indican la cantidad de números que hay mal en la subcuadrícula. Una vez rellenado el array, llama a la función `compruebaHuecosVacios()` para que calcule la cantidad de números que hay mal en la subcuadrícula y aumentar nuestro contador global de fallos.
+
+
+- **Función compruebaHuecosVacios**: Función que recibe un array con los valores de una fila, columna o subcuadrícula, lo recorre y por cada 0 que encuentre aumenta el contador, finalmente lo retorna para aumentar el contador general de la función fitness
+
+Ejemplo 1: Tenemos una fila con los valores (7, 1, 3, 2, 5, 4, 6, 8, 9), al llamar a `calculaFilas()` obtenemos el array ordenado, posteriormente llamamos a `compruebaHuecosVacios()` y comprobamos el numero de 0 que hay, en este caso como no hay repeticiones, no hay y la fila es correcta
+
+7 | 1 | 3 | 2 | 5 | 4 | 6 | 8 | 9
+--|--|--|--|--|--|--|--|--
+1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 
+
+
+Ejemplo 2: Tenemos una columna con los valores (7, 1, 3, 3, 5, 5, 6, 8, 9), al llamar a `calculaColumnas()` obtenemos el array ordenado, posteriormente llamamos a `compruebaHuecosVacios()` y comprobamos el numero de 0 que hay, en este caso como esta repetido tanto el 3 como el 5, faltan 2 números que son el 2 y el 4, con lo que el numero de fallos son 2
+
+
+7 | 1 | 3 | 3 | 5 | 5 | 6 | 8 | 9
+--|--|--|--|--|--|--|--|--
+1 | 0 | 3 | 0 | 5 | 6 | 7 | 8 | 9
 
 
 \newpage
 
 
 
-# c) La tabla completa que muestre los valores de la función fitness para todas las pruebas realizadas para el ajuste del software sobre los distintos valores para los parámetros ajustables y para los distintos “Casos para el Ajuste” propuestos. La tabla debe mostrarse de forma clara y que facilite su análisis. Ver sección “Ajuste del Algoritmo Genético” en este mismo documento.
+# La tabla completa que muestre los valores de la función fitness para todas las pruebas realizadas para el ajuste del software sobre los distintos valores para los parámetros ajustables y para los distintos “Casos para el Ajuste” propuestos. La tabla debe mostrarse de forma clara y que facilite su análisis. Ver sección “Ajuste del Algoritmo Genético” en este mismo documento.
+
+
+
+![Tabla con selector GARouletteWheelSelector para casos de ajuste](images/CasosAjusteGARouletteWheelSelector.png)
+
+
+
+
+![Tabla con selector GATournamentSelector para casos de ajuste](images/CasosAjusteGATournamentSelector.png)
+
+
+
+
+![Gráfica comparando Probabilidades de Cruce](images/ProbCruce.png)
+
+
+![Gráfica comparando Probabilidades de Mutación](images/ProbMutac.png)
+
+
+
+# Análisis de las pruebas de ajuste (esto es, el análisis de la tabla de resultados del apartado c). El objetivo de este análisis es obtener el comportamiento del software diseñado.
+
 
 
 a) se eligen los distintos métodos aplicables y un conjunto de posibles valores para los parámetros, 
@@ -135,33 +194,10 @@ d) se analizan las soluciones.
 A partir de esto, debemos obtener unos determinados métodos y valores que hacen al algoritmo robusto, eficiente y óptimo (o lo mejor posible).
 
 
-![Tabla con selector GARouletteWheelSelector para casos de ajuste](images/CasosAjusteGARouletteWheelSelector.png)
+# A partir de este análisis, indicar qué valores de los parámetros debemos utilizar, y el protocolo para asignarlos, para que el software tenga un comportamiento aceptable. Denominar a esta sección “manual-Asignación”.
 
 
-\newpage
-
-
-![Tabla con selector GATournamentSelector para casos de ajuste](images/CasosAjusteGATournamentSelector.png)
-
-
-
-# d) Análisis de las pruebas de ajuste (esto es, el análisis de la tabla de resultados del apartado c). El objetivo de este análisis es obtener el comportamiento del software diseñado.
-
-
-# e) A partir de este análisis, indicar qué valores de los parámetros debemos utilizar, y el protocolo para asignarlos, para que el software tenga un comportamiento aceptable. Denominar a esta sección “manual-Asignación”.
-
-
-# f) Para cada uno de los “Casos del Usuario” (ver sección correspondiente), indicar el protocolo seguido para resolverlo (siguiendo el “manual-Asignación”), el valor para cada parámetro, la solución obtenida y su fitness.
-
-
-
-
-
-This is a test [@doe1905].
-
-
-
-
+# Para cada uno de los “Casos del Usuario” (ver sección correspondiente), indicar el protocolo seguido para resolverlo (siguiendo el “manual-Asignación”), el valor para cada parámetro, la solución obtenida y su fitness.
 
 
 
