@@ -127,8 +127,7 @@ Tenemos 2 condiciones de parada posibles:
 2. Se ha llegado al numero máximo de generaciones, que en este caso son 12000, aquí llegaremos cuando no lleguemos a un fitness 0 y significara que la configuración que hayamos usado no es correcta.
 
 
-## Diseña y explica la función fitness que utilizarás. Recuerda, como se indica al comienzo de este guión, que una solución del sudoku no puede repetir en una misma fila, columna o subcuadrícula ninguno de los números
-
+## Diseña y explica la función fitness que utilizarás.
 La función fitness se compone de 3 partes, comprobar las filas, comprobar las columnas y comprobar las subcuadriculas
 
 
@@ -276,6 +275,7 @@ Los parámetros que hay que pasarle al binario son:
 
 `UM-SSII Caso-X.txt población selector pc pm`
 
+Ejemplo de uso: `UM-SSII Sudoku-1.txt 100 GATournamentSelector 1.95 0.1`
 
 # Casos del Usuario
 
@@ -289,7 +289,7 @@ Selector | Población | pc | pm
 GATournamentSelector | 100 | 0.95 | 0.1 
 
 
-Ejemplo de ejecución: `UM-SSII Sudoku-1.txt 100 GATournamentSelector 1.95 0.1`
+Ejecución: `UM-SSII Sudoku-1.txt 100 GATournamentSelector 1.95 0.1`
 
 Solución:
 
@@ -323,7 +323,7 @@ Selector | Población | pc | pm
 GATournamentSelector | 100 | 0.95 | 0.1 
 
 
-Ejemplo de ejecución: `UM-SSII Sudoku-2.txt 100 GATournamentSelector 1.95 0.1`
+Ejecución: `UM-SSII Sudoku-2.txt 100 GATournamentSelector 1.95 0.1`
 
 Solución:
 
@@ -357,7 +357,7 @@ Selector | Población | pc | pm
 GATournamentSelector | 100 | 0.95 | 0.1 
 
 
-Ejemplo de ejecución: `UM-SSII Sudoku-3.txt 100 GATournamentSelector 1.95 0.1`
+Ejecución: `UM-SSII Sudoku-3.txt 100 GATournamentSelector 1.95 0.1`
 
 Solución:
 
@@ -379,5 +379,7 @@ Como podemos observar resuelve el sudoku y obtenemos el sudoku resulto en forma 
 6 3 1 8 5 2 4 7 9 
 2 9 5 4 7 3 6 8 1
 ```
+
+
 
 # Bibliografía 
