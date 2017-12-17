@@ -18,7 +18,6 @@ int main(int argc, char **argv) {
     const char *nombreF = argv[1];
     int popsize = atoi(argv[2]);
     const char *selectorString = argv[3];
-    int ngen = 12000;  //atoi(argv[3]);
     float pcross = atof(argv[4]);
     float pmut = atof(argv[5]);
 
@@ -26,7 +25,7 @@ int main(int argc, char **argv) {
 
     cout << "Sudoku de tamaño: " << plantillaSudoku->tam << "x" << plantillaSudoku->tam << endl;
     cout << "Parametros:\t - Tamano poblacion: " << popsize << endl;
-    cout << "\t\t - Numero de generaciones: " << ngen << endl;
+    cout << "\t\t - Numero de generaciones: " << TAM_POBLACION << endl;
     cout << "\t\t - Probabilidad cruce: " << pcross << endl;
     cout << "\t\t - Probabilidad mutacion: " << pmut << endl;
     cout << endl;
@@ -39,7 +38,7 @@ int main(int argc, char **argv) {
         alelos.add(i);
 
     // Creamos el genoma y definimos operadores de inicio, cruce y mutación
-    GA1DArrayAlleleGenome<int> genome(plantillaSudoku->tam * plantillaSudoku->tam, alelos, fitnes, plantillaSudoku);
+    GA1DArrayAlleleGenome<int> genome(plantillaSudoku->tam * plantillaSudoku->tam, alelos, fitness, plantillaSudoku);
     genome.initializer(::inicioSudoku);
     genome.crossover(::cruceSudoku);
     genome.mutator(::mutacionSudoku);
@@ -52,7 +51,7 @@ int main(int argc, char **argv) {
 
     ga.minimaxi(-1);  // el objetivo del algoritmo genético consiste en minimizar
     ga.populationSize(popsize);
-    ga.nGenerations(ngen);
+    ga.nGenerations(TAM_POBLACION);
     ga.pCrossover(pcross);
     ga.pMutation(pmut);
     //seleccionamos el selector
@@ -72,7 +71,7 @@ int main(int argc, char **argv) {
 }
 
 // Funcion objetivo.
-float fitnes(GAGenome& g) {
+float fitness(GAGenome& g) {
     GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
 
     float jaques = 0;

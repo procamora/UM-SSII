@@ -6,6 +6,7 @@
 #include <iostream>
 #include <fstream>
 #include <cmath>  //sqrt
+#define TAM_POBLACION 12000
 
 using namespace std;
 
@@ -19,7 +20,7 @@ struct plantilla {
  */
 int getInicioFilaBloque[9] = { 0, 3, 6, 27, 30, 33, 54, 57, 60 };
 
-float fitnes(GAGenome &);  // Funcion objetivo --> al final
+float fitness(GAGenome &);  // Funcion objetivo --> al final
 int compruebaHuecosVacios(int *t1, int tamSudoku);
 GABoolean termina(GAGeneticAlgorithm &);  // Funcion de terminacion --> al final
 void leerSudoku(struct plantilla *S, const char *nombreF);
