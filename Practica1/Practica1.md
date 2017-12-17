@@ -49,7 +49,7 @@ header-includes:
 
 
 
-# Explicación breve y completa de la técnica Algoritmo Genético (AG). Debe quedarse muy claro cuáles son los elementos y el proceso que sigue dicha técnica.
+# Explicación breve y completa de la técnica Algoritmo Genético (AG).
 
 Un algoritmo genético (AG) es una variante de la búsqueda de haz estocástica en el que los estados sucesores se generan combinando a dos estados padres, más que modificar un solo estado.
 
@@ -162,8 +162,16 @@ Ejemplo 2: Tenemos una columna con los valores (7, 1, 3, 3, 5, 5, 6, 8, 9), al l
 
 
 
-# La tabla completa que muestre los valores de la función fitness para todas las pruebas realizadas para el ajuste del software sobre los distintos valores para los parámetros ajustables y para los distintos “Casos para el Ajuste” propuestos. La tabla debe mostrarse de forma clara y que facilite su análisis. Ver sección “Ajuste del Algoritmo Genético” en este mismo documento.
+# Tablas con los resultados de las ejecuciones.
 
+
+Vamos a realizar el ajuste de parámetros de la siguiente manera:
+Conjunto de casos del problema: Casos 1-5.
+Métodos/parámetros fijos: Nº generaciones = 12000.
+Métodos/parámetros ajustables: Tam Población, pc, pm, Selector.
+
+
+Para un mejor ajuste se ha añadido un sudoku extra de una complejidad superior al resto, en la siguiente sección se hablara de el.
 
 
 ![Tabla con selector GARouletteWheelSelector para casos de ajuste](images/CasosAjusteGARouletteWheelSelector.png)
@@ -183,27 +191,193 @@ Ejemplo 2: Tenemos una columna con los valores (7, 1, 3, 3, 5, 5, 6, 8, 9), al l
 
 
 
-# Análisis de las pruebas de ajuste (esto es, el análisis de la tabla de resultados del apartado c). El objetivo de este análisis es obtener el comportamiento del software diseñado.
+# Análisis de las pruebas de ajuste.
+
+Para un mejor ajuste se ha añadido un sudoku extra, este sudoku es diferente al de los casos de ajuste porque en vez de tener 30 o 33 números iniciales solo tiene 28, por lo que tiene una complejidad superior. En este análisis primero se observaran los 5 casos de ajuste y por ultimo se hará un análisis individual del sudoku extra.
+
+## Sudokus de caso de ajuste
+
+Estos sudokus tienen inicialmente 30 y 33 números.
+
+Observando las soluciones vemos que el selector GARouletteWheelSelector consigue en muy pocas ocasiones resolver los 5 casos, por lo que usaremos el selector GATournamentSelector.
+
+En cuanto a la tamaño de la población no se aprecian diferencias significativas, por lo que podríamos usar cualquiera de los dos.
+
+Mirando la figura 3 podemos apreciar que el pc de 0.9 es negativo ya que solo consigue resolver el sudoku del `Caso 1`, por el contrario 0.8 y 0.95 consiguen resolver todos los casos.
+
+
+Mirando la figura 4 podemos apreciar que un pm de 0.01 es negativo ya que no consigue resolver ningún sudoku, por el contrario el resto si consigue resolver todos los sudokus.
+
+Dado que hay gran cantidad de soluciones validad para resolver los casos vamos a añadir también el promedio de los tiempos de ejecución de todos los casos, ya que ademas de buscar solucionar un sudoku buscamos hacerlo en el menor tiempo posible.
+
+Mirando la figura 2, en la columna `Tiempo Promedio C` tenemos el promedio de los tiempos de ejecución de los casos de ajuste, podemos apreciar que un pm de 0.1 suele ofrecer menores tiempos de ejecución.
+
+Por lo que al final tenemos:
+
+Selector | Población | pc | pm | Tiempo Ejecución
+---|---|---|---|---
+GATournamentSelector | 100 | 0.8 | 0.1 | 0.69
+GATournamentSelector | 100 | 0.85 | 0.1 | 1.058
+GATournamentSelector | 100 | 0.9 | 0.1 | 1.112
+GATournamentSelector | 100 | 0.95 | 0.1 | 0.078
+
+
+Y viendo los tiempos de ejecución de cada pc comprobamos que pc=0.95 es mucho mas rápido que el resto ademas que el resto de configuraciones validas.
+
+Por lo que nuestra configuración final sera:
+
+Selector | Población | pc | pm
+---|---|---|---|---
+GATournamentSelector | 100 | 0.95 | 0.1 
+
+
+Mirando la configuración valida pero mas lenta que tenemos que tarda 1.214 seg, si la comparamos con la elegida que tarde 0.075 seg podemos decir que es un 1456.40%  mas rápida que la solución mas lenta.
+
+$$
+\frac{1.214}{0.078} = 15.5640 == 1456.40%
+$$
+
+
+## Sudoku extra
+
+Este sudoku al tener menos números iniciales es mas complejo, y solo hay 3 configuraciones que sean capaz de resolverlo junto con el resto de casos:
+
+Selector | Población | pc | pm | Tiempo Ejecución
+---|---|---|---|---
+GATournamentSelector | 100 | 0.95 | 0.15 | 0.91
+GATournamentSelector | 150 | 0.85 | 0.1 | 0.11
+GATournamentSelector | 150 | 0.95 | 0.125 | 1.53
+
+En esta ocasión como mejor configuración tomaremos:
+
+Selector | Población | pc | pm 
+---|---|---|---|---
+GATournamentSelector | 150 | 0.85 | 0.1
+
+
+# Manual-Asignación.
+
+
+Para sudokus que tengan 30 o mas números iniciales usaremos:
+
+Selector | Población | pc | pm
+---|---|---|---|---
+GATournamentSelector | 100 | 0.95 | 0.1 
+
+
+Para sudokus de menos de 30 números iniciales usaremos:
+
+Selector | Población | pc | pm 
+---|---|---|---|---
+GATournamentSelector | 150 | 0.85 | 0.1
+
+
+Los parámetros que hay que pasarle al binario son: 
+
+`UM-SSII Caso-X.txt población selector pc pm`
+
+
+# Casos del Usuario
+
+
+## Caso 1
+
+Como tiene 33 números iniciales usaremos: 
+
+Selector | Población | pc | pm
+---|---|---|---|---
+GATournamentSelector | 100 | 0.95 | 0.1 
+
+
+Ejemplo de ejecución: `UM-SSII Sudoku-1.txt 100 GATournamentSelector 1.95 0.1`
+
+Solución:
+
+```
+El GA encuentra la solución ( 4 5 8 3 6 7 9 1 2 1 6 3 9 2 5 7 4 8 2 9 7 8 4 1 5 6 3 8 4 5 2 9 6 3 7 1 7 3 2 5 1 8 6 9 4 6 1 9 4 7 3 2 8 5 5 7 1 6 8 2 4 3 9 9 2 6 1 3 4 8 5 7 3 8 4 7 5 9 1 2 6 )
+fitness: 0
+```
+
+Como podemos observar resuelve el sudoku y obtenemos el sudoku resulto en forma lineal, si queremos verlo en un formato mas amigable tendríamos:
+
+```
+4 5 8 3 6 7 9 1 2 
+1 6 3 9 2 5 7 4 8 
+2 9 7 8 4 1 5 6 3 
+8 4 5 2 9 6 3 7 1 
+7 3 2 5 1 8 6 9 4 
+6 1 9 4 7 3 2 8 5 
+5 7 1 6 8 2 4 3 9 
+9 2 6 1 3 4 8 5 7 
+3 8 4 7 5 9 1 2 6
+```
 
 
 
-a) se eligen los distintos métodos aplicables y un conjunto de posibles valores para los parámetros, 
-b) se selecciona un conjunto significativo de casos del problema, 
-c) se resuelven todos los casos utilizando todas las combinaciones de métodos-valores, 
-d) se analizan las soluciones. 
-A partir de esto, debemos obtener unos determinados métodos y valores que hacen al algoritmo robusto, eficiente y óptimo (o lo mejor posible).
+## Caso 2
+
+Como tiene 33 números iniciales usaremos: 
+
+Selector | Población | pc | pm
+---|---|---|---|---
+GATournamentSelector | 100 | 0.95 | 0.1 
 
 
-# A partir de este análisis, indicar qué valores de los parámetros debemos utilizar, y el protocolo para asignarlos, para que el software tenga un comportamiento aceptable. Denominar a esta sección “manual-Asignación”.
+Ejemplo de ejecución: `UM-SSII Sudoku-2.txt 100 GATournamentSelector 1.95 0.1`
+
+Solución:
+
+```
+El GA encuentra la solución ( 6 7 1 8 9 2 3 5 4 8 5 9 4 1 3 7 2 6 3 2 4 6 5 7 1 8 9 4 3 6 7 8 5 2 9 1 5 1 2 3 6 9 8 4 7 9 8 7 1 2 4 5 6 3 7 6 3 5 4 8 9 1 2 2 4 5 9 7 1 6 3 8 1 9 8 2 3 6 4 7 5 )
+fitness: 0
+```
+
+Como podemos observar resuelve el sudoku y obtenemos el sudoku resulto en forma lineal, si queremos verlo en un formato mas amigable tendríamos:
+
+```
+6 7 1 8 9 2 3 5 4 
+8 5 9 4 1 3 7 2 6 
+3 2 4 6 5 7 1 8 9 
+4 3 6 7 8 5 2 9 1 
+5 1 2 3 6 9 8 4 7 
+9 8 7 1 2 4 5 6 3 
+7 6 3 5 4 8 9 1 2 
+2 4 5 9 7 1 6 3 8 
+1 9 8 2 3 6 4 7 5
+```
 
 
-# Para cada uno de los “Casos del Usuario” (ver sección correspondiente), indicar el protocolo seguido para resolverlo (siguiendo el “manual-Asignación”), el valor para cada parámetro, la solución obtenida y su fitness.
+
+## Caso 3
+
+Como tiene 33 números iniciales usaremos: 
+
+Selector | Población | pc | pm
+---|---|---|---|---
+GATournamentSelector | 100 | 0.95 | 0.1 
 
 
+Ejemplo de ejecución: `UM-SSII Sudoku-3.txt 100 GATournamentSelector 1.95 0.1`
 
+Solución:
 
+```
+El GA encuentra la solución ( 1 5 9 7 2 4 8 6 3 8 2 4 1 3 6 5 9 7 7 6 3 9 8 5 1 2 4 9 4 2 3 6 8 7 1 5 3 7 8 5 1 9 2 4 6 5 1 6 2 4 7 9 3 8 4 8 7 6 9 1 3 5 2 6 3 1 8 5 2 4 7 9 2 9 5 4 7 3 6 8 1 )
+fitness: 0
+```
 
+Como podemos observar resuelve el sudoku y obtenemos el sudoku resulto en forma lineal, si queremos verlo en un formato mas amigable tendríamos:
 
-
+```
+1 5 9 7 2 4 8 6 3 
+8 2 4 1 3 6 5 9 7
+7 6 3 9 8 5 1 2 4 
+9 4 2 3 6 8 7 1 5 
+3 7 8 5 1 9 2 4 6 
+5 1 6 2 4 7 9 3 8 
+4 8 7 6 9 1 3 5 2 
+6 3 1 8 5 2 4 7 9 
+2 9 5 4 7 3 6 8 1
+```
 
 # Bibliografía 
