@@ -6,12 +6,23 @@ author:
 date: 9 de Diciembre de 2017
 header: dsad
 footer: So is this
-geometry: margin=1in
+geometry:
+    - top=1in
+    - margin=1in
+    - bottom=1in
+    - right=1in
+    - left=1in
 toc: true
 toc-depth: 1
 fontsize: 11pt # puede ser 10, 11 o 12
 fontfamily: lmodern
 documentclass: scrartcl
+lang: es
+bibliography: bibliografia.bib
+csl: estilo.csl
+link-citations: true
+lof: false # Añadir lista de figuras
+lot: false # Añadir lista de tablas 
 header-includes:
     - \usepackage{xcolor}
     - \definecolor{miverde}{rgb}{0.31,0.60,0.02}
@@ -55,7 +66,7 @@ Un algoritmo genético (AG) es una variante de la búsqueda de haz estocástica 
 
 El algoritmo genético trata de encontrar la mejor solución por comparación de un conjunto de soluciones. 
 
-Las soluciones se generan a través del cruzamiento de generaciones o soluciones anteriores; está cruzando generaciones para obtener una nueva generación, de manera que podamos compararla para ver si estamos acercándonos a la solución final [@1].
+Las soluciones se generan a través del cruzamiento de generaciones o soluciones anteriores; está cruzando generaciones para obtener una nueva generación, de manera que podamos compararla para ver si estamos acercándonos a la solución final [@youtube].
 
 
 ## Elementos
@@ -110,7 +121,7 @@ Tenemos disponibles en este caso 2 operadores de Selección:
 - GARouletteWheelSelector: Se asigna una probabilidad de selección proporcional al valor del fitness del cromosoma.
 - GATournamentSelector: Escoge al individuo de mejor fitness de entre N~ts~ individuos seleccionados aleatoriamente con reemplazamiento (N~ts~=2,3,...).
 
-[@2]
+[@ssii]
 
 ## Explica de qué manera se están cruzando los individuos.
 
@@ -143,6 +154,23 @@ La función fitness se compone de 3 partes: comprobar las filas, comprobar las c
 
 - **Función compruebaHuecosVacios**: Función que recibe un array con los valores de una fila, columna o subcuadrícula. Lo recorre, y por cada 0 que encuentre, aumenta el contador. Finalmente, lo retorna para aumentar el contador general de la función fitness.
 
+
+
+```
+/**
+ * Metodo que comprueba la cantidad de huecos que tiene el array con un 0
+ */
+int compruebaHuecosVacios(int *array, int tamSudoku) {
+    int huecosVacios = 0;
+    for (int i = 1; i <= tamSudoku; i++)
+        if (array[i] == 0)
+            huecosVacios++;
+
+    return huecosVacios;
+}
+```
+
+
 Ejemplo 1: Tenemos una fila con los valores (7, 1, 3, 2, 5, 4, 6, 8, 9); al llamar a `calculaFilas()`, obtenemos el array ordenado. Posteriormente, llamamos a `compruebaHuecosVacios()` y comprobamos el número de 0 que haya; en este caso, como no hay repeticiones, tampoco hay 0 y, por tanto, la fila es correcta.
 
 7 | 1 | 3 | 2 | 5 | 4 | 6 | 8 | 9
@@ -174,20 +202,13 @@ Métodos/parámetros ajustables: Tam Población, pc, pm, Selector.
 Para un mejor ajuste se ha añadido un sudoku extra de una complejidad superior al resto; en la siguiente sección se hablará de él.
 
 
-![Tabla con selector GARouletteWheelSelector para casos de ajuste](images/CasosAjusteGARouletteWheelSelector.png)
+![Tabla con selector GARouletteWheelSelector para casos de ajuste](images/CasosAjusteGARouletteWheelSelector.png){#fig:RouletteWheel}
 
+![Tabla con selector GATournamentSelector para casos de ajuste](images/CasosAjusteGATournamentSelector.png){#fig:Tournament}
 
+![Gráfica comparando Probabilidades de Cruce](images/ProbCruce.png){#fig:ProbCruce}
 
-
-![Tabla con selector GATournamentSelector para casos de ajuste](images/CasosAjusteGATournamentSelector.png)
-
-
-
-
-![Gráfica comparando Probabilidades de Cruce](images/ProbCruce.png)
-
-
-![Gráfica comparando Probabilidades de Mutación](images/ProbMutac.png)
+![Gráfica comparando Probabilidades de Mutación](images/ProbMutac.png){#fig:ProbMutac}
 
 
 
@@ -203,9 +224,9 @@ Observando las soluciones vemos que el selector GARouletteWheelSelector consigue
 
 En cuanto al tamaño de la población, no se aprecian diferencias significativas, por lo que podríamos usar cualquiera de los dos para comparar.
 
-Mirando la figura 3 podemos apreciar que el pc de 0.9 es negativo, ya que solo consigue resolver el sudoku del `Caso 1`; por el contrario, 0.8 y 0.95 consiguen resolver todos los casos, por lo que los usaremos para comparar.
+Mirando la [Figura 3](#fig:ProbCruce) podemos apreciar que el pc de 0.9 es negativo, ya que solo consigue resolver el sudoku del `Caso 1`; por el contrario, 0.8 y 0.95 consiguen resolver todos los casos, por lo que los usaremos para comparar.
 
-Mirando la figura 4 podemos apreciar que un pm de 0.01 es negativo, ya que solo consigue resolver el `Caso 3` y `Caso 4`; por el contrario, el resto sí consigue resolver todos los sudokus, por lo que usaremos para comparar 0.05, 0.1 y 0.125.
+Mirando la [Figura 3](#fig:ProbMutac) podemos apreciar que un pm de 0.01 es negativo, ya que solo consigue resolver el `Caso 3` y `Caso 4`; por el contrario, el resto sí consigue resolver todos los sudokus, por lo que usaremos para comparar 0.05, 0.1 y 0.125.
 
 Dado que hay gran cantidad de soluciones válidas para resolver los casos, vamos a añadir también el promedio de los tiempos de ejecución de todos los casos, ya que además de buscar solucionar un sudoku buscamos hacerlo en el menor tiempo posible.
 
@@ -314,7 +335,7 @@ Como podemos observar, resuelve el sudoku (fitness 0) y ofrece su solución de f
 6 1 9 4 7 3 2 8 5 
 5 7 1 6 8 2 4 3 9 
 9 2 6 1 3 4 8 5 7 
-3 8 4 7 5 9 1 2 6
+3 8 4 7 5 9 1 2 6 
 ```
 
 
@@ -348,7 +369,7 @@ Como podemos observar, resuelve el sudoku (fitness 0) y ofrece su solución de f
 9 8 7 1 2 4 5 6 3 
 7 6 3 5 4 8 9 1 2 
 2 4 5 9 7 1 6 3 8 
-1 9 8 2 3 6 4 7 5
+1 9 8 2 3 6 4 7 5 
 ```
 
 
@@ -375,16 +396,22 @@ Como podemos observar, resuelve el sudoku (fitness 0) y ofrece su solución de f
 
 ```
 1 5 9 7 2 4 8 6 3 
-8 2 4 1 3 6 5 9 7
+8 2 4 1 3 6 5 9 7 
 7 6 3 9 8 5 1 2 4 
 9 4 2 3 6 8 7 1 5 
 3 7 8 5 1 9 2 4 6 
 5 1 6 2 4 7 9 3 8 
 4 8 7 6 9 1 3 5 2 
 6 3 1 8 5 2 4 7 9 
-2 9 5 4 7 3 6 8 1
+2 9 5 4 7 3 6 8 1 
 ```
 
 
 
+
 # Bibliografía 
+
+La referencia:
+
+- 1: Es un video de youtube que explica el funcionamiento de un algoritmo genético, ha sido usado para explicar como funciona un algoritmo genetico.
+- 2: Es un manual antiguo de la asignatura, ha sido usado para explicar los operadores de selección..
