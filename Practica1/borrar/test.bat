@@ -1,0 +1,1 @@
+..\..\Debug\UM-SSII.exe Caso-A1.txt 100 GARouletteWheelSelector 0.95 0.1

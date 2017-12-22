@@ -95,12 +95,12 @@ Las soluciones se generan a través del cruzamiento de generaciones o soluciones
 
 #### Tenemos que definir la función objetivo
 
-Es necesario crear la función fitness; es una función de adaptación que tiene que retornar: *>0*, es la forma de evaluar la población.
+Es necesario crear la función fitness; es una función de adaptación que tiene que retornar un numero n: *n>0*, es la forma de evaluar la población.
 
 ## Proceso
 
 1. Codificamos el problema (en nuestro caso en forma de *Integer*).
-2. Generanos una población inicial aleatoriamente de k estados.  
+2. Generanos una población inicial aleatoriamente de k estados.
 3. Seleccionamos k individuos a través del operador de selección para crear una nueva población.
 4. Elegimos individuos con una probabilidad (p~c~) para ser cruzados y crear una nueva población.
 5. Con una probabilidad (p~m~) mutamos los genes de los individuos de la población actual.
@@ -113,6 +113,7 @@ Es necesario crear la función fitness; es una función de adaptación que tiene
 
 ## Explica de qué manera se están inicializando los individuos en el AG propuesto.
 
+La población se inicializada cogiendo la plantilla, y poniendo sus valores, cuando un valor es `0` significa que no esta, por lo que añade un numero aleatorio del rango `1-9`.
 
 ## Explica el funcionamiento de los operadores de selección indicados en la sección “Ajuste del Algoritmo Genético”.
 
@@ -130,6 +131,7 @@ Se hace un cruce por 2 puntos; el primer rango de genes corresponde a *p1* y el 
 
 ## Explica de qué manera se están mutando los individuos.
 
+No lo se.
 
 ## Define y explica la condición de parada que utilizarás.
 
@@ -171,14 +173,14 @@ int compruebaHuecosVacios(int *array, int tamSudoku) {
 ```
 
 
-Ejemplo 1: Tenemos una fila con los valores (7, 1, 3, 2, 5, 4, 6, 8, 9); al llamar a `calculaFilas()`, obtenemos el array ordenado. Posteriormente, llamamos a `compruebaHuecosVacios()` y comprobamos el número de 0 que haya; en este caso, como no hay repeticiones, tampoco hay 0 y, por tanto, la fila es correcta.
+Ejemplo 1: Tenemos una fila con valores (7, 1, 3, 2, 5, 4, 6, 8, 9); al llamar a _calculaFilas()_, obtenemos el array ordenado. Posteriormente, llamamos a _compruebaHuecosVacios()_ y comprobamos el número de 0 que haya; en este caso, como no hay repeticiones, tampoco hay 0 y, por tanto, la fila es correcta.
 
 7 | 1 | 3 | 2 | 5 | 4 | 6 | 8 | 9
 --|--|--|--|--|--|--|--|--
 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 
 
 
-Ejemplo 2: Tenemos una columna con los valores (7, 1, 3, 3, 5, 5, 6, 8, 9); al llamar a `calculaColumnas()` obtenemos el array ordenado. Posteriormente, llamamos a `compruebaHuecosVacios()` y comprobamos el número de 0 que hay; en este caso, como están repetidos tanto el 3 como el 5, faltan 2 números que son el 2 y el 4, con lo que el número de fallos son 2.
+Ejemplo 2: Tenemos una columna los valores (7, 1, 3, 3, 5, 5, 6, 8, 9); al llamar a _calculaColumnas()_ obtenemos el array ordenado. Posteriormente, llamamos a _compruebaHuecosVacios()_ y comprobamos el número de 0 que hay; en este caso, como están repetidos tanto el 3 como el 5, faltan 2 números que son el 2 y el 4, con lo que el número de fallos son 2.
 
 
 7 | 1 | 3 | 3 | 5 | 5 | 6 | 8 | 9
@@ -186,31 +188,37 @@ Ejemplo 2: Tenemos una columna con los valores (7, 1, 3, 3, 5, 5, 6, 8, 9); al l
 1 | 0 | 3 | 0 | 5 | 6 | 7 | 8 | 9
 
 
-\newpage
-
 
 
 # Tablas con los resultados de las ejecuciones.
 
 
 Vamos a realizar el ajuste de parámetros de la siguiente manera:
-Conjunto de casos del problema: Casos 1-5.
-Métodos/parámetros fijos: Nº generaciones = 12000, operador de cruce y operador de mutación.
-Métodos/parámetros ajustables: Tam Población, pc, pm, Selector.
+
+- Conjunto de casos del problema: Casos 1-5.
+- Métodos/parámetros fijos: Nº generaciones = 12000, operador de cruce y operador de mutación.
+- Métodos/parámetros ajustables: Tam Población, pc, pm, Selector.
 
 
 Para un mejor ajuste se ha añadido un sudoku extra de una complejidad superior al resto; en la siguiente sección se hablará de él.
+En la tabla también aparecen:
+
+- Especial: sudoku extra.
+- Valido?: que es la suma de los fitness de los 5 casos, si es 0 ese ajuste funciona con todos los casos.
+- Tiempo: C1-5: Tiempo de ejecución del caso indicado.
+- Promedio Tiempo: Promedio de tiempo de ejecuciones de todos los casos.
 
 
-![Tabla con selector GARouletteWheelSelector para casos de ajuste](images/CasosAjusteGARouletteWheelSelector.png){#fig:RouletteWheel}
 
-![Tabla con selector GATournamentSelector para casos de ajuste](images/CasosAjusteGATournamentSelector.png){#fig:Tournament}
+![Tabla con selector GARouletteWheelSelector para casos de ajuste](images/CasosAjusteGARouletteWheelSelector.png){#RouletteWheel}
 
-![Gráfica comparando Probabilidades de Cruce](images/ProbCruce.png){#fig:ProbCruce}
+![Tabla con selector GATournamentSelector para casos de ajuste](images/CasosAjusteGATournamentSelector.png){#Tournament}
 
-![Gráfica comparando Probabilidades de Mutación](images/ProbMutac.png){#fig:ProbMutac}
+![Gráfica comparando Probabilidades de Mutación](images/ProbMutac.png){#ProbMutac}
 
+![Gráfica comparando Probabilidades de Cruce](images/ProbCruce.png){#ProbCruce}
 
+\newpage
 
 # Análisis de las pruebas de ajuste.
 
@@ -224,42 +232,51 @@ Observando las soluciones vemos que el selector GARouletteWheelSelector consigue
 
 En cuanto al tamaño de la población, no se aprecian diferencias significativas, por lo que podríamos usar cualquiera de los dos para comparar.
 
-Mirando la [Figura 3](#fig:ProbCruce) podemos apreciar que el pc de 0.9 es negativo, ya que solo consigue resolver el sudoku del `Caso 1`; por el contrario, 0.8 y 0.95 consiguen resolver todos los casos, por lo que los usaremos para comparar.
+Mirando la [Figura 3](#ProbMutac) podemos apreciar que un _p~m~=0.01_ es negativo, ya que solo consigue resolver algunos casos; por el contrario, el resto sí consigue resolver la mayoría de los sudokus, por lo que usaremos para comparar 0.05, 0.1, 0.125 u 0.15. También observamos que un _p~m~=0.05_ solo funciona bien con una población de 100.
 
-Mirando la [Figura 3](#fig:ProbMutac) podemos apreciar que un pm de 0.01 es negativo, ya que solo consigue resolver el `Caso 3` y `Caso 4`; por el contrario, el resto sí consigue resolver todos los sudokus, por lo que usaremos para comparar 0.05, 0.1 y 0.125.
+Mirando la [Figura 4](#ProbCruce) podemos apreciar que _p~m~=0.05_ con _población=150_ no funciona bien independientemente de la probabilidad de cruce, pero no podemos sacar mas información al respecto, por lo que no filtraremos ninguna probabilidad de cruce por el momento. 
 
 Dado que hay gran cantidad de soluciones válidas para resolver los casos, vamos a añadir también el promedio de los tiempos de ejecución de todos los casos, ya que además de buscar solucionar un sudoku buscamos hacerlo en el menor tiempo posible.
 
+\newpage
 
 Por lo que al final tenemos:
 
 Selector | Población | pc | pm | Tiempo Ejecución
 ---|---|---|---|---
-GATournamentSelector | 100 | 0,8 | 0,125 | 0,258
-GATournamentSelector | 100 | 0,8 | 0,15 | 0,236
-GATournamentSelector | 100 | 0,95 | 0,05 | 0,182
-GATournamentSelector | 100 | 0,95 | 0,1 | 0,078
-GATournamentSelector | 100 | 0,95 | 0,125 | 1,026
-GATournamentSelector | 100 | 0,95 | 0,15 | 0,6
-GATournamentSelector | 150 | 0,8 | 0,1 | 0,254
-GATournamentSelector | 150 | 0,8 | 0,125 | 0,778
-GATournamentSelector | 150 | 0,8 | 0,15 | 0,424
-GATournamentSelector | 150 | 0,95 | 0,1 | 0,098
-GATournamentSelector | 150 | 0,95 | 0,125 | 0,558
-GATournamentSelector | 150 | 0,95 | 0,15 | 0,466
+GATournamentSelector | 100 | 0,8 | 0,05 | 1,97
+GATournamentSelector | 100 | 0,8 | 0,1 | 1,11
+GATournamentSelector | 100 | 0,8 | 0,125 | 0,51
+GATournamentSelector | 100 | 0,8 | 0,15 | 0,48
+GATournamentSelector | 100 | 0,95 | 0,1 | 1,58
+GATournamentSelector | 100 | 0,95 | 0,15 | 1,65
+GATournamentSelector | 100 | 0,95 | 0,05 | 0,52
+GATournamentSelector | 100 | 0,95 | 0,1 | 0,35
+GATournamentSelector | 100 | 0,95 | 0,125 | 1,06
+GATournamentSelector | 100 | 0,95 | 0,15 | 1,90
+GATournamentSelector | 150 | 0,8 | 0,1 | 0,50
+GATournamentSelector | 150 | 0,8 | 0,125 | 1,19
+GATournamentSelector | 150 | 0,8 | 0,15 | 0,68
+GATournamentSelector | 150 | 0,95 | 0,1 | 0,7
+GATournamentSelector | 150 | 0,95 | 0,125 | 0,87
+GATournamentSelector | 150 | 0,95 | 0,15 | 0,34
+GATournamentSelector | 150 | 0,95 | 0,1 | 0,30
+GATournamentSelector | 150 | 0,95 | 0,125 | 0,75
+GATournamentSelector | 150 | 0,95 | 0,15 | 0,76
 
 
-Tenemos el promedio de los tiempos de ejecución de los casos de ajuste; en ellos, podemos apreciar que un pm de 0.1 suele ofrecer menores tiempos de ejecución. Observando los tiempos de ejecución de cada pc comprobamos que pc=0.95 con población=100 es mucho mas rápido que el resto de configuraciones validas, por lo que nuestra configuración final será:
+Una vez que hemos reducido nuestras posibles configuraciones podemos observar que la configuración con mejor rendimiento son las que tienen un _p~m~=0.1_ junto con un _p~c~=0.95_ sin tener demasiada relevancia el tamaño de la población, en esta ocasión escogemos `población=150` porque es 5ms mas rápida, por lo que nuestra configuración final será:
 
 Selector | Población | pc | pm
 ---|---|---|---
-GATournamentSelector | 100 | 0.95 | 0.1 
+GATournamentSelector | 150 | 0,95 | 0,1
 
 
-Mirando la configuración válida pero más lenta que tenemos, vemos que tarda 1.214 seg; si la comparamos con la elegida (que tarda 0.075 seg), podemos decir que es un 1456.40%  mas rápida que la solución más lenta.
+
+Mirando la configuración válida pero más lenta que tenemos, vemos que tarda 1.97 seg; si la comparamos con la elegida (que tarda 0.30 seg), podemos decir que es un 556.66%  mas rápida que la solución más lenta.
 
 $$
-\frac{1.214}{0.078} = 15.5640 == 1456.40%
+\frac{1.97}{0.30} = 6.5666 == 556.66% mas rápida
 $$
 
 
@@ -269,11 +286,12 @@ Este sudoku, al tener menos números iniciales, es más complejo, y solo hay 3 c
 
 Selector | Población | pc | pm | Tiempo Ejecución
 ---|---|---|---|---
-GATournamentSelector | 100 | 0.95 | 0.15 | 0.91
-GATournamentSelector | 150 | 0.85 | 0.1 | 0.11
-GATournamentSelector | 150 | 0.95 | 0.125 | 1.53
+GATournamentSelector | 100 | 0.95 | 0.15 | 2,17
+GATournamentSelector | 150 | 0.85 | 0.1 | 0,59
+GATournamentSelector | 150 | 0.95 | 0.125 | 1,98
 
-En esta ocasión, como mejor configuración, tomaremos:
+
+En esta ocasión, como mejor configuración y mas eficiente en tiempo de ejecución, tomaremos:
 
 Selector | Población | pc | pm 
 ---|---|---|---|---
@@ -282,12 +300,20 @@ GATournamentSelector | 150 | 0.85 | 0.1
 
 # Manual-Asignación.
 
+A la hora de elegir una configuración, si buscamos la mayor eficiencia en tiempo de ejecución, vemos que tenemos varias configuraciones fijas que son:
+
+Selector | Población  | pm
+---|---|---|--
+GATournamentSelector | 150 | 0.1 
+
+y el valor que cambia es la probabilidad de cruce (_p~c~_) que dependerá de la dificultad del problema.
+
 
 Para sudokus que tengan 30 o mas números iniciales usaremos:
 
 Selector | Población | pc | pm
 ---|---|---|---|---
-GATournamentSelector | 100 | 0.95 | 0.1 
+GATournamentSelector | 150 | 0.95 | 0.1 
 
 
 Para sudokus de menos de 30 números iniciales usaremos:
@@ -299,9 +325,9 @@ GATournamentSelector | 150 | 0.85 | 0.1
 
 Los parámetros que hay que pasarle al binario son: 
 
-`UM-SSII Caso-X.txt población selector pc pm`
+`UM-SSII.exe Caso-X.txt población selector pc pm`
 
-Ejemplo de uso: `UM-SSII Sudoku-1.txt 100 GATournamentSelector 1.95 0.1`
+Ejemplo de uso: `UM-SSII.exe Sudoku-1.txt 150 GATournamentSelector 1.95 0.1`
 
 # Casos del Usuario
 
@@ -315,7 +341,7 @@ Selector | Población | pc | pm
 GATournamentSelector | 100 | 0.95 | 0.1 
 
 
-Ejecución: `UM-SSII Sudoku-1.txt 100 GATournamentSelector 1.95 0.1`
+Ejecución: `UM-SSII.exe Sudoku-1.txt 150 GATournamentSelector 1.95 0.1`
 
 Solución:
 
@@ -349,7 +375,7 @@ Selector | Población | pc | pm
 GATournamentSelector | 100 | 0.95 | 0.1 
 
 
-Ejecución: `UM-SSII Sudoku-2.txt 100 GATournamentSelector 1.95 0.1`
+Ejecución: `UM-SSII.exe Sudoku-2.txt 150 GATournamentSelector 1.95 0.1`
 
 Solución:
 
@@ -383,7 +409,7 @@ Selector | Población | pc | pm
 GATournamentSelector | 100 | 0.95 | 0.1 
 
 
-Ejecución: `UM-SSII Sudoku-3.txt 100 GATournamentSelector 1.95 0.1`
+Ejecución: `UM-SSII.exe Sudoku-3.txt 150 GATournamentSelector 1.95 0.1`
 
 Solución:
 

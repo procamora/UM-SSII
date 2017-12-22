@@ -74,8 +74,6 @@ int main(int argc, char **argv) {
 float fitness(GAGenome& g) {
     GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
 
-    float jaques = 0;
-    int c, f;
     int huecosVacios = 0;
     int tamSudoku = sqrt(genome.length());
     int *arrayElementos = new int[tamSudoku];
@@ -131,7 +129,7 @@ void calculaFilas(GAGenome& g, int inicioFila, int *arrayElementos) {
 }
 
 /**
- * Metodo para comprobar una fila, recibe el inicio de la columna y va calculando los saltos que
+ * Metodo para comprobar una columna, recibe el inicio de la columna y va calculando los saltos que
  * tiene que dar para recorrer la columna completa añadiendo al array pasado por referencia los .
  * valores que encuentra para su posterior tratamiento
  */
@@ -139,7 +137,7 @@ void calculaColumnas(GAGenome& g, int inicioColumna, int *arrayElementos) {
     GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
 
     int tamSudoku = sqrt(genome.length());
-    int finFila = inicioColumna + (tamSudoku * (tamSudoku - 1));
+    // int finFila = inicioColumna + (tamSudoku * (tamSudoku - 1));
     for (int i = 0; i < tamSudoku; i++) {
         arrayElementos[genome.gene(inicioColumna)] = genome.gene(inicioColumna);
         inicioColumna += tamSudoku;
@@ -299,7 +297,7 @@ int mutacionSudoku(GAGenome& g, float pmut) {
 
     struct plantilla * plantilla1 = (struct plantilla *) genome.userData();
     int nmut = 0;
-    int aux, aux1;
+    int aux;
     int fil;
     bool fila;
 
