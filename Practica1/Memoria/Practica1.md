@@ -309,14 +309,14 @@ GATournamentSelector | 150 | 0.1
 y el valor que cambia es la probabilidad de cruce (_p~c~_) que dependerá de la dificultad del problema.
 
 
-Para sudokus que tengan 30 o mas números iniciales usaremos:
+Para sudokus que tengan 30 o mas números iniciales usaremos _p~c~=0.95_:
 
 Selector | Población | pc | pm
 ---|---|---|---|---
 GATournamentSelector | 150 | 0.95 | 0.1 
 
 
-Para sudokus de menos de 30 números iniciales usaremos:
+Para sudokus de menos de 30 números iniciales usaremos _p~c~=0.85_:
 
 Selector | Población | pc | pm 
 ---|---|---|---|---
@@ -338,10 +338,12 @@ Como tiene 33 números iniciales usaremos:
 
 Selector | Población | pc | pm
 ---|---|---|---|---
-GATournamentSelector | 100 | 0.95 | 0.1 
+GATournamentSelector | 150 | 0.95 | 0.1 
 
 
 Ejecución: `UM-SSII.exe Sudoku-1.txt 150 GATournamentSelector 1.95 0.1`
+
+\pagebreak
 
 Solución:
 
@@ -372,7 +374,7 @@ Como tiene 33 números iniciales usaremos:
 
 Selector | Población | pc | pm
 ---|---|---|---|---
-GATournamentSelector | 100 | 0.95 | 0.1 
+GATournamentSelector | 150 | 0.95 | 0.1 
 
 
 Ejecución: `UM-SSII.exe Sudoku-2.txt 150 GATournamentSelector 1.95 0.1`
@@ -406,7 +408,7 @@ Como tiene 33 números iniciales usaremos:
 
 Selector | Población | pc | pm
 ---|---|---|---|---
-GATournamentSelector | 100 | 0.95 | 0.1 
+GATournamentSelector | 150 | 0.95 | 0.1 
 
 
 Ejecución: `UM-SSII.exe Sudoku-3.txt 150 GATournamentSelector 1.95 0.1`
@@ -439,5 +441,5 @@ Como podemos observar, resuelve el sudoku (fitness 0) y ofrece su solución de f
 
 La referencia:
 
-- 1: Es un video de youtube que explica el funcionamiento de un algoritmo genético, ha sido usado para explicar como funciona un algoritmo genetico.
-- 2: Es un manual antiguo de la asignatura, ha sido usado para explicar los operadores de selección..
+- 1: Es un video de youtube que explica el funcionamiento de un algoritmo genético, ha sido usado para explicar como funciona un algoritmo genético.
+- 2: Es un manual antiguo de la asignatura, ha sido usado para explicar los operadores de selección y el uso de la librería GA.
