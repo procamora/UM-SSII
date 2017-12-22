@@ -3,7 +3,7 @@
 #g++.exe -o Debug/UM-SSII.exe Debug/src/sudoku.o galib247-c2014/galib.a
 
 CC = g++
-CFLAGS = -ggdb3 -Wall -Wno-unused -fexceptions -g -std=c++14
+CFLAGS = -ggdb3 -Wall -Wunused-variable -fexceptions -g -std=c++14
 LDLIBS = -Igalib247-c2014/galib247-c2014
 SRC = Practica1/sudoku.cpp
 OBJ = sudoku.o
