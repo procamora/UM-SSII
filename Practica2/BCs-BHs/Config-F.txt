@@ -2,7 +2,7 @@ ATRIBUTOS
 8
 Forma Nom {Larga,Redonda,Ensanchada}
 Color Nom {Verde,Amarillo,Tostado,Naranja,Rojo,Morado}
-Fruta Nom {Platano,Sandia,Melon,Cantalupo,Albaricoque,Cereza,Manzana,Melocoton,Ciruela}
+Fruta Nom {Platano,Sandia,Melon,Cantalupo,Albaricoque,Cereza,Manzana,Melocoton,Ciruela,Naranja}
 Diametro NU 
 ClaseFrutal Nom {Emparrado,Arbol}
 NSemillas NU 
