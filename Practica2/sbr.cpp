@@ -76,24 +76,27 @@ void leerFicheroReglas(Reglas *rules, const char *file) {
 
     getline(f, line);  //IDENTIFICACION DE FRUTAS
     getline(f, line);
-    vector<int> priority;
+    vector<variable> precondicion;
 
-    int numLines =  stoi(line);
+    int numLines = stoi(line);
     for (int i = 0; i < numLines; i++) {
         getline(f, line);
-        cout << line;
-        //attributes.push_back(line);
+        //cout << line;
+        variable v /*= new variable*/;
+        v.nombre = line;
+        precondicion.push_back(v);
     }
 
+    rules->precondicion = precondicion;
     f.close();
 }
 
 void imprimirFicheroReglas(Reglas *rules) {
     cout << "tipo: " << rules->tipo << endl;
 
-    for (std::vector<variable>::iterator it = rules->precondicion.begin(); it != rules->precondicion.end(); ++it)
-       // cout << "\t " << *it << endl;
-        ;
+    for (unsigned int i = 0; i < rules->precondicion.size(); i++)
+        cout << "\t " << rules->precondicion[i].nombre << endl;
+
     cout << endl;
 }
 
