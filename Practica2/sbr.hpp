@@ -8,9 +8,12 @@
 #ifndef PRACTICA2_SBR_HPP_
 #define PRACTICA2_SBR_HPP_
 
+#define REGEX_RULES "R(\\d+): Si (.*) Entonces (.*)"
+
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <regex>
 
 using namespace std;
 
@@ -23,25 +26,33 @@ typedef struct {
 } Configuration;
 
 typedef struct {
-        string nombre;
-        //string estado;
+        string name;
+        string operador;
+        string estado;
         //int prioridad;
         //int indexRegla;
-} variable;  //FIXME llamar condition
+} Condition;
 
 typedef struct {
-        int tipo;
-        vector<variable> precondicion;
-        //vector<variable> consecuencia;
-        //int prioridad;
-        //int indice;
+        int indice;
+        vector<Condition> precondition;
+        Condition consecuencia;
+        int prioridad;
         //bool usada;
-} Reglas;
+} Rules;
 
-void leerFicheroConfiguracion(Configuration *conf, const char *file);
-void imprimirFicheroConfiguracion(Configuration *conf);
-void leerFicheroReglas(Reglas *rules, const char *file);
-void imprimirFicheroReglas(Reglas *rules);
+vector<Rules> listRules;	 // Lista de reglas global
+
+
+void readFileConfiguration(Configuration *conf, const char *file);
+void printConfiguration(Configuration *conf);
+void readFileBC(const char *file);
+void printBC();
+void printBCAux(vector<Condition> precondition);
+string parserRule(string line);
+void parserRulePreconditionAux(string line, vector<Condition> *precondition);
+const vector<string> explode(const string& s, const char& c);
+
 
 
 #endif /* PRACTICA2_SBR_HPP_ */
