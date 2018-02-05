@@ -1,0 +1,4 @@
+3
+Mes = Septiembre
+Prediccion = Tormenta
+Precipitaciones = Fuertes

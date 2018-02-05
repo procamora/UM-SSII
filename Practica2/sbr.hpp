@@ -45,9 +45,9 @@ Configuration *configuration = new Configuration;
 vector<Rules> listRules;	 // Lista de reglas global
 
 
-void readFileConfiguration(const char *file);
+void readFileConfiguration(const char *pathFile);
 void printConfiguration();
-void readFileBC(const char *file);
+void readFileBC(const char *pathFile);
 void printBC();
 void printBCAux(vector<Condition> precondition);
 string parserRule(string line);

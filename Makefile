@@ -15,7 +15,7 @@ ifeq ($(OS),Windows_NT)
 else
 	TARGET = Debug/UM-SSII
 	RM = rm -f
-	RUN_TARGET = ./$(TARGET) Practica2/Casos/Caso-A1.txt 100 GARouletteWheelSelector 0.8 0.01
+	RUN_TARGET = ./$(TARGET) Practica2/BCs-BHs/BC-I.txt Practica2/BCs-BHs/Config-I.txt Practica2/BCs-BHs/BH-I1.txt
 endif
 
 
@@ -32,7 +32,7 @@ clean:
 	$(RM) $(call OBJ_OUT)
 
 run:
-	./$(RUN_TARGET)
+	$(RUN_TARGET)
 
 	
 .PHONY: clean all run
