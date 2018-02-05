@@ -56,12 +56,12 @@ void readFileConfiguration(const char *pathFile) {
  */
 void printConfiguration() {
     cout << "################# INICIO CONFIGURACION #################" << endl;
-    cout << "tamAtributos: " << configuration->sizeAttributes << endl;
+    cout << "sizeAttributes: " << configuration->sizeAttributes << endl;
 
     for (auto attr : configuration->attributes)
         cout << "\t " << attr << endl;
 
-    cout << "objetivo: " << configuration->objetive << endl;
+    cout << "objetive: " << configuration->objetive << endl;
     cout << "sizePriority: " << configuration->sizePriority << endl;
 
     for (auto pri : configuration->priority)
@@ -96,7 +96,7 @@ void readFileBC(const char *pathFile) {
 }
 
 /**
- * Metodo para parsear las reglas
+ * Metodo para parsear una regla
  */
 string parserRule(string line) {
     Rules rule;
@@ -106,15 +106,16 @@ string parserRule(string line) {
     smatch matches;
 
     if (regex_search(line, matches, rgx) && matches.size() == 4) {
-        rule.indice = stoi(matches[1].str());
+        rule.index = stoi(matches[1].str());
         parserRulePreconditionAux(matches[2].str(), &precondition);
         condition.name = matches[3].str();
         rule.precondition = precondition;
-        rule.consecuencia = condition;
-        rule.prioridad = configuration->priority[rule.indice - 1];
+        rule.consequence = condition;
+        rule.priority = configuration->priority[rule.index - 1];
+        rule.use = false;
         listRules.push_back(rule);
     } else
-        cerr << "NOT Match found!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n";
+        cerr << "NOT Match found!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" << line << endl;
 
     return line;
 }
@@ -124,17 +125,16 @@ string parserRule(string line) {
  */
 void parserRulePreconditionAux(string line, vector<Condition> *precondition) {
     smatch match;
-    regex regex("(\\w+ ..? \\w+)");
+    regex regex(REGEX_RULES_PRECONDITION);
 
     while (regex_search(line, match, regex)) {
         if (match.size() == 2) {
-            Condition c;
-            vector<string> v = explode(match[1], ' ');
-            c.name = v[0];
-            c.operador = v[1];
-            c.estado = v[2];
-            precondition->push_back(c);
-            //cout << match[1] << " ";
+            Condition condition;
+            vector<string> splitPrecondition = explode(match[1], ' ');
+            condition.name = splitPrecondition[0];
+            condition.operador = splitPrecondition[1];
+            condition.state = splitPrecondition[2];
+            precondition->push_back(condition);
         }
         line = match.suffix().str();
     }
@@ -168,10 +168,12 @@ const vector<string> explode(const string& s, const char& c) {
 void printBC() {
     cout << "################## INICIO BC #################" << endl;
     for (Rules rule : listRules) {
-        cout << "R" << rule.indice << ": Si ";
+        cout << "R" << rule.index << ": IF ";
         printBCAux(rule.precondition);
-        cout << "Entonces " << rule.consecuencia.name << " " << rule.consecuencia.operador << rule.consecuencia.estado;
-        cout << "; Prioridad: " << rule.prioridad << endl;
+        cout << "THEN " << rule.consequence.name << " " << rule.consequence.operador << rule.consequence.state;
+        cout << "; Priority: " << rule.priority;
+        string uso = rule.use == true ? "True" : "False";
+        cout << " ; Use: " << uso << endl;
     }
     cout << "################### FIN BC ##################" << endl;
 }
@@ -182,7 +184,7 @@ void printBC() {
 void printBCAux(vector<Condition> precondition) {
     unsigned int cont = 0;
     for (Condition condition : precondition) {
-        cout << condition.name << " " << condition.operador << " " << condition.estado;
+        cout << condition.name << " " << condition.operador << " " << condition.state;
         cont++;
         if (cont != precondition.size())
             cout << " && ";

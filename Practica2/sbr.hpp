@@ -9,6 +9,7 @@
 #define PRACTICA2_SBR_HPP_
 
 #define REGEX_RULES "R(\\d+): Si (.*) Entonces (.*)"
+#define REGEX_RULES_PRECONDITION "(\\w+ ..? \\w+)"
 
 #include <iostream>
 #include <fstream>
@@ -18,32 +19,31 @@
 using namespace std;
 
 typedef struct {
-        int sizeAttributes;
-        vector<string> attributes;
-        string objetive;
-        int sizePriority;
-        vector<int> priority;
+    int sizeAttributes;
+    vector<string> attributes;
+    string objetive;
+    int sizePriority;
+    vector<int> priority;
 } Configuration;
 
 typedef struct {
-        string name;
-        string operador;
-        string estado;
-        //int prioridad;
-        //int indexRegla;
+    string name;
+    string operador;
+    string state;
+    //int prioridad;
+    //int indexRegla;
 } Condition;
 
 typedef struct {
-        int indice;
-        vector<Condition> precondition;
-        Condition consecuencia;
-        int prioridad;
-        //bool usada;
+    int index;
+    vector<Condition> precondition;
+    Condition consequence;
+    int priority;
+    bool use;
 } Rules;
 
 Configuration *configuration = new Configuration;
 vector<Rules> listRules;	 // Lista de reglas global
-
 
 void readFileConfiguration(const char *pathFile);
 void printConfiguration();
@@ -53,7 +53,5 @@ void printBCAux(vector<Condition> precondition);
 string parserRule(string line);
 void parserRulePreconditionAux(string line, vector<Condition> *precondition);
 const vector<string> explode(const string& s, const char& c);
-
-
 
 #endif /* PRACTICA2_SBR_HPP_ */
