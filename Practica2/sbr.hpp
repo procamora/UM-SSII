@@ -41,11 +41,12 @@ typedef struct {
         //bool usada;
 } Rules;
 
+Configuration *configuration = new Configuration;
 vector<Rules> listRules;	 // Lista de reglas global
 
 
-void readFileConfiguration(Configuration *conf, const char *file);
-void printConfiguration(Configuration *conf);
+void readFileConfiguration(const char *file);
+void printConfiguration();
 void readFileBC(const char *file);
 void printBC();
 void printBCAux(vector<Condition> precondition);
