@@ -86,8 +86,8 @@ void readFileBC(const char *pathFile) {
 
     getline(file, line);  //IDENTIFICACION DE FRUTAS
     getline(file, line); // numero de reglas que hay
-
     int numLines = stoi(line);
+
     for (int i = 0; i < numLines; i++) {
         getline(file, line);
         parserRule(line);
@@ -169,7 +169,7 @@ void printBC() {
     cout << "################## INICIO BC #################" << endl;
     for (Rules rule : listRules) {
         cout << "R" << rule.index << ": IF ";
-        printBCAux(rule.precondition);
+        printConditions(rule.precondition);
         cout << "THEN " << rule.consequence.name << " " << rule.consequence.operador << rule.consequence.state;
         cout << "; Priority: " << rule.priority;
         string uso = rule.use == true ? "True" : "False";
@@ -181,7 +181,7 @@ void printBC() {
 /**
  * Metodo auxiliar para imprimir las condiciones de la Base de Conocimiento
  */
-void printBCAux(vector<Condition> precondition) {
+void printConditions(vector<Condition> precondition) {
     unsigned int cont = 0;
     for (Condition condition : precondition) {
         cout << condition.name << " " << condition.operador << " " << condition.state;
@@ -193,16 +193,50 @@ void printBCAux(vector<Condition> precondition) {
     }
 }
 
+/**
+ * Metodo para cargar en memoria la Base de Conocimiento
+ */
+void readFileBH(const char *pathFile) {
+    ifstream file(pathFile);
+    if (!file.is_open()) {
+        cerr << "Fichero: " << pathFile << " no ha podido ser abierto" << endl;
+        cout << "Terminando programa..." << endl;
+        exit(0);
+    }
+
+    string line;
+    getline(file, line); // numero de hechos que hay
+    int numLines = stoi(line);
+
+    for (int i = 0; i < numLines; i++) {
+        getline(file, line);
+        parserRulePreconditionAux(line, &listBH);
+    }
+
+    file.close();
+}
+
+/**
+ * Metodo para imprimir la Base de Hechos
+ */
+void printBH() {
+    cout << "################## INICIO BH #################" << endl;
+    printConditions(listBH);
+    cout << endl << "################### FIN BH ##################" << endl;
+}
+
 int main(int argc, char **argv) {
 
     const char *bc = argv[1];
     const char *conf = argv[2];
-    //const char *bh = argv[3];
+    const char *bh = argv[3];
 
     readFileConfiguration(conf);
-    printConfiguration();
+    //printConfiguration();
     readFileBC(bc);
-    printBC();
+    //printBC();
+    readFileBH(bh);
+    //printBH();
 
     return 0;
 }
