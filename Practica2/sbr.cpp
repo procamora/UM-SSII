@@ -18,7 +18,7 @@ void readFileConfiguration(const char *pathFile) {
         exit(0);
     }
 
-    vector<string> attributes;
+    vector<Attributes> attributes;
     string line;
 
     getline(file, line);  //ATRIBUTOS
@@ -27,7 +27,19 @@ void readFileConfiguration(const char *pathFile) {
 
     for (int i = 0; i < configuration->sizeAttributes; i++) {
         getline(file, line);
-        attributes.push_back(line);
+        vector<string> splitAttributes = explode(line, ' ');
+        Attributes attrib;
+        attrib.name = splitAttributes[0];
+        if (splitAttributes[1].compare(CONF_NUM) == 0)
+            attrib.isNum = true;
+        else {
+            attrib.isNum = false;
+            //Eliminanos los corchetes FIXME intentar ponerlo con regex
+            string substrNominal = splitAttributes[2].substr(1, splitAttributes[2].size() - 2);
+            vector<string> splitAttributes = explode(substrNominal, ',');
+            attrib.nominal = splitAttributes;
+        }
+        attributes.push_back(attrib);
     }
 
     configuration->attributes = attributes;
@@ -58,8 +70,17 @@ void printConfiguration() {
     cout << "################# INICIO CONFIGURACION #################" << endl;
     cout << "sizeAttributes: " << configuration->sizeAttributes << endl;
 
-    for (auto attr : configuration->attributes)
-        cout << "\t " << attr << endl;
+    for (Attributes attr : configuration->attributes) {
+        cout << "\t " << attr.name << " "; //FIXME CAMBIAR
+        if (attr.isNum)
+            cout << CONF_NUM;
+        else {
+            cout << CONF_NOMINAL << " {";
+            for (auto n : attr.nominal)
+                cout << n << ","; //FIXME La ultima pone , imnecesaria, solo el visual
+        }
+        cout << "}" << endl;
+    }
 
     cout << "objetive: " << configuration->objetive << endl;
     cout << "sizePriority: " << configuration->sizePriority << endl;
@@ -93,13 +114,25 @@ void readFileBC(const char *pathFile) {
         parserRule(line);
     }
     file.close();
+
+    sortBC();
+}
+
+void sortBC() {
+    //Ordenamos segun criterio
+    sort(listBC.begin(), listBC.end(), [ ]( const auto& lhs, const auto& rhs ) {
+        if( lhs.priority == rhs.priority) {
+            return lhs.index < rhs.index;
+        }
+        return lhs.priority > rhs.priority;
+    });
 }
 
 /**
  * Metodo para parsear una regla
  */
-string parserRule(string line) {
-    Rules rule;
+void parserRule(string line) {
+    Rule rule;
     vector<Condition> precondition;
     Condition condition;
     regex rgx(REGEX_RULES);
@@ -113,11 +146,9 @@ string parserRule(string line) {
         rule.consequence = condition;
         rule.priority = configuration->priority[rule.index - 1];
         rule.use = false;
-        listRules.push_back(rule);
+        listBC.push_back(rule);
     } else
         cerr << "NOT Match found!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" << line << endl;
-
-    return line;
 }
 
 /**
@@ -167,7 +198,7 @@ const vector<string> explode(const string& s, const char& c) {
  */
 void printBC() {
     cout << "################## INICIO BC #################" << endl;
-    for (Rules rule : listRules) {
+    for (Rule rule : listBC) {
         cout << "R" << rule.index << ": IF ";
         printConditions(rule.precondition);
         cout << "THEN " << rule.consequence.name << " " << rule.consequence.operador << rule.consequence.state;
@@ -222,22 +253,151 @@ void readFileBH(const char *pathFile) {
 void printBH() {
     cout << "################## INICIO BH #################" << endl;
     printConditions(listBH);
-    cout << endl << "################### FIN BH ##################" << endl;
+    cout << endl;
+    cout << "################### FIN BH ##################" << endl;
 }
+
+/***
+ * Compara un numero segun el operador
+ * https://stackoverflow.com/questions/24716453/convert-string-to-operator
+ */
+bool conditionalState(string op, Condition c1, Condition c2) {
+    if (op.compare("==")) {
+        return stoi(c1.state) == stoi(c2.state);
+    } else if (op == "<")
+        return stoi(c1.state) < stoi(c2.state);
+    else if (op == ">")
+        return stoi(c1.state) > stoi(c2.state);
+    else if (op == "<=")
+        return stoi(c1.state) <= stoi(c2.state);
+    else if (op == ">=")
+        return stoi(c1.state) >= stoi(c2.state);
+    return false;
+}
+
+/**
+ * Compara si 2 condiciones son iguales
+ */
+bool isConditionEquals(Condition c1, Condition c2) {
+    bool equals = true;
+    if (!c1.name.compare(c2.name) == 0)
+        equals = false;
+    if (!c1.operador.compare(c2.operador) == 0)
+        equals = false;
+    if (!c1.state.compare(c2.state) == 0)
+        equals = false;
+
+    return equals;
+}
+
+/**
+ * Para una condicion de una regla de la BC comprueba si estan todas las condiciones en la BH
+ */
+bool isConditionInBH(Condition condition) {
+    for (Condition conditionBH : listBH) {
+        if (isConditionEquals(condition, conditionBH)) {
+            cout << "acierta: " << conditionBH.name << endl;
+            return true;
+        }
+        cout << "falla: " << conditionBH.name << endl;
+
+    }
+    return false;
+}
+
+/**
+ * Extrae TODAS las reglas ordenadas por prioridad que no ha sido usada y que
+ * se pueden ejecutar en este momento
+ */
+vector<Rule> extraeCualquierRegla(vector<Rule> listBC) {
+    vector<Rule> conflict;
+    for (Rule rule : listBC)
+        if (!rule.use)
+            conflict.push_back(rule);
+    return conflict;
+}
+
+/**
+ * Retorna True si hemos encontrado la meta, False en caso contrario
+ */
+bool noContenida(string meta, vector<Condition> listBH) {
+    for (Condition condition : listBH)
+        if (condition.name.compare(meta))
+            return false;
+    return true;
+}
+
+/**
+ * Retorna true si encuentra alguna regla que aun no ha sido usada
+ */
+bool noVacia() {
+//FIXME creo que esta regla esta mal, ya que no tiene en cuenta que puede haber reglas
+//no usadas pero que no se puedan usar
+    for (Rule rule : listBC)
+        if (!rule.use)
+            return true;
+    return false;
+}
+/*
+ Rule equiparar(, vector<Condition> listBH) {
+ for (Rule rule : listBC)
+ ;
+ return nullptr;    //FIXME Repasar si esta bien
+ }*/
+
+/**
+ * Encuentra la proxima regla valida a ejecutar
+ */
+Rule resolver(vector<Rule> conjuntoConflicto) {
+    for (Rule rule : conjuntoConflicto)
+        //FIXME Ver que regla hay que retornar
+        return rule;
+//return nullptr;    //FIXME Repasar si esta bien
+    return conjuntoConflicto[0]; //FIXME BORRAR
+}
+
+/**
+ * Actualiza la Base de Hechos con el nuevo valor sacado
+ */
+void actualizar(vector<Condition> listBH, Condition newCondition) {
+    listBH.push_back(newCondition);
+}
+/*
+ void motorInferencia() {
+ vector<Rule> conjuntoConflicto = extraeCualquierRegla(listBC);
+
+ while (noContenida(configuration->objetive, listBH) && noVacia()) {
+ conjuntoConflicto = equiparar(antecedente(BC), listBH) - reglasMarcadas;
+ if (noVacia()) {
+ Rule R = resolver(conjuntoConflicto);
+ reglasMarcadas.add(R);
+ Condition nuevosHechos = aplicar(R, listBH);
+ actualizar(listBH, nuevosHechos);
+ }
+ }
+ if (contenida(configuration->objetive, listBH))
+ return; // "exito";
+ }*/
 
 int main(int argc, char **argv) {
 
-    const char *bc = argv[1];
+    //const char *bc = argv[1];
     const char *conf = argv[2];
-    const char *bh = argv[3];
+    //  const char *bh = argv[3];
 
     readFileConfiguration(conf);
-    //printConfiguration();
-    readFileBC(bc);
+    printConfiguration();
+    //readFileBC(bc);
     //printBC();
-    readFileBH(bh);
+    //readFileBH(bh);
     //printBH();
 
+//motorInferencia();
+    cout << "***" << endl;
+    bool r = isConditionInBH(listBC[16].precondition[0]);
+    cout << r << endl;
+//cout << listBC[16].precondition[0].name << endl;
+    cout << "***" << endl;
     return 0;
 }
 
