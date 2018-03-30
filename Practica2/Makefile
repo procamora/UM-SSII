@@ -19,7 +19,7 @@ else
 endif
 
 
-OBJECTS=$(patsubst %.c,%.o,$(wildcard *.c))
+#OBJECTS=$(patsubst %.c,%.o,$(wildcard *.c))
 
 all: $(OBJ)
 	$(CC) -o $(TARGET) $(OBJ_OUT)

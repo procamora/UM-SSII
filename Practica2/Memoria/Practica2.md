@@ -3,7 +3,7 @@ title: Sistemas Inteligentes
 subtitle: Practica 2
 author:
     - Pablo José Rocamora Zamora G3.2
-date: 9 de Diciembre de 2017
+date: 29 de Diciembre de 2017
 header: dsad
 footer: So is this
 geometry:
@@ -59,7 +59,11 @@ header-includes:
 --- 
 
 
-acercándonos a la solución final [@youtube].
+acercándonos a la solución final [@split].
+
+acercándonos a la solución final [@regex].
+
+acercándonos a la solución final [@sort].
 
 
 a)b)c)
