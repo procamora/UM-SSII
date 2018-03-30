@@ -262,8 +262,8 @@ void printBH() {
  * https://stackoverflow.com/questions/24716453/convert-string-to-operator
  */
 bool conditionalState(string op, Condition conditionRuleBC, Condition conditionBH) {
-    cout << "BC:" << conditionRuleBC.name << " " << conditionRuleBC.operador << " " << conditionRuleBC.state << endl;
-    cout << "BH:" << conditionBH.name << " " << conditionBH.operador << " " << conditionBH.state << endl;
+    //cout << "BC:" << conditionRuleBC.name << " " << conditionRuleBC.operador << " " << conditionRuleBC.state << endl;
+    //cout << "BH:" << conditionBH.name << " " << conditionBH.operador << " " << conditionBH.state << endl;
     if (op.compare("=") == 0) {
         return stoi(conditionBH.state) == stoi(conditionRuleBC.state);
     } else if (op.compare("<") == 0)
@@ -297,11 +297,11 @@ bool isConditionEquals(Condition conditionRuleBC, Condition conditionBH) {
         return false;
 
     Attributes attr = getAttributes(conditionRuleBC);
-    cout << "Is num: " << attr.isNum << endl;
-    cout << endl;
+    //cout << "Is num: " << attr.isNum << endl;
+    //cout << endl;
     if (attr.isNum) {  //Es numero
         bool boolNum = conditionalState(conditionRuleBC.operador, conditionRuleBC, conditionBH);
-        cout << boolNum << endl;
+        // cout << boolNum << endl;
         return boolNum;
     } else { //Es nominal
         if (!conditionRuleBC.operador.compare(conditionBH.operador) == 0)
@@ -317,12 +317,12 @@ bool isConditionEquals(Condition conditionRuleBC, Condition conditionBH) {
  */
 bool isConditionInBH(Condition condition) {
     for (Condition conditionBH : listBH) {
-        cout << "analizo: " << conditionBH.name << endl;
+        //cout << "analizo: " << conditionBH.name << endl;
         if (isConditionEquals(condition, conditionBH)) {
-            cout << "acierta: " << conditionBH.name << endl;
+            // cout << "acierta: " << conditionBH.name << endl;
             return true;
         }
-        cout << "falla: " << conditionBH.name << endl;
+        //cout << "falla: " << conditionBH.name << endl;
 
     }
     return false;
@@ -443,14 +443,14 @@ int main(int argc, char **argv) {
      if (valid)
      v.push_back(r);*/
 
-     for (Rule rule : v) {
-     cout << "R" << rule.index << ": IF ";
-     printConditions(rule.precondition);
-     cout << "THEN " << rule.consequence.name << " " << rule.consequence.operador << rule.consequence.state;
-     cout << "; Priority: " << rule.priority;
-     string uso = rule.use == true ? "True" : "False";
-     cout << " ; Use: " << uso << endl;
-     }
+    for (Rule rule : v) {
+        cout << "R" << rule.index << ": IF ";
+        printConditions(rule.precondition);
+        cout << "THEN " << rule.consequence.name << " " << rule.consequence.operador << rule.consequence.state;
+        cout << "; Priority: " << rule.priority;
+        string uso = rule.use == true ? "True" : "False";
+        cout << " ; Use: " << uso << endl;
+    }
 
     return 0;
 }
