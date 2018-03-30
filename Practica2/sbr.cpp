@@ -135,13 +135,13 @@ void parserRule(string line) {
     Rule rule;
     vector<Condition> precondition;
     Condition condition;
-    regex rgx(REGEX_RULES);
-    smatch matches;
+    regex regex(REGEX_RULES);
+    smatch match;
 
-    if (regex_search(line, matches, rgx) && matches.size() == 4) {
-        rule.index = stoi(matches[1].str());
-        parserRulePreconditionAux(matches[2].str(), &precondition);
-        condition.name = matches[3].str();
+    if (regex_search(line, match, regex) && match.size() == 4) {
+        rule.index = stoi(match[1].str());
+        parserRulePreconditionAux(match[2].str(), &precondition);
+        condition.name = match[3].str();
         rule.precondition = precondition;
         rule.consequence = condition;
         rule.priority = configuration->priority[rule.index - 1];
@@ -261,32 +261,54 @@ void printBH() {
  * Compara un numero segun el operador
  * https://stackoverflow.com/questions/24716453/convert-string-to-operator
  */
-bool conditionalState(string op, Condition c1, Condition c2) {
-    if (op.compare("==")) {
-        return stoi(c1.state) == stoi(c2.state);
-    } else if (op == "<")
-        return stoi(c1.state) < stoi(c2.state);
-    else if (op == ">")
-        return stoi(c1.state) > stoi(c2.state);
-    else if (op == "<=")
-        return stoi(c1.state) <= stoi(c2.state);
-    else if (op == ">=")
-        return stoi(c1.state) >= stoi(c2.state);
+bool conditionalState(string op, Condition conditionRuleBC, Condition conditionBH) {
+    cout << "BC:" << conditionRuleBC.name << " " << conditionRuleBC.operador << " " << conditionRuleBC.state << endl;
+    cout << "BH:" << conditionBH.name << " " << conditionBH.operador << " " << conditionBH.state << endl;
+    if (op.compare("=") == 0) {
+        return stoi(conditionBH.state) == stoi(conditionRuleBC.state);
+    } else if (op.compare("<") == 0)
+        return stoi(conditionBH.state) < stoi(conditionRuleBC.state);
+    else if (op.compare(">") == 0)
+        return stoi(conditionBH.state) > stoi(conditionRuleBC.state);
+    else if (op.compare("<=") == 0)
+        return stoi(conditionBH.state) <= stoi(conditionRuleBC.state);
+    else if (op.compare(">=") == 0)
+        return stoi(conditionBH.state) >= stoi(conditionRuleBC.state);
     return false;
+}
+
+/**
+ * Metodo para obtener la configuracion de una condicion
+ * https://stackoverflow.com/questions/22972265/c-return-null-struct-from-function?noredirect=1&lq=1
+ */
+Attributes getAttributes(Condition c1) {
+    for (Attributes attr : configuration->attributes)
+        if (c1.name.compare(attr.name) == 0)
+            return attr;
+    throw runtime_error("getAttributes no ha encontrado la condicion necesaria"); // FIXME CAMBIAR O DEJAR?
 }
 
 /**
  * Compara si 2 condiciones son iguales
  */
-bool isConditionEquals(Condition c1, Condition c2) {
+bool isConditionEquals(Condition conditionRuleBC, Condition conditionBH) {
     bool equals = true;
-    if (!c1.name.compare(c2.name) == 0)
-        equals = false;
-    if (!c1.operador.compare(c2.operador) == 0)
-        equals = false;
-    if (!c1.state.compare(c2.state) == 0)
-        equals = false;
+    if (!conditionRuleBC.name.compare(conditionBH.name) == 0)
+        return false;
 
+    Attributes attr = getAttributes(conditionRuleBC);
+    cout << "Is num: " << attr.isNum << endl;
+    cout << endl;
+    if (attr.isNum) {  //Es numero
+        bool boolNum = conditionalState(conditionRuleBC.operador, conditionRuleBC, conditionBH);
+        cout << boolNum << endl;
+        return boolNum;
+    } else { //Es nominal
+        if (!conditionRuleBC.operador.compare(conditionBH.operador) == 0)
+            equals = false;
+        if (!conditionRuleBC.state.compare(conditionBH.state) == 0)
+            equals = false;
+    }
     return equals;
 }
 
@@ -295,6 +317,7 @@ bool isConditionEquals(Condition c1, Condition c2) {
  */
 bool isConditionInBH(Condition condition) {
     for (Condition conditionBH : listBH) {
+        cout << "analizo: " << conditionBH.name << endl;
         if (isConditionEquals(condition, conditionBH)) {
             cout << "acierta: " << conditionBH.name << endl;
             return true;
@@ -312,8 +335,15 @@ bool isConditionInBH(Condition condition) {
 vector<Rule> extraeCualquierRegla(vector<Rule> listBC) {
     vector<Rule> conflict;
     for (Rule rule : listBC)
-        if (!rule.use)
-            conflict.push_back(rule);
+        if (!rule.use) {
+            bool valid = true;
+            for (Condition condition : rule.precondition) {
+                if (!isConditionInBH(condition))
+                    valid = false;
+            }
+            if (valid)
+                conflict.push_back(rule);
+        }
     return conflict;
 }
 
@@ -381,23 +411,47 @@ void actualizar(vector<Condition> listBH, Condition newCondition) {
 
 int main(int argc, char **argv) {
 
-    //const char *bc = argv[1];
+    const char *bc = argv[1];
     const char *conf = argv[2];
-    //  const char *bh = argv[3];
+    const char *bh = argv[3];
 
     readFileConfiguration(conf);
     printConfiguration();
-    //readFileBC(bc);
-    //printBC();
-    //readFileBH(bh);
-    //printBH();
+    readFileBC(bc);
+    printBC();
+    readFileBH(bh);
+    printBH();
 
 //motorInferencia();
-    cout << "***" << endl;
-    bool r = isConditionInBH(listBC[16].precondition[0]);
-    cout << r << endl;
+    // cout << "***" << endl;
+    /*bool r =*///isConditionInBH(listBC[13].precondition[0]);
+    //cout << r << endl;
 //cout << listBC[16].precondition[0].name << endl;
-    cout << "***" << endl;
+    // cout << "***" << endl;
+    /*r = *///isConditionInBH(listBC[13].precondition[1]);
+    //cout << r << endl;
+    vector<Rule> v = extraeCualquierRegla(listBC);
+    //vector<Rule> v;
+
+    /*Rule r = listBC[13];
+     cout << "R" << r.index << endl;
+     bool valid = true;
+     for (Condition condition : r.precondition) {
+     if (!isConditionInBH(condition))
+     valid = false;
+     }
+     if (valid)
+     v.push_back(r);*/
+
+     for (Rule rule : v) {
+     cout << "R" << rule.index << ": IF ";
+     printConditions(rule.precondition);
+     cout << "THEN " << rule.consequence.name << " " << rule.consequence.operador << rule.consequence.state;
+     cout << "; Priority: " << rule.priority;
+     string uso = rule.use == true ? "True" : "False";
+     cout << " ; Use: " << uso << endl;
+     }
+
     return 0;
 }
 
