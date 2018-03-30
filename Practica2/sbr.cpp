@@ -361,7 +361,7 @@ vector<Rule> equiparar(vector<Rule> listBC, vector<Condition> listBH) {
             if (valid)
                 conflict.push_back(rule);
         } else
-            cout << "La regla esta en uso: " << rule.priority << endl;
+            cout << "La regla ha sido usada: " << rule.index << endl;
     return conflict;
 }
 
@@ -371,8 +371,8 @@ vector<Rule> equiparar(vector<Rule> listBC, vector<Condition> listBH) {
 bool contenida(string meta, vector<Condition> listBH) {
     for (Condition condition : listBH)
         if (condition.name.compare(meta))
-            return true;
-    return false;
+            return false;
+    return true;
 }
 
 /**
@@ -391,9 +391,6 @@ bool noVacia(vector<Rule> listBC) {
  * Resuelve la primera regla del conjunto conflicto ya que es un vector ordenado primero por prioridad y luego por numero de regla
  */
 Rule resolver(vector<Rule> &conjuntoConflicto) {
-//&conjuntoConflicto[0].use = true;
-//return &conjuntoConflicto[0];
-//conjuntoConflicto->front().use = true;
     return conjuntoConflicto.front();
 }
 /**
@@ -421,16 +418,28 @@ void actualizar(Rule r, vector<Rule> &listBC) {
 void motorInferencia(vector<Rule> listBC, vector<Condition> listBH, vector<Rule> listMark) {
     vector<Rule> conjuntoConflicto = extraeCualquierRegla(listBC);
 
+    for (int i = 0; i < int(conjuntoConflicto.size()); i++)
+        cout << "Print: " << conjuntoConflicto[i].index << " -> " << conjuntoConflicto[i].use << endl;
+
+    cout << endl << endl;
+
     while (!contenida(configuration->objetive, listBH) && noVacia(listBC)) {
         conjuntoConflicto = equiparar(listBC, listBH);
+
+        for (int i = 0; i < int(conjuntoConflicto.size()); i++)
+            cout << "Print: " << conjuntoConflicto[i].index << " -> " << conjuntoConflicto[i].use << endl;
+        cout << endl;
+
         if (noVacia(listBC)) {
             Rule r = resolver(conjuntoConflicto);
+            printRule(r);
             aplicar(r, listBH);
             actualizar(r, listBC);
             listMark.push_back(r);
             // printBC(conjuntoConflicto);
         }
     }
+    cout << "asdasd" << endl;
     if (contenida(configuration->objetive, listBH))
         return; // "exito";
 }
@@ -446,13 +455,56 @@ int main(int argc, char **argv) {
     vector<Condition> listBH; // Base de Hechos
 
     readFileConfiguration(conf);
-//printConfiguration();
+    //printConfiguration();
     readFileBC(bc, &listBC);
     printBC(listBC);
     readFileBH(bh, &listBH);
     printBH(listBH);
 
-    motorInferencia(listBC, listBH, listMark);
+    //motorInferencia(listBC, listBH, listMark);
+    cout << endl << endl;
+
+    //ITERACION 1
+    vector<Rule> conjuntoConflicto = extraeCualquierRegla(listBC);
+    if (noVacia(listBC)) {
+        conjuntoConflicto = equiparar(listBC, listBH);
+
+        Rule r = resolver(conjuntoConflicto);
+        printRule(r);
+        aplicar(r, listBH);
+        actualizar(r, listBC);
+        listMark.push_back(r);
+        // printBC(conjuntoConflicto);
+    }
+
+    //ITERACION 2
+    conjuntoConflicto = extraeCualquierRegla(listBC);
+    if (noVacia(listBC)) {
+        conjuntoConflicto = equiparar(listBC, listBH);
+
+        Rule r = resolver(conjuntoConflicto);
+        printRule(r);
+        aplicar(r, listBH);
+        actualizar(r, listBC);
+        listMark.push_back(r);
+        // printBC(conjuntoConflicto);
+    }
+
+    //ITERACION 1
+    conjuntoConflicto = extraeCualquierRegla(listBC);
+    for (int i = 0; i < int(conjuntoConflicto.size()); i++)
+        cout << "Print: " << conjuntoConflicto[i].index << " -> " << conjuntoConflicto[i].use << endl;
+    cout << endl;
+    /*if (noVacia(listBC)) {
+     conjuntoConflicto = equiparar(listBC, listBH);
+
+     Rule r = resolver(conjuntoConflicto);
+     printRule(r);
+     aplicar(r, listBH);
+     actualizar(r, listBC);
+     listMark.push_back(r);
+     // printBC(conjuntoConflicto);
+     }*/
 
     printBH(listBH);
     printBC(listBC);
