@@ -11,8 +11,8 @@
 using namespace std;
 
 struct plantilla {
-        int tam;
-        int *fijo;
+    int tam;
+    int *fijo;
 };
 
 /*
@@ -33,5 +33,5 @@ void calculaFilas(GAGenome& g, int inicioFila, int *t1);
 void calculaColumnas(GAGenome& g, int inicioColumna, int *t1);
 void calculaSubBloque(GAGenome& g, int bloque, int *t1);
 void imprimirSudokuResulto(char *solucion);
-
+void imprimirSudokuResulto(const GAGenome& g, int size);
 #endif /* PRACTICA1_SUDOKU_HPP_ */

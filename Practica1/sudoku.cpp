@@ -66,8 +66,15 @@ int main(int argc, char **argv) {
     ga.evolve(1);
 
     // Imprimimos el mejor individuo que encuentra el GA y su valor fitness
-    cout << "El GA encuentra la solucion ( " << ga.statistics().bestIndividual() << ")" << endl;
-    cout << "fitness: " << ga.statistics().minEver() << endl;
+    if (ga.statistics().minEver() == 0) {
+        cout << "El GA encuentra la solucion" << endl;
+        imprimirSudokuResulto(ga.statistics().bestIndividual(), plantillaSudoku->tam);
+        cout << "fitness: " << ga.statistics().minEver() << endl;
+    } else {
+        cout << "El GA NO encuentra la solucion, daremos una aproximacion erronea" << endl;
+        imprimirSudokuResulto(ga.statistics().bestIndividual(), plantillaSudoku->tam);
+        cout << "fitness: " << ga.statistics().minEver() << endl;
+    }
 }
 
 // Funcion objetivo.
@@ -206,6 +213,26 @@ void imprimirSudoku(struct plantilla *S) {
     cout << "---------------------" << endl;
 }
 
+/**
+ * Metodo para imprimir el solucion resuelto con tabulaciones y espacios
+ */
+void imprimirSudokuResulto(const GAGenome& g, int size) {
+    GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
+
+    int contFila = 1;
+
+    cout << "++++++++++++++++++++++" << endl;
+    for (int i = 0; i < size * size; i++)
+        if (contFila < size) {
+            cout << genome.gene(i) << " ";
+            contFila++;
+        } else {
+            cout << genome.gene(i) << endl;
+            contFila = 1;
+        }
+    cout << "---------------------" << endl;
+}
+
 void inicioSudoku(GAGenome& g) {
     GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
 
@@ -332,8 +359,7 @@ int mutacionSudoku(GAGenome& g, float pmut) {
 
                             bool encontrado = false;
                             for (int j = 0; j < plantilla1->tam && !encontrado; j++)
-                                if ((plantilla1->fijo[j * (plantilla1->tam) + c] == 0)
-                                        && (genome.gene(j * (plantilla1->tam) + c) == v1)) {
+                                if ((plantilla1->fijo[j * (plantilla1->tam) + c] == 0) && (genome.gene(j * (plantilla1->tam) + c) == v1)) {
                                     encontrado = true;
                                     genome.gene((j * plantilla1->tam) + c, v2);
                                     fil = j;
