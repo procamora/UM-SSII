@@ -51,21 +51,6 @@ typedef struct {
     bool use;
 } Rule;
 
-Configuration *configuration = new Configuration; //Configuracion global
-vector<Rule> listBC;	 // Base de Conociminto global
-vector<Condition> listBH; // Base de Hechos global
-
-void readFileConfiguration(const char *pathFile);
-void printConfiguration();
-void readFileBC(const char *pathFile);
-void sortBC();
-void printBC();
-void printConditions(vector<Condition> precondition);
-void parserRule(string line);
-void parserRulePreconditionAux(string line, vector<Condition> *precondition);
-const vector<string> explode(const string& s, const char& c);
-void readFileBH(const char *pathFile);
-void printBH();
-void motorInferencia();
+Configuration *configuration = new Configuration; //Configuracion
 
 #endif /* PRACTICA2_SBR_HPP_ */

@@ -8,6 +8,28 @@
 #include "sbr.hpp"
 
 /**
+ * Metodo para partir un string a partir de un delimitador
+ * http://www.cplusplus.com/articles/2wA0RXSz/
+ */
+const vector<string> explode(const string& s, const char& c) {
+    string buff { "" };
+    vector<string> v;
+
+    for (auto n : s) {
+        if (n != c)
+            buff += n;
+        else if (n == c && buff != "") {
+            v.push_back(buff);
+            buff = "";
+        }
+    }
+    if (buff != "")
+        v.push_back(buff);
+
+    return v;
+}
+
+/**
  * Metodo para cargar en memoria la configuracion
  */
 void readFileConfiguration(const char *pathFile) {
@@ -92,66 +114,6 @@ void printConfiguration() {
 }
 
 /**
- * Metodo para cargar en memoria la Base de Conocimiento
- */
-void readFileBC(const char *pathFile) {
-    ifstream file(pathFile);
-    if (!file.is_open()) {
-        cerr << "Fichero: " << pathFile << " no ha podido ser abierto" << endl;
-        cout << "Terminando programa..." << endl;
-        exit(0);
-    }
-
-    vector<string> attributes;
-    string line;
-
-    getline(file, line);  //IDENTIFICACION DE FRUTAS
-    getline(file, line); // numero de reglas que hay
-    int numLines = stoi(line);
-
-    for (int i = 0; i < numLines; i++) {
-        getline(file, line);
-        parserRule(line);
-    }
-    file.close();
-
-    sortBC();
-}
-
-void sortBC() {
-    //Ordenamos segun criterio
-    sort(listBC.begin(), listBC.end(), [ ]( const auto& lhs, const auto& rhs ) {
-        if( lhs.priority == rhs.priority) {
-            return lhs.index < rhs.index;
-        }
-        return lhs.priority > rhs.priority;
-    });
-}
-
-/**
- * Metodo para parsear una regla
- */
-void parserRule(string line) {
-    Rule rule;
-    vector<Condition> precondition;
-    Condition condition;
-    regex regex(REGEX_RULES);
-    smatch match;
-
-    if (regex_search(line, match, regex) && match.size() == 4) {
-        rule.index = stoi(match[1].str());
-        parserRulePreconditionAux(match[2].str(), &precondition);
-        condition.name = match[3].str();
-        rule.precondition = precondition;
-        rule.consequence = condition;
-        rule.priority = configuration->priority[rule.index - 1];
-        rule.use = false;
-        listBC.push_back(rule);
-    } else
-        cerr << "NOT Match found!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" << line << endl;
-}
-
-/**
  * Metodo para parsear las precondiciones en la regla
  */
 void parserRulePreconditionAux(string line, vector<Condition> *precondition) {
@@ -172,41 +134,63 @@ void parserRulePreconditionAux(string line, vector<Condition> *precondition) {
 }
 
 /**
- * Metodo para partir un string a partir de un delimitador
- * http://www.cplusplus.com/articles/2wA0RXSz/
+ * Metodo para parsear una regla
  */
-const vector<string> explode(const string& s, const char& c) {
-    string buff { "" };
-    vector<string> v;
+void parserRule(string line, vector<Rule> *listBC) {
+    Rule rule;
+    vector<Condition> precondition;
+    Condition condition;
+    regex regex(REGEX_RULES);
+    smatch match;
 
-    for (auto n : s) {
-        if (n != c)
-            buff += n;
-        else if (n == c && buff != "") {
-            v.push_back(buff);
-            buff = "";
+    if (regex_search(line, match, regex) && match.size() == 4) {
+        rule.index = stoi(match[1].str());
+        parserRulePreconditionAux(match[2].str(), &precondition);
+        condition.name = match[3].str();
+        rule.precondition = precondition;
+        rule.consequence = condition;
+        rule.priority = configuration->priority[rule.index - 1];
+        rule.use = false;
+        listBC->push_back(rule);
+    } else
+        cerr << "NOT Match found!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" << line << endl;
+}
+
+void sortBC(vector<Rule> *listBC) {
+    //Ordenamos segun criterio
+    sort(listBC->begin(), listBC->end(), [ ]( const auto& lhs, const auto& rhs ) {
+        if( lhs.priority == rhs.priority) {
+            return lhs.index < rhs.index;
         }
-    }
-    if (buff != "")
-        v.push_back(buff);
-
-    return v;
+        return lhs.priority > rhs.priority;
+    });
 }
 
 /**
- * Metodo para imprimir la Base de Conocimiento
+ * Metodo para cargar en memoria la Base de Conocimiento
  */
-void printBC() {
-    cout << "################## INICIO BC #################" << endl;
-    for (Rule rule : listBC) {
-        cout << "R" << rule.index << ": IF ";
-        printConditions(rule.precondition);
-        cout << "THEN " << rule.consequence.name << " " << rule.consequence.operador << rule.consequence.state;
-        cout << "; Priority: " << rule.priority;
-        string uso = rule.use == true ? "True" : "False";
-        cout << " ; Use: " << uso << endl;
+void readFileBC(const char *pathFile, vector<Rule> *listBC) {
+    ifstream file(pathFile);
+    if (!file.is_open()) {
+        cerr << "Fichero: " << pathFile << " no ha podido ser abierto" << endl;
+        cout << "Terminando programa..." << endl;
+        exit(0);
     }
-    cout << "################### FIN BC ##################" << endl;
+
+    vector<string> attributes;
+    string line;
+
+    getline(file, line);  //IDENTIFICACION DE FRUTAS
+    getline(file, line); // numero de reglas que hay
+    int numLines = stoi(line);
+
+    for (int i = 0; i < numLines; i++) {
+        getline(file, line);
+        parserRule(line, listBC);
+    }
+    file.close();
+
+    sortBC(listBC);
 }
 
 /**
@@ -224,10 +208,30 @@ void printConditions(vector<Condition> precondition) {
     }
 }
 
+void printRule(Rule rule) {
+    cout << "R" << rule.index << ": IF ";
+    printConditions(rule.precondition);
+    cout << "THEN " << rule.consequence.name << " " << rule.consequence.operador << rule.consequence.state;
+    cout << "; Priority: " << rule.priority;
+    string uso = rule.use == true ? "True" : "False";
+    cout << " ; Use: " << uso << endl;
+}
+
+/**
+ * Metodo para imprimir la Base de Conocimiento
+ */
+void printBC(vector<Rule> listBC) {
+    cout << "################## INICIO BC #################" << endl;
+    for (Rule rule : listBC) {
+        printRule(rule);
+    }
+    cout << "################### FIN BC ##################" << endl;
+}
+
 /**
  * Metodo para cargar en memoria la Base de Conocimiento
  */
-void readFileBH(const char *pathFile) {
+void readFileBH(const char *pathFile, vector<Condition> *listBH) {
     ifstream file(pathFile);
     if (!file.is_open()) {
         cerr << "Fichero: " << pathFile << " no ha podido ser abierto" << endl;
@@ -241,7 +245,7 @@ void readFileBH(const char *pathFile) {
 
     for (int i = 0; i < numLines; i++) {
         getline(file, line);
-        parserRulePreconditionAux(line, &listBH);
+        parserRulePreconditionAux(line, listBH);
     }
 
     file.close();
@@ -250,20 +254,27 @@ void readFileBH(const char *pathFile) {
 /**
  * Metodo para imprimir la Base de Hechos
  */
-void printBH() {
+void printBH(vector<Condition> listBH) {
     cout << "################## INICIO BH #################" << endl;
     printConditions(listBH);
     cout << endl;
     cout << "################### FIN BH ##################" << endl;
 }
 
+void printMark(vector<Rule> listMark) {
+    cout << "El orden seguido ha sido: " << endl;
+    for (int i = 0; i < int(listMark.size()); i++) {
+        cout << i << ": ";
+        printRule(listMark[i]);
+    }
+}
 /***
  * Compara un numero segun el operador
  * https://stackoverflow.com/questions/24716453/convert-string-to-operator
  */
 bool conditionalState(string op, Condition conditionRuleBC, Condition conditionBH) {
-    //cout << "BC:" << conditionRuleBC.name << " " << conditionRuleBC.operador << " " << conditionRuleBC.state << endl;
-    //cout << "BH:" << conditionBH.name << " " << conditionBH.operador << " " << conditionBH.state << endl;
+//cout << "BC:" << conditionRuleBC.name << " " << conditionRuleBC.operador << " " << conditionRuleBC.state << endl;
+//cout << "BH:" << conditionBH.name << " " << conditionBH.operador << " " << conditionBH.state << endl;
     if (op.compare("=") == 0) {
         return stoi(conditionBH.state) == stoi(conditionRuleBC.state);
     } else if (op.compare("<") == 0)
@@ -297,8 +308,8 @@ bool isConditionEquals(Condition conditionRuleBC, Condition conditionBH) {
         return false;
 
     Attributes attr = getAttributes(conditionRuleBC);
-    //cout << "Is num: " << attr.isNum << endl;
-    //cout << endl;
+//cout << "Is num: " << attr.isNum << endl;
+//cout << endl;
     if (attr.isNum) {  //Es numero
         bool boolNum = conditionalState(conditionRuleBC.operador, conditionRuleBC, conditionBH);
         // cout << boolNum << endl;
@@ -315,7 +326,7 @@ bool isConditionEquals(Condition conditionRuleBC, Condition conditionBH) {
 /**
  * Para una condicion de una regla de la BC comprueba si estan todas las condiciones en la BH
  */
-bool isConditionInBH(Condition condition) {
+bool isConditionInBH(Condition condition, vector<Condition> listBH) {
     for (Condition conditionBH : listBH) {
         //cout << "analizo: " << conditionBH.name << endl;
         if (isConditionEquals(condition, conditionBH)) {
@@ -323,44 +334,51 @@ bool isConditionInBH(Condition condition) {
             return true;
         }
         //cout << "falla: " << conditionBH.name << endl;
-
     }
     return false;
+}
+
+vector<Rule> extraeCualquierRegla(vector<Rule> listBC) {
+    vector<Rule> r;
+    r.push_back(listBC.front());
+    return r;
 }
 
 /**
  * Extrae TODAS las reglas ordenadas por prioridad que no ha sido usada y que
  * se pueden ejecutar en este momento
  */
-vector<Rule> extraeCualquierRegla(vector<Rule> listBC) {
+vector<Rule> equiparar(vector<Rule> listBC, vector<Condition> listBH) {
     vector<Rule> conflict;
+
     for (Rule rule : listBC)
         if (!rule.use) {
             bool valid = true;
             for (Condition condition : rule.precondition) {
-                if (!isConditionInBH(condition))
+                if (!isConditionInBH(condition, listBH))
                     valid = false;
             }
             if (valid)
                 conflict.push_back(rule);
-        }
+        } else
+            cout << "La regla esta en uso: " << rule.priority << endl;
     return conflict;
 }
 
 /**
  * Retorna True si hemos encontrado la meta, False en caso contrario
  */
-bool noContenida(string meta, vector<Condition> listBH) {
+bool contenida(string meta, vector<Condition> listBH) {
     for (Condition condition : listBH)
         if (condition.name.compare(meta))
-            return false;
-    return true;
+            return true;
+    return false;
 }
 
 /**
  * Retorna true si encuentra alguna regla que aun no ha sido usada
  */
-bool noVacia() {
+bool noVacia(vector<Rule> listBC) {
 //FIXME creo que esta regla esta mal, ya que no tiene en cuenta que puede haber reglas
 //no usadas pero que no se puedan usar
     for (Rule rule : listBC)
@@ -368,46 +386,54 @@ bool noVacia() {
             return true;
     return false;
 }
-/*
- Rule equiparar(, vector<Condition> listBH) {
- for (Rule rule : listBC)
- ;
- return nullptr;    //FIXME Repasar si esta bien
- }*/
 
 /**
- * Encuentra la proxima regla valida a ejecutar
+ * Resuelve la primera regla del conjunto conflicto ya que es un vector ordenado primero por prioridad y luego por numero de regla
  */
-Rule resolver(vector<Rule> conjuntoConflicto) {
-    for (Rule rule : conjuntoConflicto)
-        //FIXME Ver que regla hay que retornar
-        return rule;
-//return nullptr;    //FIXME Repasar si esta bien
-    return conjuntoConflicto[0]; //FIXME BORRAR
+Rule resolver(vector<Rule> &conjuntoConflicto) {
+//&conjuntoConflicto[0].use = true;
+//return &conjuntoConflicto[0];
+//conjuntoConflicto->front().use = true;
+    return conjuntoConflicto.front();
 }
-
 /**
  * Actualiza la Base de Hechos con el nuevo valor sacado
  */
-void actualizar(vector<Condition> listBH, Condition newCondition) {
-    listBH.push_back(newCondition);
+void aplicar(Rule r, vector<Condition> &listBH) {
+    cout << "Actualizada: " << r.consequence.name << r.consequence.operador << r.consequence.state << endl;
+    listBH.push_back(r.consequence);
 }
-/*
- void motorInferencia() {
- vector<Rule> conjuntoConflicto = extraeCualquierRegla(listBC);
 
- while (noContenida(configuration->objetive, listBH) && noVacia()) {
- conjuntoConflicto = equiparar(antecedente(BC), listBH) - reglasMarcadas;
- if (noVacia()) {
- Rule R = resolver(conjuntoConflicto);
- reglasMarcadas.add(R);
- Condition nuevosHechos = aplicar(R, listBH);
- actualizar(listBH, nuevosHechos);
- }
- }
- if (contenida(configuration->objetive, listBH))
- return; // "exito";
- }*/
+/**
+ * Actualiza la Base de Conocimiento marcando como utilizado la regla para no volver a ejecutarse
+ */
+void actualizar(Rule r, vector<Rule> &listBC) {
+    for (int i = 0; i < int(listBC.size()); i++) {
+        if (listBC[i].index == r.index) {
+            cout << "ac: " << listBC[i].index << endl;
+            listBC[i].use = true;
+            return;
+        }
+    }
+//listBH->push_back(r.consequence);
+}
+
+void motorInferencia(vector<Rule> listBC, vector<Condition> listBH, vector<Rule> listMark) {
+    vector<Rule> conjuntoConflicto = extraeCualquierRegla(listBC);
+
+    while (!contenida(configuration->objetive, listBH) && noVacia(listBC)) {
+        conjuntoConflicto = equiparar(listBC, listBH);
+        if (noVacia(listBC)) {
+            Rule r = resolver(conjuntoConflicto);
+            aplicar(r, listBH);
+            actualizar(r, listBC);
+            listMark.push_back(r);
+            // printBC(conjuntoConflicto);
+        }
+    }
+    if (contenida(configuration->objetive, listBH))
+        return; // "exito";
+}
 
 int main(int argc, char **argv) {
 
@@ -415,42 +441,22 @@ int main(int argc, char **argv) {
     const char *conf = argv[2];
     const char *bh = argv[3];
 
+    vector<Rule> listBC;     // Base de Conociminto
+    vector<Rule> listMark;   // Base de Conociminto de reglas marcadas ordenadas
+    vector<Condition> listBH; // Base de Hechos
+
     readFileConfiguration(conf);
-    printConfiguration();
-    readFileBC(bc);
-    printBC();
-    readFileBH(bh);
-    printBH();
+//printConfiguration();
+    readFileBC(bc, &listBC);
+    printBC(listBC);
+    readFileBH(bh, &listBH);
+    printBH(listBH);
 
-//motorInferencia();
-    // cout << "***" << endl;
-    /*bool r =*///isConditionInBH(listBC[13].precondition[0]);
-    //cout << r << endl;
-//cout << listBC[16].precondition[0].name << endl;
-    // cout << "***" << endl;
-    /*r = *///isConditionInBH(listBC[13].precondition[1]);
-    //cout << r << endl;
-    vector<Rule> v = extraeCualquierRegla(listBC);
-    //vector<Rule> v;
+    motorInferencia(listBC, listBH, listMark);
 
-    /*Rule r = listBC[13];
-     cout << "R" << r.index << endl;
-     bool valid = true;
-     for (Condition condition : r.precondition) {
-     if (!isConditionInBH(condition))
-     valid = false;
-     }
-     if (valid)
-     v.push_back(r);*/
-
-    for (Rule rule : v) {
-        cout << "R" << rule.index << ": IF ";
-        printConditions(rule.precondition);
-        cout << "THEN " << rule.consequence.name << " " << rule.consequence.operador << rule.consequence.state;
-        cout << "; Priority: " << rule.priority;
-        string uso = rule.use == true ? "True" : "False";
-        cout << " ; Use: " << uso << endl;
-    }
+    printBH(listBH);
+    printBC(listBC);
+    printMark(listMark);
 
     return 0;
 }
