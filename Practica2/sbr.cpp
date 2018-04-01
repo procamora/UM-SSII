@@ -8,6 +8,17 @@
 #include "sbr.hpp"
 
 /**
+ * Metodo para convertir un string en un int, en linux no es necesario pero parece que en windows con mingw si
+ * https://www.reddit.com/r/cpp_questions/comments/2s7y35/gcc_492_stoi_not_a_member/
+ */
+int stoiMia(const std::string& s) {
+    istringstream str(s);
+    int i;
+    str >> i;
+    return i;
+}
+
+/**
  * Metodo para partir un string a partir de un delimitador
  * http://www.cplusplus.com/articles/2wA0RXSz/
  */
@@ -45,7 +56,7 @@ void readFileConfiguration(const char *pathFile) {
 
     getline(file, line);  //ATRIBUTOS
     getline(file, line);
-    configuration->sizeAttributes = stoi(line);
+    configuration->sizeAttributes = stoiMia(line);
 
     for (int i = 0; i < configuration->sizeAttributes; i++) {
         getline(file, line);
@@ -72,13 +83,13 @@ void readFileConfiguration(const char *pathFile) {
 
     getline(file, line);  //PRIORIDADES-REGLAS
     getline(file, line);
-    configuration->sizePriority = stoi(line);
+    configuration->sizePriority = stoiMia(line);
 
     vector<int> priority;
 
     for (int i = 0; i < configuration->sizePriority; i++) {
         getline(file, line);
-        priority.push_back(stoi(line));
+        priority.push_back(stoiMia(line));
     }
 
     configuration->priority = priority;
@@ -98,7 +109,7 @@ void printConfiguration() {
             cout << CONF_NUM;
         else {
             cout << CONF_NOMINAL << " {";
-            for (auto n : attr.nominal)
+            for (string n : attr.nominal)
                 cout << n << ","; //FIXME La ultima pone , imnecesaria, solo el visual
         }
         cout << "}" << endl;
@@ -107,7 +118,7 @@ void printConfiguration() {
     cout << "objetive: " << configuration->objetive << endl;
     cout << "sizePriority: " << configuration->sizePriority << endl;
 
-    for (auto pri : configuration->priority)
+    for (int pri : configuration->priority)
         cout << "\t " << pri << endl;
 
     cout << "################## FIN CONFIGURACION #################" << endl;
@@ -140,7 +151,7 @@ void parserRule(string line, vector<Rule> *listBC) {
     smatch match;
 
     if (regex_search(line, match, regex) && match.size() == 4) {
-        rule.index = stoi(match[1].str());
+        rule.index = stoiMia(match[1].str());
         parserRuleConditionAux(match[2].str(), &precondition); //Precondiciones
         parserRuleConditionAux(match[3].str(), &consequence);
         if (consequence.size() != 1)
@@ -159,7 +170,7 @@ void parserRule(string line, vector<Rule> *listBC) {
  * en caso de empate de prioridad ordena por numero de regla ascendente
  */
 void sortBC(vector<Rule> *listBC) {
-    sort(listBC->begin(), listBC->end(), [ ]( const auto& r1, const auto& r2 ) {
+    sort(listBC->begin(), listBC->end(), [ ]( const Rule& r1, const Rule& r2 ) {
         if( r1.priority == r2.priority) {
             return r1.index < r2.index;
         }
@@ -183,7 +194,7 @@ void readFileBC(const char *pathFile, vector<Rule> *listBC) {
 
     getline(file, line);  //IDENTIFICACION DE FRUTAS
     getline(file, line); // numero de reglas que hay
-    int numLines = stoi(line);
+    int numLines = stoiMia(line);
 
     for (int i = 0; i < numLines; i++) {
         getline(file, line);
@@ -244,7 +255,7 @@ void readFileBH(const char *pathFile, vector<Condition> *listBH) {
 
     string line;
     getline(file, line); // numero de hechos que hay
-    int numLines = stoi(line);
+    int numLines = stoiMia(line);
 
     for (int i = 0; i < numLines; i++) {
         getline(file, line);
@@ -280,15 +291,15 @@ void printMark(vector<Rule> listMark) {
  */
 bool conditionalState(string op, Condition conditionRuleBC, Condition conditionBH) {
     if (op.compare("=") == 0) {
-        return stoi(conditionBH.state) == stoi(conditionRuleBC.state);
+        return stoiMia(conditionBH.state) == stoiMia(conditionRuleBC.state);
     } else if (op.compare("<") == 0)
-        return stoi(conditionBH.state) < stoi(conditionRuleBC.state);
+        return stoiMia(conditionBH.state) < stoiMia(conditionRuleBC.state);
     else if (op.compare(">") == 0)
-        return stoi(conditionBH.state) > stoi(conditionRuleBC.state);
+        return stoiMia(conditionBH.state) > stoiMia(conditionRuleBC.state);
     else if (op.compare("<=") == 0)
-        return stoi(conditionBH.state) <= stoi(conditionRuleBC.state);
+        return stoiMia(conditionBH.state) <= stoiMia(conditionRuleBC.state);
     else if (op.compare(">=") == 0)
-        return stoi(conditionBH.state) >= stoi(conditionRuleBC.state);
+        return stoiMia(conditionBH.state) >= stoiMia(conditionRuleBC.state);
     return false;
 }
 
