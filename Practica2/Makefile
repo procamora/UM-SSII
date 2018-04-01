@@ -3,7 +3,7 @@
 #g++.exe -o Debug/UM-SSII.exe Debug/src/sudoku.o galib247-c2014/galib.a
 
 CC = g++
-CFLAGS = -ggdb3 -Wall -Wunused-variable -fexceptions -g -std=c++11
+CFLAGS = -ggdb3 -O2 -Wall -Wunused-variable -fexceptions -g -std=c++11
 SRC = sbr.cpp
 OBJ = sbr.o
 OBJ_OUT = ../Debug/src/sbr.o
