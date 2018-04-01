@@ -39,8 +39,6 @@ typedef struct {
     string name;
     string operador;
     string state;
-    //int prioridad;
-    //int indexRegla;
 } Condition;
 
 typedef struct {

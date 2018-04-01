@@ -114,44 +114,37 @@ void printConfiguration() {
 }
 
 /**
- * Metodo para parsear las precondiciones en la regla
+ * Metodo para parsear las precondiciones en la regla y consecuencias
  */
-void parserRulePreconditionAux(string line, vector<Condition> *precondition) {
+void parserRuleConditionAux(string line, vector<Condition> *precondition) {
     smatch match;
     regex regex(REGEX_RULES_PRECONDITION);
 
     while (regex_search(line, match, regex)) {
         if (match.size() == 2) {
-            Condition condition;
             vector<string> splitPrecondition = explode(match[1], ' ');
-            condition.name = splitPrecondition[0]; //FIXME CAMBIAR POR {splitPrecondition[0], splitPrecondition[1], splitPrecondition[2]}
-            condition.operador = splitPrecondition[1];
-            condition.state = splitPrecondition[2];
-            precondition->push_back(condition);
+            precondition->push_back( { splitPrecondition[0], splitPrecondition[1], splitPrecondition[2] });
         }
         line = match.suffix().str();
     }
 }
 
 /**
- * Metodo para parsear una regla
+ * Metodo para parsear una regla y guardarla en memoria
  */
 void parserRule(string line, vector<Rule> *listBC) {
     Rule rule;
     vector<Condition> precondition;
     vector<Condition> consequence; //Solo es 1 pero lo hago como vector para reutilizar parserRulePreconditionAux
-    //Condition condition;
     regex regex(REGEX_RULES);
     smatch match;
 
     if (regex_search(line, match, regex) && match.size() == 4) {
         rule.index = stoi(match[1].str());
-        parserRulePreconditionAux(match[2].str(), &precondition); //Precondiciones
-        parserRulePreconditionAux(match[3].str(), &consequence);
+        parserRuleConditionAux(match[2].str(), &precondition); //Precondiciones
+        parserRuleConditionAux(match[3].str(), &consequence);
         if (consequence.size() != 1)
             cout << "La consecuencia en la regla" << line << " ha fallado" << endl;
-        //condition.name = match[3].str();
-        //FIXME CAMBIAR
         rule.precondition = precondition;
         rule.consequence = {consequence.front().name, consequence.front().operador, consequence.front().state};
         rule.priority = configuration->priority[rule.index - 1];
@@ -161,13 +154,16 @@ void parserRule(string line, vector<Rule> *listBC) {
         cerr << "NOT Match found!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" << line << endl;
 }
 
+/**
+ * Metodo que ordena el vector con la base de conocimiento segun el criterio, primero ordena por prioridad descendente,
+ * en caso de empate de prioridad ordena por numero de regla ascendente
+ */
 void sortBC(vector<Rule> *listBC) {
-    //Ordenamos segun criterio
-    sort(listBC->begin(), listBC->end(), [ ]( const auto& lhs, const auto& rhs ) {
-        if( lhs.priority == rhs.priority) {
-            return lhs.index < rhs.index;
+    sort(listBC->begin(), listBC->end(), [ ]( const auto& r1, const auto& r2 ) {
+        if( r1.priority == r2.priority) {
+            return r1.index < r2.index;
         }
-        return lhs.priority > rhs.priority;
+        return r1.priority > r2.priority;
     });
 }
 
@@ -213,6 +209,9 @@ void printConditions(vector<Condition> precondition) {
     }
 }
 
+/**
+ * Metodo para imprimir una regla con un formato visible
+ */
 void printRule(Rule rule) {
     cout << "R" << rule.index << ": IF ";
     printConditions(rule.precondition);
@@ -227,9 +226,8 @@ void printRule(Rule rule) {
  */
 void printBC(vector<Rule> listBC) {
     cout << "################## INICIO BC #################" << endl;
-    for (Rule rule : listBC) {
+    for (Rule rule : listBC)
         printRule(rule);
-    }
     cout << "################### FIN BC ##################" << endl;
 }
 
@@ -250,7 +248,7 @@ void readFileBH(const char *pathFile, vector<Condition> *listBH) {
 
     for (int i = 0; i < numLines; i++) {
         getline(file, line);
-        parserRulePreconditionAux(line, listBH);
+        parserRuleConditionAux(line, listBH);
     }
 
     file.close();
@@ -269,17 +267,18 @@ void printBH(vector<Condition> listBH) {
 void printMark(vector<Rule> listMark) {
     cout << "El orden seguido ha sido: " << endl;
     for (int i = 0; i < int(listMark.size()); i++) {
-        cout << i << ": ";
+        cout << "\t" << i + 1 << ": ";
         printRule(listMark[i]);
     }
+    Rule r = listMark.back();
+    cout << "Y el resultado objetivo es: " << r.consequence.name << " " << r.consequence.operador << " " << r.consequence.state << endl;
 }
+
 /***
- * Compara un numero segun el operador
+ * Compara un par de numeros segun el operador indicado
  * https://stackoverflow.com/questions/24716453/convert-string-to-operator
  */
 bool conditionalState(string op, Condition conditionRuleBC, Condition conditionBH) {
-//cout << "BC:" << conditionRuleBC.name << " " << conditionRuleBC.operador << " " << conditionRuleBC.state << endl;
-//cout << "BH:" << conditionBH.name << " " << conditionBH.operador << " " << conditionBH.state << endl;
     if (op.compare("=") == 0) {
         return stoi(conditionBH.state) == stoi(conditionRuleBC.state);
     } else if (op.compare("<") == 0)
@@ -294,7 +293,7 @@ bool conditionalState(string op, Condition conditionRuleBC, Condition conditionB
 }
 
 /**
- * Metodo para obtener la configuracion de una condicion
+ * Metodo para obtener la configuracion de una condicion, para saber tengo que hacer una comparacion numerica o nominal
  * https://stackoverflow.com/questions/22972265/c-return-null-struct-from-function?noredirect=1&lq=1
  */
 Attributes getAttributes(Condition c1) {
@@ -313,8 +312,6 @@ bool isConditionEquals(Condition conditionRuleBC, Condition conditionBH) {
         return false;
 
     Attributes attr = getAttributes(conditionRuleBC);
-//cout << "Is num: " << attr.isNum << endl;
-//cout << endl;
     if (attr.isNum) {  //Es numero
         bool boolNum = conditionalState(conditionRuleBC.operador, conditionRuleBC, conditionBH);
         // cout << boolNum << endl;
@@ -332,17 +329,15 @@ bool isConditionEquals(Condition conditionRuleBC, Condition conditionBH) {
  * Para una condicion de una regla de la BC comprueba si estan todas las condiciones en la BH
  */
 bool isConditionInBH(Condition condition, vector<Condition> listBH) {
-    for (Condition conditionBH : listBH) {
-        //cout << "analizo: " << conditionBH.name << endl;
-        if (isConditionEquals(condition, conditionBH)) {
-            // cout << "acierta: " << conditionBH.name << endl;
+    for (Condition conditionBH : listBH)
+        if (isConditionEquals(condition, conditionBH))
             return true;
-        }
-        //cout << "falla: " << conditionBH.name << endl;
-    }
     return false;
 }
 
+/**
+ * Metodo que extrae la primera regla, se usa inicialmente aunque la regla no se vaya a usar
+ */
 vector<Rule> extraeCualquierRegla(vector<Rule> listBC) {
     vector<Rule> r;
     r.push_back(listBC.front());
@@ -364,12 +359,12 @@ vector<Rule> equiparar(vector<Rule> listBC, vector<Condition> listBH) {
                     valid = false;
             }
             if (valid) {
-                cout << "equiparar ";
-                printRule(rule);
+                //cout << "equiparar ";
+                //printRule(rule);
                 conflict.push_back(rule);
             }
-        } else
-            cout << "La regla " << rule.index << " esta usada" << endl;
+        } //else
+          // cout << "La regla " << rule.index << " esta usada" << endl;
     return conflict;
 }
 
@@ -396,17 +391,18 @@ bool noVacia(vector<Rule> listBC) {
 }
 
 /**
- * Resuelve la primera regla del conjunto conflicto ya que es un vector ordenado primero por prioridad y luego por numero de regla
+ * Resuelve la primera regla del conjunto conflicto, retornando la primera regla del vector,
+ * ya que es un vector ordenado
  */
 Rule resolver(vector<Rule> &conjuntoConflicto) {
     return conjuntoConflicto.front();
 }
+
 /**
  * Actualiza la Base de Hechos con el nuevo valor sacado
  */
 void aplicar(Rule r, vector<Condition> *listBH) {
-    Condition c;
-    cout << "aplicar: " << r.consequence.name << "." << r.consequence.operador << "." << r.consequence.state << endl;
+    //cout << "aplicar: " << r.consequence.name << "." << r.consequence.operador << "." << r.consequence.state << endl;
     listBH->push_back( { r.consequence.name, r.consequence.operador, r.consequence.state });
 }
 
@@ -416,39 +412,40 @@ void aplicar(Rule r, vector<Condition> *listBH) {
 void actualizar(Rule r, vector<Rule> &listBC) {
     for (int i = 0; i < int(listBC.size()); i++) {
         if (listBC[i].index == r.index) {
-            cout << "actualizar: " << listBC[i].index << endl;
+            //cout << "actualizar: " << listBC[i].index << endl;
             listBC[i].use = true;
             return;
         }
     }
-//listBH->push_back(r.consequence);
 }
 
+/**
+ * Motor de Inferencia con encaminamiento hacia delante
+ */
 void motorInferencia(vector<Rule> *listBC, vector<Condition> *listBH, vector<Rule> *listMark) {
     vector<Rule> conjuntoConflicto = extraeCualquierRegla(*listBC);
 
-    for (int i = 0; i < int(conjuntoConflicto.size()); i++)
-        cout << "Print: " << conjuntoConflicto[i].index << " -> " << conjuntoConflicto[i].use << endl;
+    //for (int i = 0; i < int(conjuntoConflicto.size()); i++)
+    //cout << "Print: " << conjuntoConflicto[i].index << " -> " << conjuntoConflicto[i].use << endl;
 
-    cout << endl << endl;
+    // cout << endl << endl;
 
     while (!contenida(configuration->objetive, *listBH) && noVacia(*listBC)) {
         conjuntoConflicto = equiparar(*listBC, *listBH);
 
-        for (int i = 0; i < int(conjuntoConflicto.size()); i++)
-            cout << "Print: " << conjuntoConflicto[i].index << " -> " << conjuntoConflicto[i].use << endl;
-        cout << endl;
+        // for (int i = 0; i < int(conjuntoConflicto.size()); i++)
+        //   cout << "Print: " << conjuntoConflicto[i].index << " -> " << conjuntoConflicto[i].use << endl;
+        //cout << endl;
 
         if (noVacia(*listBC)) {
             Rule r = resolver(conjuntoConflicto);
-            printRule(r);
+            //printRule(r);
             aplicar(r, listBH);
             actualizar(r, *listBC);
             listMark->push_back(r);
             // printBC(conjuntoConflicto);
         }
     }
-    cout << "asdasd" << endl;
     if (contenida(configuration->objetive, *listBH))
         cout << "EXITO" << endl;
 }
@@ -471,63 +468,8 @@ int main(int argc, char **argv) {
     printBH(listBH);
 
     motorInferencia(&listBC, &listBH, &listMark);
-    cout << endl << endl;
 
-    //ITERACION 1
-    /*vector<Rule> conjuntoConflicto = extraeCualquierRegla(listBC);
-     if (!contenida(configuration->objetive, listBH) && noVacia(listBC)) {
-     conjuntoConflicto = equiparar(listBC, listBH);
-     if (noVacia(listBC)) {
-     Rule r = resolver(conjuntoConflicto);
-     printRule(r);
-     aplicar(r, &listBH);
-     actualizar(r, listBC);
-     listMark.push_back(r);
-     // printBC(conjuntoConflicto);
-     }
-     }
-     cout << endl << endl;
-
-     //ITERACION 2
-     if (!contenida(configuration->objetive, listBH) && noVacia(listBC)) {
-     conjuntoConflicto = equiparar(listBC, listBH);
-     if (noVacia(listBC)) {
-     Rule r = resolver(conjuntoConflicto);
-     printRule(r);
-     aplicar(r, &listBH);
-     actualizar(r, listBC);
-     listMark.push_back(r);
-     // printBC(conjuntoConflicto);
-     }
-     }
-     cout << endl << endl;
-
-     //ITERACION 3
-     if (!contenida(configuration->objetive, listBH) && noVacia(listBC)) {
-     conjuntoConflicto = equiparar(listBC, listBH);
-     if (noVacia(listBC)) {
-     Rule r = resolver(conjuntoConflicto);
-     printRule(r);
-     aplicar(r, &listBH);
-     actualizar(r, listBC);
-     listMark.push_back(r);
-     // printBC(conjuntoConflicto);
-     }
-     }
-     //ITERACION 4
-     if (!contenida(configuration->objetive, listBH) && noVacia(listBC)) {
-     conjuntoConflicto = equiparar(listBC, listBH);
-     if (noVacia(listBC)) {
-     Rule r = resolver(conjuntoConflicto);
-     printRule(r);
-     aplicar(r, &listBH);
-     actualizar(r, listBC);
-     listMark.push_back(r);
-     // printBC(conjuntoConflicto);
-     }
-     }*/
-
-    printBH(listBH);
+    //printBH(listBH);
     //printBC(listBC);
     printMark(listMark);
 
