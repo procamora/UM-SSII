@@ -3,7 +3,7 @@ title: Sistemas Inteligentes
 subtitle: Practica 2
 author:
     - Pablo José Rocamora Zamora G3.2
-date: 29 de Diciembre de 2017
+date: Convocatoria de Junio
 header: dsad
 footer: So is this
 geometry:
@@ -66,17 +66,63 @@ acercándonos a la solución final [@regex].
 acercándonos a la solución final [@sort].
 
 
-a)b)c)
-
 # Explicación breve y completa de la técnica Sistema Basado en Reglas (SBR).
+
+## Introducción
+
+Los sistemas basados en reglas (SBR) se inspiran en los sistemas de deducción en lógica proposicional o de primer orden. Se les suele llamar Sistemas Expertos (SE) porque el conocimiento suele proceder de expertos humanos y los SBR permiten capturarlo bien.
+
+- Utilizan la estructura de inferencia _modus ponens_ para obtener conclusiones lógicas.
+- Interpretan la primera premisa de un _modus ponens_ como una regla de la forma **IF condición THEN acción**.
+
+## Componentes Básicos
+
+- Base de conocimiento (BC): Contiene las reglas que codifican todo el conocimiento. Una regla se consta de 2 partes: izquierda o antecedente y derecha o consecuente. Ejemplo: *IF antecedente THEN consecuente*.
+
+- Base de Hechos (BH): Son los hechos establecidos como verdaderos, pueden ser tanto datos de entrada como conclusiones inferidas.
+
+- Motor de Inferencias (MI): Selecciona las reglas que se pueden ejecutar y las ejecuta con el objetivo de obtener alguna conclusión.
+
+Una diferencia importante entre la BC y la BH es que la BH almacena información puntual sobre un problema concreto mientras  que la BC almacena porciones de cocimiento sobre como resolver el problema genérico.
+
+## Inferencia en un SBR
+
+Hay dos formas de razonar un MI: 
+
+- Encadenamiento hacia delante o dirigido por datos, se seleccionan las reglas cuyos antecedentes se verifican, dado el contenido de la BH. La particularidad de esta etapa es la equiparación, donde se seleccionan las reglas cuyos antecedentes se verifican, dado el contenido de la BH.
+- Encadenamiento hacia atrás o dirigido por metas, se especifica una meta objetivo y se trata de determinar su la meta se verifica o no, teniendo en cuenta el contenido de la BH.
+
+## Técnicas de Equiparación
+
+La equiparación del antecedente de las reglas con el estado de la BH no siempre es trivial, puede no describir situaciones particulares sino generales.
+Otro problema es la necesidad de examinar todas las reglas en cada ciclo de inferencias, ya que puede ser poco eficiente si la BC es extensa, puede mejorar con indexado de reglas o el algoritmo *RETE*
+
+
+## Técnicas de resolución de conflictos
+
+Un método de resolución de conflictos selecciona, a partir del conjunto conflicto, la regla a aplicar. Las principales técnicas de resolución son las siguientes:
+
+- Según la BC (Criterios estáticos): Seleccionan las reglas ordenados por un criterio, como puede ser prioridad de reglas.
+- Según la BH (Criterios dinámicos): Reglas que usan elementos mas recientes de la BH.
+- Según la ejecución (Criterios dinámicos): Usar reglas no utilizadas previamente.
 
 
 
 # Explicación clara de los elementos siguientes del motor de inferencia diseñado (dado que el diseño es anterior a la implementación, no se debe hacer mención a aspectos de código):
 
-- Equiparación-Conjunto conflicto
-- Condición de parada
+## Equiparación-Conjunto conflicto
 
+La equiparación: El objetivo de la equiparación es seleccionar reglas validas para la BH, se realizara recorriendo regla a regla la BC y comprobando para cada condición de la regla si esta esa misma condición en la BH, si esta y se cumplen todas las condiciones de la regla entonces podremos obtener esa regla para ser usada posteriormente
+
+Conjunto conflicto: La equiparación nos retorna una lista de reglas validas para usarse, para resolver que regla tenemos que usar en cada caso cogeremos siempre la primera, ya que la BC esta ordenada primero por prioridad y en caso de empate de prioridad por numero de regla, gracias a eso la equiparación nos retorna la lista ordenada y resolver el conjunto conflicto es una tarea sencilla.
+
+
+## Condición de parada
+
+Tenemos 2 condiciones de parada:
+
+ - Cuando en la BH aparezca el objetivo que buscamos, lo que significara que hemos resuelto el problema.
+ - Cuando equiparar no retorna ninguna regla o todas las reglas que retornan ya han sido usadas, lo que significara que no podemos continuar y por tanto resolver el problema por falta de información.
 
 
 
@@ -95,4 +141,10 @@ Tanto las BH como las BC proporcionadas no podrán ser modificadas.
 
 La referencia:
 
-- 1: Es 
+- 1: Usado para convertir un string en un int, ya que la funcion stoi de c++ parece que no esta implementada correctamente en MinGW
+
+- : Usado para ver como partir un string a partir de un delimitador especifico
+
+- : Usado para convertir un string en un operador y realizar su respectiva operacion
+
+- : Usado para ver la forma mas correcta de hacer un return null de un struct cuando nunca deberia de ejecutarse, en c++ lo correcto seria enviar una excepcion

@@ -3,7 +3,7 @@ title: Sistemas Inteligentes
 subtitle: Practica 1
 author:
     - Pablo José Rocamora Zamora G3.2
-date: 9 de Diciembre de 2017
+date: Convocatoria de Junio
 header: dsad
 footer: So is this
 geometry:

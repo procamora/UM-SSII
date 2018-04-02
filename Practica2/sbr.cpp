@@ -99,29 +99,32 @@ void readFileConfiguration(const char *pathFile) {
 /**
  * Metodo para imprimir la configuracion del sistema
  */
-void printConfiguration() {
-    cout << "################# INICIO CONFIGURACION #################" << endl;
-    cout << "sizeAttributes: " << configuration->sizeAttributes << endl;
+void printConfiguration(ofstream *myfile) {
+
+    *myfile << "################# INICIO CONFIGURACION #################" << endl;
+    *myfile << "sizeAttributes: " << configuration->sizeAttributes << endl;
 
     for (Attributes attr : configuration->attributes) {
-        cout << "\t " << attr.name << " "; //FIXME CAMBIAR
+        *myfile << "\t " << attr.name << " "; //FIXME CAMBIAR
         if (attr.isNum)
-            cout << CONF_NUM;
+            *myfile << CONF_NUM;
         else {
-            cout << CONF_NOMINAL << " {";
+            *myfile << CONF_NOMINAL << " {";
             for (string n : attr.nominal)
-                cout << n << ","; //FIXME La ultima pone , imnecesaria, solo el visual
+                *myfile << n << ","; //FIXME La ultima pone , imnecesaria, solo el visual
+            *myfile << "}";
         }
-        cout << "}" << endl;
+        *myfile << endl;
     }
 
-    cout << "objetive: " << configuration->objetive << endl;
-    cout << "sizePriority: " << configuration->sizePriority << endl;
+    *myfile << "objetive: " << configuration->objetive << endl;
+    *myfile << "sizePriority: " << configuration->sizePriority << endl;
 
     for (int pri : configuration->priority)
-        cout << "\t " << pri << endl;
+        *myfile << "\t " << pri << endl;
 
-    cout << "################## FIN CONFIGURACION #################" << endl;
+    *myfile << "################## FIN CONFIGURACION #################" << endl;
+
 }
 
 /**
@@ -208,38 +211,38 @@ void readFileBC(const char *pathFile, vector<Rule> *listBC) {
 /**
  * Metodo auxiliar para imprimir las condiciones de la Base de Conocimiento
  */
-void printConditions(vector<Condition> precondition) {
+void printConditions(vector<Condition> precondition, ofstream *myfile) {
     unsigned int cont = 0;
     for (Condition condition : precondition) {
-        cout << condition.name << " " << condition.operador << " " << condition.state;
+        *myfile << condition.name << " " << condition.operador << " " << condition.state;
         cont++;
         if (cont != precondition.size())
-            cout << " && ";
+            *myfile << " && ";
         else
-            cout << " ";
+            *myfile << " ";
     }
 }
 
 /**
  * Metodo para imprimir una regla con un formato visible
  */
-void printRule(Rule rule) {
-    cout << "R" << rule.index << ": IF ";
-    printConditions(rule.precondition);
-    cout << "THEN " << rule.consequence.name << " " << rule.consequence.operador << " " << rule.consequence.state;
-    cout << "; Priority: " << rule.priority;
+void printRule(Rule rule, ofstream *myfile) {
+    *myfile << "R" << rule.index << ": IF ";
+    printConditions(rule.precondition, myfile);
+    *myfile << "THEN " << rule.consequence.name << " " << rule.consequence.operador << " " << rule.consequence.state;
+    *myfile << "; Priority: " << rule.priority;
     string uso = rule.use == true ? "True" : "False";
-    cout << " ; Use: " << uso << endl;
+    *myfile << " ; Use: " << uso << endl;
 }
 
 /**
  * Metodo para imprimir la Base de Conocimiento
  */
-void printBC(vector<Rule> listBC) {
-    cout << "################## INICIO BC #################" << endl;
+void printBC(vector<Rule> listBC, ofstream *myfile) {
+    *myfile << "################## INICIO BC #################" << endl;
     for (Rule rule : listBC)
-        printRule(rule);
-    cout << "################### FIN BC ##################" << endl;
+        printRule(rule, myfile);
+    *myfile << "################### FIN BC ##################" << endl;
 }
 
 /**
@@ -262,27 +265,28 @@ void readFileBH(const char *pathFile, vector<Condition> *listBH) {
         parserRuleConditionAux(line, listBH);
     }
 
-    file.close();
 }
 
 /**
  * Metodo para imprimir la Base de Hechos
  */
-void printBH(vector<Condition> listBH) {
-    cout << "################## INICIO BH #################" << endl;
-    printConditions(listBH);
-    cout << endl;
-    cout << "################### FIN BH ##################" << endl;
+void printBH(vector<Condition> listBH, ofstream *myfile) {
+    *myfile << "################## INICIO BH #################" << endl;
+    printConditions(listBH, myfile);
+    *myfile << endl;
+    *myfile << "################### FIN BH ##################" << endl;
 }
 
-void printMark(vector<Rule> listMark) {
-    cout << "El orden seguido ha sido: " << endl;
+/**
+ * Metodo que imprime el vector de reglas que han sido usadas
+ */
+void printMark(vector<Rule> listMark, ofstream *myfile) {
+    *myfile << "El orden seguido ha sido: " << endl;
     for (int i = 0; i < int(listMark.size()); i++) {
-        cout << "\t" << i + 1 << ": ";
-        printRule(listMark[i]);
+        *myfile << "\t" << i + 1 << ": ";
+        //listMark[i].use = true; //al pasarle una copia antes de la modificacion
+        printRule(listMark[i], myfile);
     }
-    Rule r = listMark.back();
-    cout << "Y el resultado objetivo es: " << r.consequence.name << " " << r.consequence.operador << " " << r.consequence.state << endl;
 }
 
 /***
@@ -325,7 +329,6 @@ bool isConditionEquals(Condition conditionRuleBC, Condition conditionBH) {
     Attributes attr = getAttributes(conditionRuleBC);
     if (attr.isNum) {  //Es numero
         bool boolNum = conditionalState(conditionRuleBC.operador, conditionRuleBC, conditionBH);
-        // cout << boolNum << endl;
         return boolNum;
     } else { //Es nominal
         if (!conditionRuleBC.operador.compare(conditionBH.operador) == 0)
@@ -369,13 +372,9 @@ vector<Rule> equiparar(vector<Rule> listBC, vector<Condition> listBH) {
                 if (!isConditionInBH(condition, listBH))
                     valid = false;
             }
-            if (valid) {
-                //cout << "equiparar ";
-                //printRule(rule);
+            if (valid)
                 conflict.push_back(rule);
-            }
-        } //else
-          // cout << "La regla " << rule.index << " esta usada" << endl;
+        }
     return conflict;
 }
 
@@ -390,12 +389,10 @@ bool contenida(string meta, vector<Condition> listBH) {
 }
 
 /**
- * Retorna true si encuentra alguna regla que aun no ha sido usada
+ * Retorna true si encuentra alguna regla que aun no ha sido usada en el conjucto conflicto
  */
-bool noVacia(vector<Rule> listBC) {
-//FIXME creo que esta regla esta mal, ya que no tiene en cuenta que puede haber reglas
-//no usadas pero que no se puedan usar
-    for (Rule rule : listBC)
+bool noVacia(vector<Rule> conjuntoConflicto) {
+    for (Rule rule : conjuntoConflicto)
         if (!rule.use)
             return true;
     return false;
@@ -413,21 +410,19 @@ Rule resolver(vector<Rule> &conjuntoConflicto) {
  * Actualiza la Base de Hechos con el nuevo valor sacado
  */
 void aplicar(Rule r, vector<Condition> *listBH) {
-    //cout << "aplicar: " << r.consequence.name << "." << r.consequence.operador << "." << r.consequence.state << endl;
     listBH->push_back( { r.consequence.name, r.consequence.operador, r.consequence.state });
 }
 
 /**
  * Actualiza la Base de Conocimiento marcando como utilizado la regla para no volver a ejecutarse
  */
-void actualizar(Rule r, vector<Rule> &listBC) {
-    for (int i = 0; i < int(listBC.size()); i++) {
+Rule actualizar(Rule r, vector<Rule> &listBC) {
+    for (int i = 0; i < int(listBC.size()); i++)
         if (listBC[i].index == r.index) {
-            //cout << "actualizar: " << listBC[i].index << endl;
             listBC[i].use = true;
-            return;
+            return listBC[i];
         }
-    }
+    throw runtime_error("actualizar no ha actualizado la regla");
 }
 
 /**
@@ -436,25 +431,13 @@ void actualizar(Rule r, vector<Rule> &listBC) {
 void motorInferencia(vector<Rule> *listBC, vector<Condition> *listBH, vector<Rule> *listMark) {
     vector<Rule> conjuntoConflicto = extraeCualquierRegla(*listBC);
 
-    //for (int i = 0; i < int(conjuntoConflicto.size()); i++)
-    //cout << "Print: " << conjuntoConflicto[i].index << " -> " << conjuntoConflicto[i].use << endl;
-
-    // cout << endl << endl;
-
-    while (!contenida(configuration->objetive, *listBH) && noVacia(*listBC)) {
+    while (!contenida(configuration->objetive, *listBH) && noVacia(conjuntoConflicto)) {
         conjuntoConflicto = equiparar(*listBC, *listBH);
-
-        // for (int i = 0; i < int(conjuntoConflicto.size()); i++)
-        //   cout << "Print: " << conjuntoConflicto[i].index << " -> " << conjuntoConflicto[i].use << endl;
-        //cout << endl;
-
-        if (noVacia(*listBC)) {
+        if (noVacia(conjuntoConflicto)) {
             Rule r = resolver(conjuntoConflicto);
-            //printRule(r);
             aplicar(r, listBH);
-            actualizar(r, *listBC);
+            r = actualizar(r, *listBC);
             listMark->push_back(r);
-            // printBC(conjuntoConflicto);
         }
     }
     if (contenida(configuration->objetive, *listBH))
@@ -471,18 +454,29 @@ int main(int argc, char **argv) {
     vector<Rule> listMark;   // Base de Conociminto de reglas marcadas ordenadas
     vector<Condition> listBH; // Base de Hechos
 
+    string file = "Salida1.txt";
+    ofstream myfile;
+    myfile.open(file);
     readFileConfiguration(conf);
-    //printConfiguration();
+    //printConfiguration(&myfile);
     readFileBC(bc, &listBC);
-    printBC(listBC);
+    printBC(listBC, &myfile);
+    myfile << "Objetivo -> " << configuration->objetive << endl;
     readFileBH(bh, &listBH);
-    printBH(listBH);
+    printBH(listBH, &myfile);
 
     motorInferencia(&listBC, &listBH, &listMark);
+    printMark(listMark, &myfile);
+    myfile.close();
 
-    //printBH(listBH);
-    //printBC(listBC);
-    printMark(listMark);
+    file = "Salida2.txt";
+    myfile.open(file);
+    printBC(listBC, &myfile);
+    printBH(listBH, &myfile);
+
+    Rule r = listMark.back();
+    myfile << "El resultado objetivo es: " << r.consequence.name << " " << r.consequence.operador << " " << r.consequence.state << endl;
+    myfile.close();
 
     return 0;
 }
