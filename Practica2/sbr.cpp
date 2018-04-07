@@ -441,7 +441,10 @@ void motorInferencia(vector<Rule> *listBC, vector<Condition> *listBH, vector<Rul
         }
     }
     if (contenida(configuration->objetive, *listBH))
-        cout << "EXITO" << endl;
+        cout << "EXITO!!" << endl;
+    else
+        cout << "FRACASO :(" << endl;
+
 }
 
 int main(int argc, char **argv) {
@@ -454,14 +457,17 @@ int main(int argc, char **argv) {
     vector<Rule> listMark;   // Base de Conociminto de reglas marcadas ordenadas
     vector<Condition> listBH; // Base de Hechos
 
-    string file = "Salida1.txt";
     ofstream myfile;
-    myfile.open(file);
+    myfile.open(SALIDA_1);
     readFileConfiguration(conf);
     //printConfiguration(&myfile);
     readFileBC(bc, &listBC);
     printBC(listBC, &myfile);
+
+    myfile << "########## INICIO ATRIBUTO OBJETIVO ##########" << endl;
     myfile << "Objetivo -> " << configuration->objetive << endl;
+    myfile << "########### FIN ATRIBUTO OBJETIVO ###########" << endl;
+
     readFileBH(bh, &listBH);
     printBH(listBH, &myfile);
 
@@ -469,13 +475,13 @@ int main(int argc, char **argv) {
     printMark(listMark, &myfile);
     myfile.close();
 
-    file = "Salida2.txt";
-    myfile.open(file);
+    myfile.open(SALIDA_2);
     printBC(listBC, &myfile);
     printBH(listBH, &myfile);
 
     Rule r = listMark.back();
     myfile << "El resultado objetivo es: " << r.consequence.name << " " << r.consequence.operador << " " << r.consequence.state << endl;
+
     myfile.close();
 
     return 0;

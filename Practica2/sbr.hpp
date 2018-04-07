@@ -13,6 +13,8 @@
 
 #define CONF_NUM "NU"
 #define CONF_NOMINAL "Nom"
+#define SALIDA_1 "Salida1.txt"
+#define SALIDA_2 "Salida2.txt"
 
 #include <iostream>
 #include <fstream>
