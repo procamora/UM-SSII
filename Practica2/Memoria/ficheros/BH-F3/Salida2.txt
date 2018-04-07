@@ -1,0 +1,24 @@
+################## INICIO BC #################
+R2: IF Forma = Larga && Color = Amarillo THEN Fruta = Platano; Priority: 10 ; Use: False
+R7: IF Forma = Larga && Color = Verde THEN Fruta = Platano; Priority: 10 ; Use: False
+R8: IF ClaseFrutal = Emparrado && Color = Verde THEN Fruta = Sandia; Priority: 10 ; Use: True
+R9: IF ClaseFrutal = Emparrado && Superficie = Lisa && Color = Amarillo THEN Fruta = Melon; Priority: 10 ; Use: False
+R10: IF ClaseFrutal = Emparrado && Superficie = Rugosa && Color = Tostado THEN Fruta = Cantalupo; Priority: 10 ; Use: False
+R11: IF ClaseFrutal = Arbol && Color = Naranja && TipoSemilla = Hueso THEN Fruta = Albaricoque; Priority: 10 ; Use: False
+R12: IF ClaseFrutal = Arbol && Color = Naranja && TipoSemilla = Multiple THEN Fruta = Naranja; Priority: 10 ; Use: False
+R13: IF ClaseFrutal = Arbol && Color = Rojo && TipoSemilla = Hueso THEN Fruta = Cereza; Priority: 10 ; Use: False
+R14: IF ClaseFrutal = Arbol && Color = Rojo && TipoSemilla = Multiple THEN Fruta = Manzana; Priority: 10 ; Use: False
+R15: IF ClaseFrutal = Arbol && Color = Amarillo && TipoSemilla = Multiple THEN Fruta = Manzana; Priority: 10 ; Use: False
+R16: IF ClaseFrutal = Arbol && Color = Verde && TipoSemilla = Multiple THEN Fruta = Manzana; Priority: 10 ; Use: False
+R17: IF ClaseFrutal = Arbol && Color = Naranja && TipoSemilla = Hueso THEN Fruta = Melocoton; Priority: 10 ; Use: False
+R18: IF ClaseFrutal = Arbol && Color = Morado && TipoSemilla = Hueso THEN Fruta = Ciruela; Priority: 10 ; Use: False
+R1: IF NSemillas > 1 THEN TipoSemilla = Multiple; Priority: 0 ; Use: True
+R3: IF Forma = Redonda && Diametro >= 10 THEN ClaseFrutal = Emparrado; Priority: 0 ; Use: True
+R4: IF Forma = Ensanchada && Diametro >= 10 THEN ClaseFrutal = Emparrado; Priority: 0 ; Use: False
+R5: IF Forma = Redonda && Diametro < 10 THEN ClaseFrutal = Arbol; Priority: 0 ; Use: False
+R6: IF NSemillas = 1 THEN TipoSemilla = Hueso; Priority: 0 ; Use: False
+################### FIN BC ##################
+################## INICIO BH #################
+Forma = Redonda && NSemillas = 2 && Diametro = 11 && Color = Verde && TipoSemilla = Multiple && ClaseFrutal = Emparrado && Fruta = Sandia 
+################### FIN BH ##################
+El resultado objetivo es: Fruta = Sandia

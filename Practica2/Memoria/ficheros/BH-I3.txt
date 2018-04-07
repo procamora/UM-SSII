@@ -1,0 +1,4 @@
+3
+Precipitaciones = Fuertes
+Profundidad = 12
+Prediccion = Soleado
