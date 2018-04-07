@@ -1,0 +1,102 @@
+                                                                                                         
+ ███╗   ███╗ █████╗ ███╗   ██╗██╗   ██╗ █████╗ ██╗         ██████╗ ███████╗    ██╗   ██╗███████╗ ██████╗ 
+ ████╗ ████║██╔══██╗████╗  ██║██║   ██║██╔══██╗██║         ██╔══██╗██╔════╝    ██║   ██║██╔════╝██╔═══██╗
+ ██╔████╔██║███████║██╔██╗ ██║██║   ██║███████║██║         ██║  ██║█████╗      ██║   ██║███████╗██║   ██║
+ ██║╚██╔╝██║██╔══██║██║╚██╗██║██║   ██║██╔══██║██║         ██║  ██║██╔══╝      ██║   ██║╚════██║██║   ██║
+ ██║ ╚═╝ ██║██║  ██║██║ ╚████║╚██████╔╝██║  ██║███████╗    ██████╔╝███████╗    ╚██████╔╝███████║╚██████╔╝
+ ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝    ╚═════╝ ╚══════╝     ╚═════╝ ╚══════╝ ╚═════╝ 
+                                                                                                         
+
+
+Este programa ha sido compilado para Windows pero puede ser usado en Linux si es recompilado, se proporciona el fichero Makefile para poder compilarlo en ambos sistemas operativos facilmente.
+
+Para ejecutar el programa es necesario hacerlo por consola y pasarle como parametros 3 ficheros, fichero con BC, fichero de configuración y fichero con BH. Como resultado imprimira por pantalla si ha tenido exito encontrado el atributo objetivo o no y 2 ficheros que se llamaran Salida1.txt y Salida2.txt
+
+Ejemplo de ejecucion: UM-SSII.exe BC-I.txt Config-I.txt BH-I4.txt
+
+Donde:
+	- UM-SSII.exe: Es el binario del SBR.
+	- BC-I.txt: Es el fichero con la base de conocimiento, contiene el conjunto de reglas que codifican el cononimiento, la primera linea contiene el dominio de la aplicacion, la segunda linea el numero de reglas y las siguientes lineas continen las reglas que componen la BC.
+	- Config-I.txt: Es el fichero con la configuracion, contiene los tipos que tienen cada atributo, el atributo meta y las prioridades de reglas. La primera linea tiene la palabra reservada ATRIBUTOS, la siguiente linea contiene el numero de atributos, despues estan los atributos con la estructura: "Atributo Tipo {Valor}" Donde tipo sera "NU" para atributos numericos y "Nom" para atributos nominales, en los que habra que poner un conjunto de valores que tendra ese atributo. En la siguiente linea aparece la palabra reservada OBJETIVO, en la siguiente linea aparece el atributo objetivo, en la siguiente linea la palabra reservada PRIORIDAD-REGLAS, en la siguiente linea el numero de prioridades de reglas y las siguientes lineas seran las prioridades de esas reglas.
+	-BH-I4.txt: Contiene las base de hechos que entendemos como verdaderos. La primera linea contiene el numero de hechos que hay y las posteriores lineas los hechos.
+
+
+Un ejemplo de BC seria:
+IDENTIFICACION DE FRUTAS
+18
+R1: Si NSemillas > 1 Entonces TipoSemilla = Multiple
+R2: Si Forma = Larga y Color = Amarillo Entonces Fruta = Platano
+R3: Si Forma = Redonda y Diametro >= 10 Entonces ClaseFrutal = Emparrado
+R4: Si Forma = Ensanchada y Diametro >= 10 Entonces ClaseFrutal = Emparrado
+R5: Si Forma = Redonda y Diametro < 10 Entonces ClaseFrutal = Arbol
+R6: Si NSemillas = 1 Entonces TipoSemilla = Hueso
+R7: Si Forma = Larga y Color = Verde Entonces Fruta = Platano
+R8: Si ClaseFrutal = Emparrado y Color = Verde Entonces Fruta = Sandia
+R9: Si ClaseFrutal = Emparrado y Superficie = Lisa y Color = Amarillo Entonces Fruta = Melon
+R10: Si ClaseFrutal = Emparrado y Superficie = Rugosa y Color = Tostado Entonces Fruta = Cantalupo
+R11: Si ClaseFrutal = Arbol y Color = Naranja y TipoSemilla = Hueso Entonces Fruta = Albaricoque
+R12: Si ClaseFrutal = Arbol y Color = Naranja y TipoSemilla = Multiple Entonces Fruta = Naranja
+R13: Si ClaseFrutal = Arbol y Color = Rojo y TipoSemilla = Hueso Entonces Fruta = Cereza
+R14: Si ClaseFrutal = Arbol y Color = Rojo y TipoSemilla = Multiple Entonces Fruta = Manzana
+R15: Si ClaseFrutal = Arbol y Color = Amarillo y TipoSemilla = Multiple Entonces Fruta = Manzana
+R16: Si ClaseFrutal = Arbol y Color = Verde y TipoSemilla = Multiple Entonces Fruta = Manzana
+R17: Si ClaseFrutal = Arbol y Color = Naranja y TipoSemilla = Hueso Entonces Fruta = Melocoton
+R18: Si ClaseFrutal = Arbol y Color = Morado y TipoSemilla = Hueso Entonces Fruta = Ciruela
+
+
+Un ejemplo de Config seria:
+ATRIBUTOS
+8
+Forma Nom {Larga,Redonda,Ensanchada}
+Color Nom {Verde,Amarillo,Tostado,Naranja,Rojo,Morado}
+Fruta Nom {Platano,Sandia,Melon,Cantalupo,Albaricoque,Cereza,Manzana,Melocoton,Ciruela,Naranja}
+Diametro NU 
+ClaseFrutal Nom {Emparrado,Arbol}
+NSemillas NU 
+TipoSemilla Nom {Hueso,Multiple}
+Superficie Nom {Lisa,Rugosa}
+OBJETIVO
+Fruta
+PRIORIDADES-REGLAS
+18
+0
+10
+0
+0
+0
+0
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10
+10
+
+
+Un ejemplo de BH seria:
+4
+Diametro = 3
+Forma = Redonda
+NSemillas = 1
+Color = Rojo
+
+
+Una vez ejecutado el programa creara 2 ficheros en texto plano llamados Salida1.txt y Salida2.txt con las soluciones.
+
+El fichero Salida1.txt contiene:
+	- Todas las reglas de la BC en las que se ha añadido la prioridad que tiene esa regla y un booleano para indicar si ha sido usada esa regla que inicialmente estara a False.
+	- Atributo objetivo.
+	- BH con el contenido inicial.
+	- Lista de reglas que han sido usadas para obtener la solucion final.
+
+
+El fichero Salida2.txt contiene:
+	- Todas las reglas de la BC en las que se ha añadido la prioridad que tiene esa regla y un booleano para indicar si ha sido usada esa regla.
+	- BH con el contenido inicial mas los hechos sacados de aplicar reglas dinamicamente.
+	- Atributo objetivo con su valor como resultado de aplicar las reglas necesarias.
