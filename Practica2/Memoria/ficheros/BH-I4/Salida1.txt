@@ -36,9 +36,7 @@ R31: IF Cambio = Subiendo && Nivel = Alto && Lluvia = Ligera THEN Inundacion = S
 Objetivo -> Inundacion
 ########### FIN ATRIBUTO OBJETIVO ###########
 ################## INICIO BH #################
-Precipitaciones = Ninguna && Estacion = Humeda && Profundidad = 3 
+Precipitaciones = Ninguna && Estacion = Humeda 
 ################### FIN BH ##################
 El orden seguido ha sido: 
-	1: R18: IF Profundidad >= 3 && Profundidad <= 5 THEN Nivel = Normal; Priority: 10 ; Use: True
-	2: R14: IF Precipitaciones = Ninguna && Estacion = Humeda THEN Cambio = Ninguno; Priority: 0 ; Use: True
-	3: R24: IF Cambio = Ninguno && Nivel = Normal THEN Inundacion = No; Priority: 0 ; Use: True
+	1: R14: IF Precipitaciones = Ninguna && Estacion = Humeda THEN Cambio = Ninguno; Priority: 0 ; Use: True

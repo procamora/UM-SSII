@@ -100,3 +100,5 @@ El fichero Salida2.txt contiene:
 	- Todas las reglas de la BC en las que se ha añadido la prioridad que tiene esa regla y un booleano para indicar si ha sido usada esa regla.
 	- BH con el contenido inicial mas los hechos sacados de aplicar reglas dinamicamente.
 	- Atributo objetivo con su valor como resultado de aplicar las reglas necesarias.
+
+Contacto: pablojose.rocamora@um.es

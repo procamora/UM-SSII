@@ -428,7 +428,7 @@ Rule actualizar(Rule r, vector<Rule> &listBC) {
 /**
  * Motor de Inferencia con encaminamiento hacia delante
  */
-void motorInferencia(vector<Rule> *listBC, vector<Condition> *listBH, vector<Rule> *listMark) {
+bool motorInferencia(vector<Rule> *listBC, vector<Condition> *listBH, vector<Rule> *listMark) {
     vector<Rule> conjuntoConflicto = extraeCualquierRegla(*listBC);
 
     while (!contenida(configuration->objetive, *listBH) && noVacia(conjuntoConflicto)) {
@@ -441,9 +441,9 @@ void motorInferencia(vector<Rule> *listBC, vector<Condition> *listBH, vector<Rul
         }
     }
     if (contenida(configuration->objetive, *listBH))
-        cout << "EXITO!!" << endl;
+       return true;
     else
-        cout << "FRACASO :(" << endl;
+        return false;
 
 }
 
@@ -471,7 +471,7 @@ int main(int argc, char **argv) {
     readFileBH(bh, &listBH);
     printBH(listBH, &myfile);
 
-    motorInferencia(&listBC, &listBH, &listMark);
+    bool result = motorInferencia(&listBC, &listBH, &listMark);
     printMark(listMark, &myfile);
     myfile.close();
 
@@ -480,8 +480,15 @@ int main(int argc, char **argv) {
     printBH(listBH, &myfile);
 
     Rule r = listMark.back();
+    if(result){
+        cout << "EXITO!!" << endl;
     myfile << "El resultado objetivo es: " << r.consequence.name << " " << r.consequence.operador << " " << r.consequence.state << endl;
+    }
+    else{
+        cout << "FRACASO :(" << endl;
+        myfile << "El resultado objetivo no ha podido ser encontrado" << endl;
 
+    }
     myfile.close();
 
     return 0;

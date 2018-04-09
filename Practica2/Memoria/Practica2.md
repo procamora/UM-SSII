@@ -39,7 +39,6 @@ header-includes:
     - \lstset{framesep=4pt}
     - \lstset{numbers=left} # Posición de los números de línea (none, left, right).
     - \lstset{numberstyle=\tiny\ttfamily} # Estilo para los números de línea
-    - \lstset{postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}}}
     - \lstset{keywordstyle=\color{mimazul}} # estilo de las palabras clave
     - \lstset{stringstyle=\color{miverde}} # Estilo de las cadenas de texto
     - \lstset{commentstyle=\color{migris}} # Estilo de los comentarios
@@ -121,17 +120,40 @@ Conjunto conflicto: La equiparación nos retorna una lista de reglas validas par
 
 Tenemos 2 condiciones de parada:
 
- - Cuando en la BH aparezca el objetivo que buscamos, lo que significara que hemos resuelto el problema.
- - Cuando equiparar no retorna ninguna regla o todas las reglas que retornan ya han sido usadas, lo que significara que no podemos continuar y por tanto resolver el problema por falta de información.
+- Cuando en la BH aparezca el objetivo que buscamos, lo que significara que hemos resuelto el problema.
+- Cuando equiparar no retorna ninguna regla o todas las reglas que retornan ya han sido usadas, lo que significara que no podemos continuar y por tanto resolver el problema por falta de información.
 
 
 
 
-# Aplicación del SBR construido a las siguientes situaciones. Incluir y explicar el razonamiento seguido en la resolución de cada base de hechos (fichero Salida1.txt que se indica en el apartado e)) y la solución obtenida y que proporcionaremos al usuario del SBR (fichero Salida2.txt que se indica en el apartado e)). Además, para la Situación 2, explicar claramente todas las decisiones tomadas para la definición del fichero de configuración.
+# Aplicación del SBR construido a las siguientes situaciones. 
+Incluir y explicar el razonamiento seguido en la resolución de cada base de hechos (fichero Salida1.txt que se indica en el apartado e)) 
+y la solución obtenida y que proporcionaremos al usuario del SBR (fichero Salida2.txt que se indica en el apartado e)). 
+Además, para la Situación 2, explicar claramente todas las decisiones tomadas para la definición del fichero de configuración.
 
-Situación 1: Identificación de Frutas – Se proporcionan (recursos del Aula Virtual) la BC-F, Config-F, y cuatro bases de hechos (BH-F1, BH-F2, BH-F3 y BH-F4).
+## Situación 1: Identificación de Frutas – Se proporcionan (recursos del Aula Virtual) la BC-F, Config-F, y cuatro bases de hechos (BH-F1, BH-F2, BH-F3 y BH-F4).
+
+### BH-F1
+
+### BH-F2
+
+### BH-F3
+
+
+### BH-F4
+
 
 Situación 2: Detección de Inundaciones – Se proporciona BC-I (recursos del Aula Virtual). Para la aplicación, deben definirse el fichero de configuración y cuatro bases de hechos.
+
+### BH-I1
+
+### BH-I2
+
+### BH-I3
+
+### BH-I4
+
+
 
 Tanto las BH como las BC proporcionadas no podrán ser modificadas.
 
