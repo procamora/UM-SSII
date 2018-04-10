@@ -133,7 +133,83 @@ Además, para la Situación 2, explicar claramente todas las decisiones tomadas 
 
 ## Situación 1: Identificación de Frutas – Se proporcionan (recursos del Aula Virtual) la BC-F, Config-F, y cuatro bases de hechos (BH-F1, BH-F2, BH-F3 y BH-F4).
 
+Para la situación 1 tenemos la siguiente BC ya ordenada por criterio estático de orden de prioridad y en caso de empate por orden numérico ascendente
+
+```
+R2: IF Forma = Larga && Color = Amarillo THEN Fruta = Platano; Priority: 10 ; Use: False
+R7: IF Forma = Larga && Color = Verde THEN Fruta = Platano; Priority: 10 ; Use: False
+R8: IF ClaseFrutal = Emparrado && Color = Verde THEN Fruta = Sandia; Priority: 10 ; Use: False
+R9: IF ClaseFrutal = Emparrado && Superficie = Lisa && Color = Amarillo THEN Fruta = Melon; Priority: 10 ; Use: False
+R10: IF ClaseFrutal = Emparrado && Superficie = Rugosa && Color = Tostado THEN Fruta = Cantalupo; Priority: 10 ; Use: False
+R11: IF ClaseFrutal = Arbol && Color = Naranja && TipoSemilla = Hueso THEN Fruta = Albaricoque; Priority: 10 ; Use: False
+R12: IF ClaseFrutal = Arbol && Color = Naranja && TipoSemilla = Multiple THEN Fruta = Naranja; Priority: 10 ; Use: False
+R13: IF ClaseFrutal = Arbol && Color = Rojo && TipoSemilla = Hueso THEN Fruta = Cereza; Priority: 10 ; Use: False
+R14: IF ClaseFrutal = Arbol && Color = Rojo && TipoSemilla = Multiple THEN Fruta = Manzana; Priority: 10 ; Use: False
+R15: IF ClaseFrutal = Arbol && Color = Amarillo && TipoSemilla = Multiple THEN Fruta = Manzana; Priority: 10 ; Use: False
+R16: IF ClaseFrutal = Arbol && Color = Verde && TipoSemilla = Multiple THEN Fruta = Manzana; Priority: 10 ; Use: False
+R17: IF ClaseFrutal = Arbol && Color = Naranja && TipoSemilla = Hueso THEN Fruta = Melocoton; Priority: 10 ; Use: False
+R18: IF ClaseFrutal = Arbol && Color = Morado && TipoSemilla = Hueso THEN Fruta = Ciruela; Priority: 10 ; Use: False
+R1: IF NSemillas > 1 THEN TipoSemilla = Multiple; Priority: 0 ; Use: False
+R3: IF Forma = Redonda && Diametro >= 10 THEN ClaseFrutal = Emparrado; Priority: 0 ; Use: False
+R4: IF Forma = Ensanchada && Diametro >= 10 THEN ClaseFrutal = Emparrado; Priority: 0 ; Use: False
+R5: IF Forma = Redonda && Diametro < 10 THEN ClaseFrutal = Arbol; Priority: 0 ; Use: False
+R6: IF NSemillas = 1 THEN TipoSemilla = Hueso; Priority: 0 ; Use: False
+```
+
+Nuestro objetivo sera encontrar el atributo Fruta, por eso mismo todas las reglas con las que se obtiene una fruta tienen prioridad 10 y las reglas para obtener atributos intermedios tienen prioridad 0. Por tanto la condición de parada es Fruta en BH. Usaremos Encadenamiento hacia delante
+
 ### BH-F1
+
+Inicialmente tenemos la siguiente BH `diametro = 3 && Forma = Redonda && NSemillas = 1 && Color = Rojo `
+
+Las iteraciones del motor de inferencia serán:
+
+**Iteración 1**
+
+Conjunto Conflicto = {R5, R6}
+
+Resolver Conflicto: R5 
+
+BH = BH + {R5} // Aplicar R5 eb BH
+
+Marcada = {R5}
+
+Conjunto Conflicto = {~~R5~~, R6} //Marco R5 como usada en BC
+
+
+
+**Iteración 2**
+
+Resolver Conflicto: R6 
+
+BH = BH + {R6} // Aplicar R6 eb BH
+
+Marcada = {R5, R6}
+
+Conjunto Conflicto = {~~R5~~, ~~R6~~, R13} //Marco R6 como usada en BC
+
+
+
+**Iteración 3**
+
+Resolver Conflicto: R13 
+
+BH = BH + {R13} // Aplicar R13 eb BH
+
+Marcada = {R5, R6, R13}
+
+Conjunto Conflicto = {~~R5~~, ~~R6~~, ~~R13~~} //Marco R13 como usada en BC
+
+Condición de fin: Fruta en BH (FIN)
+
+Estado final de la BH: `Diametro = 3 && Forma = Redonda && NSemillas = 1 && Color = Rojo && ClaseFrutal = Arbol && TipoSemilla = Hueso && Fruta = Cereza`
+
+
+El resultado objetivo es: **Fruta = Cereza**
+
+
+
+
 
 ### BH-F2
 
@@ -163,10 +239,10 @@ Tanto las BH como las BC proporcionadas no podrán ser modificadas.
 
 La referencia:
 
-- 1: Usado para convertir un string en un int, ya que la funcion stoi de c++ parece que no esta implementada correctamente en MinGW
+- 1: Usado para convertir un string en un int, ya que la función stoi de c++ parece que no esta implementada correctamente en MinGW
 
 - : Usado para ver como partir un string a partir de un delimitador especifico
 
-- : Usado para convertir un string en un operador y realizar su respectiva operacion
+- : Usado para convertir un string en un operador y realizar su respectiva operación
 
-- : Usado para ver la forma mas correcta de hacer un return null de un struct cuando nunca deberia de ejecutarse, en c++ lo correcto seria enviar una excepcion
+- : Usado para ver la forma mas correcta de hacer un return null de un struct cuando nunca debería de ejecutarse, en c++ lo correcto seria enviar una excepción

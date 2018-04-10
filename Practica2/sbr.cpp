@@ -105,7 +105,7 @@ void printConfiguration(ofstream *myfile) {
     *myfile << "sizeAttributes: " << configuration->sizeAttributes << endl;
 
     for (Attributes attr : configuration->attributes) {
-        *myfile << "\t " << attr.name << " "; //FIXME CAMBIAR
+        *myfile << "\t " << attr.name << " ";
         if (attr.isNum)
             *myfile << CONF_NUM;
         else {
@@ -315,7 +315,7 @@ Attributes getAttributes(Condition c1) {
     for (Attributes attr : configuration->attributes)
         if (c1.name.compare(attr.name) == 0)
             return attr;
-    throw runtime_error("getAttributes no ha encontrado la condicion necesaria"); // FIXME CAMBIAR O DEJAR?
+    throw runtime_error("getAttributes no ha encontrado la condicion necesaria");
 }
 
 /**
@@ -425,6 +425,18 @@ Rule actualizar(Rule r, vector<Rule> &listBC) {
     throw runtime_error("actualizar no ha actualizado la regla");
 }
 
+//FIXME BORRAR
+void printConditions(vector<Condition> precondition) {
+    unsigned int cont = 0;
+    for (Condition condition : precondition) {
+        cout << condition.name << " " << condition.operador << " " << condition.state;
+        cont++;
+        if (cont != precondition.size())
+            cout << " && ";
+        else
+            cout << " ";
+    }
+}
 /**
  * Motor de Inferencia con encaminamiento hacia delante
  */
@@ -433,6 +445,17 @@ bool motorInferencia(vector<Rule> *listBC, vector<Condition> *listBH, vector<Rul
 
     while (!contenida(configuration->objetive, *listBH) && noVacia(conjuntoConflicto)) {
         conjuntoConflicto = equiparar(*listBC, *listBH);
+
+        for (auto rule : conjuntoConflicto) {
+            cout << "R" << rule.index << ": IF ";
+            printConditions(rule.precondition);
+            cout << "THEN " << rule.consequence.name << " " << rule.consequence.operador << " " << rule.consequence.state;
+            cout << "; Priority: " << rule.priority;
+            string uso = rule.use == true ? "True" : "False";
+            cout << " ; Use: " << uso << endl;
+        }
+        cout<<endl;
+
         if (noVacia(conjuntoConflicto)) {
             Rule r = resolver(conjuntoConflicto);
             aplicar(r, listBH);
@@ -441,7 +464,7 @@ bool motorInferencia(vector<Rule> *listBC, vector<Condition> *listBH, vector<Rul
         }
     }
     if (contenida(configuration->objetive, *listBH))
-       return true;
+        return true;
     else
         return false;
 
@@ -480,15 +503,15 @@ int main(int argc, char **argv) {
     printBH(listBH, &myfile);
 
     Rule r = listMark.back();
-    if(result){
+
+    if (result) {
         cout << "EXITO!!" << endl;
-    myfile << "El resultado objetivo es: " << r.consequence.name << " " << r.consequence.operador << " " << r.consequence.state << endl;
-    }
-    else{
+        myfile << "El resultado objetivo es: " << r.consequence.name << " " << r.consequence.operador << " " << r.consequence.state << endl;
+    } else {
         cout << "FRACASO :(" << endl;
         myfile << "El resultado objetivo no ha podido ser encontrado" << endl;
-
     }
+
     myfile.close();
 
     return 0;
