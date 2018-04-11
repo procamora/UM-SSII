@@ -156,67 +156,230 @@ R5: IF Forma = Redonda && Diametro < 10 THEN ClaseFrutal = Arbol; Priority: 0 ; 
 R6: IF NSemillas = 1 THEN TipoSemilla = Hueso; Priority: 0 ; Use: False
 ```
 
-Nuestro objetivo sera encontrar el atributo Fruta, por eso mismo todas las reglas con las que se obtiene una fruta tienen prioridad 10 y las reglas para obtener atributos intermedios tienen prioridad 0. Por tanto la condición de parada es Fruta en BH. Usaremos Encadenamiento hacia delante
+Nuestro objetivo sera encontrar el atributo Fruta, por eso mismo todas las reglas con las que se obtiene una fruta tienen prioridad 10 y las reglas para obtener atributos intermedios tienen prioridad 0. La condición de parada es Fruta en BH. Usaremos Encadenamiento hacia delante.
 
 ### BH-F1
 
-Inicialmente tenemos la siguiente BH `diametro = 3 && Forma = Redonda && NSemillas = 1 && Color = Rojo `
+Inicialmente tenemos la siguiente BH:
+
+```
+Diametro = 3 && Forma = Redonda && NSemillas = 1 && Color = Rojo 
+```
 
 Las iteraciones del motor de inferencia serán:
 
 **Iteración 1**
 
-Conjunto Conflicto = {R5, R6}
-
-Resolver Conflicto: R5 
-
-BH = BH + {R5} // Aplicar R5 eb BH
-
-Marcada = {R5}
-
-Conjunto Conflicto = {~~R5~~, R6} //Marco R5 como usada en BC
+- Conjunto Conflicto = {R5, R6}
+- Resolver Conflicto: R5 
+- BH = BH + {R5} // Aplicar R5 en BH
+- Marcada = {R5}
+- Conjunto Conflicto = {~~R5~~, R6} //Marco R5 como usada en BC
 
 
 
 **Iteración 2**
 
-Resolver Conflicto: R6 
-
-BH = BH + {R6} // Aplicar R6 eb BH
-
-Marcada = {R5, R6}
-
-Conjunto Conflicto = {~~R5~~, ~~R6~~, R13} //Marco R6 como usada en BC
+- Resolver Conflicto: R6 
+- BH = BH + {R6} // Aplicar R6 en BH
+- Marcada = {R5, R6}
+- Conjunto Conflicto = {~~R5~~, ~~R6~~, R13} //Marco R6 como usada en BC
 
 
 
 **Iteración 3**
 
-Resolver Conflicto: R13 
+- Resolver Conflicto: R13 
+- BH = BH + {R13} // Aplicar R13 en BH
+- Marcada = {R5, R6, R13}
+- Conjunto Conflicto = {~~R5~~, ~~R6~~, ~~R13~~} //Marco R13 como usada en BC
+- Condición de fin: Fruta en BH (FIN)
 
-BH = BH + {R13} // Aplicar R13 eb BH
+Estado final de la BH: 
 
-Marcada = {R5, R6, R13}
+```
+Diametro = 3 && Forma = Redonda && NSemillas = 1 && Color = Rojo && ClaseFrutal = Arbol && TipoSemilla = Hueso && Fruta = Cereza
+```
 
-Conjunto Conflicto = {~~R5~~, ~~R6~~, ~~R13~~} //Marco R13 como usada en BC
 
-Condición de fin: Fruta en BH (FIN)
+El orden de las reglas usadas seria:
 
-Estado final de la BH: `Diametro = 3 && Forma = Redonda && NSemillas = 1 && Color = Rojo && ClaseFrutal = Arbol && TipoSemilla = Hueso && Fruta = Cereza`
-
+```
+R5: IF Forma = Redonda && Diametro < 10 THEN ClaseFrutal = Arbol; Priority: 0 ; Use: True
+R6: IF NSemillas = 1 THEN TipoSemilla = Hueso; Priority: 0 ; Use: True
+R13: IF ClaseFrutal = Arbol && Color = Rojo && TipoSemilla = Hueso THEN Fruta = Cereza; Priority: 10 ; Use: True
+```
 
 El resultado objetivo es: **Fruta = Cereza**
 
 
-
-
-
 ### BH-F2
+
+Inicialmente tenemos la siguiente BH:
+
+```
+Diametro = 8 && Forma = Redonda && NSemillas = 10 && Color = Verde 
+```
+
+Las iteraciones del motor de inferencia serán:
+
+**Iteración 1**
+
+- Conjunto Conflicto = {R1, R5}
+- Resolver Conflicto: R1
+- BH = BH + {R1} // Aplicar R1 en BH
+- Marcada = {R1}
+- Conjunto Conflicto = {~~R1~~, R5} //Marco R1 como usada en BC
+
+
+
+**Iteración 2**
+
+- Resolver Conflicto: R5 
+- BH = BH + {R5} // Aplicar R5 en BH
+- Marcada = {R1, R5}
+- Conjunto Conflicto = {~~R1~~, ~~R5~~, R16} //Marco R5 como usada en BC
+
+
+
+**Iteración 3**
+
+- Resolver Conflicto: R16
+- BH = BH + {R16} // Aplicar R16 en BH
+- Marcada = {R1, R5, R16}
+- Conjunto Conflicto = {~~R1~~, ~~R5~~, ~~R16~~} //Marco R16 como usada en BC
+- Condición de fin: Fruta en BH (FIN)
+
+Estado final de la BH: 
+
+```
+Diametro = 8 && Forma = Redonda && NSemillas = 10 && Color = Verde && TipoSemilla = Multiple && ClaseFrutal = Arbol && Fruta = Manzana 
+```
+
+
+El orden de las reglas usadas seria:
+
+```
+R1: IF NSemillas > 1 THEN TipoSemilla = Multiple; Priority: 0 ; Use: True
+R5: IF Forma = Redonda && Diametro < 10 THEN ClaseFrutal = Arbol; Priority: 0 ; Use: True
+R16: IF ClaseFrutal = Arbol && Color = Verde && TipoSemilla = Multiple THEN Fruta = Manzana; Priority: 10 ; Use: True
+```
+
+El resultado objetivo es: **Fruta = Manzana**
+
 
 ### BH-F3
 
+Inicialmente tenemos la siguiente BH:
+
+```
+Forma = Redonda && NSemillas = 2 && Diametro = 11 && Color = Verde 
+```
+
+Las iteraciones del motor de inferencia serán:
+
+**Iteración 1**
+
+- Conjunto Conflicto = {R1, R3}
+- Resolver Conflicto: R1
+- BH = BH + {R1} // Aplicar R1 en BH
+- Marcada = {R1}
+- Conjunto Conflicto = {~~R1~~, R3} //Marco R1 como usada en BC
+
+
+
+**Iteración 2**
+
+- Resolver Conflicto: R3
+- BH = BH + {R3} // Aplicar R3 en BH
+- Marcada = {R1, R3}
+- Conjunto Conflicto = {~~R1~~, ~~R3~~, R8} //Marco R3 como usada en BC
+
+
+
+**Iteración 3**
+
+- Resolver Conflicto: R8
+- BH = BH + {R8} // Aplicar R8 en BH
+- Marcada = {R1, R3, R8}
+- Conjunto Conflicto = {~~R1~~, ~~R3~~, ~~R8~~} //Marco R8 como usada en BC
+- Condición de fin: Fruta en BH (FIN)
+
+Estado final de la BH: 
+
+```
+Forma = Redonda && NSemillas = 2 && Diametro = 11 && Color = Verde && TipoSemilla = Multiple && ClaseFrutal = Emparrado && Fruta = Sandia 
+```
+
+
+El orden de las reglas usadas seria:
+
+```
+R1: IF NSemillas > 1 THEN TipoSemilla = Multiple; Priority: 0 ; Use: True
+R3: IF Forma = Redonda && Diametro >= 10 THEN ClaseFrutal = Emparrado; Priority: 0 ; Use: True
+R8: IF ClaseFrutal = Emparrado && Color = Verde THEN Fruta = Sandia; Priority: 10 ; Use: True
+```
+
+El resultado objetivo es: **Fruta = Sandia**
+
+
 
 ### BH-F4
+
+
+Inicialmente tenemos la siguiente BH:
+
+```
+ClaseFrutal = Arbol && Color = Naranja && Forma = Redonda && NSemillas = 1 && Diametro = 6 
+```
+
+Las iteraciones del motor de inferencia serán:
+
+**Iteración 1**
+
+- Conjunto Conflicto = {R5, R6}
+- Resolver Conflicto: R5
+- BH = BH + {R5} // Aplicar R5 en BH
+- Marcada = {R5}
+- Conjunto Conflicto = {~~R5~~, R6} //Marco R5 como usada en BC
+
+
+
+**Iteración 2**
+
+- Resolver Conflicto: R6
+- BH = BH + {R6} // Aplicar R6 en BH
+- Marcada = {R5, R6}
+- Conjunto Conflicto = {~~R5~~, ~~R6~~, R11, R17} //Marco R6 como usada en BC
+
+
+
+**Iteración 3**
+
+- Resolver Conflicto: R11
+- BH = BH + {R11} // Aplicar R11 en BH
+- Marcada = {R5, R6, R11}
+- Conjunto Conflicto = {~~R5~~, ~~R6~~, ~~R11~~, R17} //Marco R11 como usada en BC
+- Condición de fin: Fruta en BH (FIN)
+
+Estado final de la BH: 
+
+```
+ClaseFrutal = Arbol && Color = Naranja && Forma = Redonda && NSemillas = 1 && Diametro = 6 && ClaseFrutal = Arbol && TipoSemilla = Hueso && Fruta = Albaricoque 
+```
+
+
+El orden de las reglas usadas seria:
+
+```
+R5: IF Forma = Redonda && Diametro < 10 THEN ClaseFrutal = Arbol; Priority: 0 ; Use: True
+R6: IF NSemillas = 1 THEN TipoSemilla = Hueso; Priority: 0 ; Use: True
+R11: IF ClaseFrutal = Arbol && Color = Naranja && TipoSemilla = Hueso THEN Fruta = Albaricoque; Priority: 10 ; Use: True
+```
+
+El resultado objetivo es: **Fruta = Albaricoque**
+
+> En esta situación cabe destacar que la regla 17 indicaba que el atributo *Fruta = Melocoton*, por lo que si hubiese tenido mayor prioridad que la regla 11 el resultado habría sido *Fruta = Melocoton*
 
 
 Situación 2: Detección de Inundaciones – Se proporciona BC-I (recursos del Aula Virtual). Para la aplicación, deben definirse el fichero de configuración y cuatro bases de hechos.
