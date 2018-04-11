@@ -454,7 +454,7 @@ bool motorInferencia(vector<Rule> *listBC, vector<Condition> *listBH, vector<Rul
             string uso = rule.use == true ? "True" : "False";
             cout << " ; Use: " << uso << endl;
         }
-        cout<<endl;
+        cout << endl;
 
         if (noVacia(conjuntoConflicto)) {
             Rule r = resolver(conjuntoConflicto);
@@ -471,6 +471,10 @@ bool motorInferencia(vector<Rule> *listBC, vector<Condition> *listBH, vector<Rul
 }
 
 int main(int argc, char **argv) {
+    if (argc != 4) {
+        cerr << "El programa necesita 3 argumentos: BC, Config y BH." << endl;
+        return 0;
+    }
 
     const char *bc = argv[1];
     const char *conf = argv[2];
