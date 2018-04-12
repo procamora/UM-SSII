@@ -1,4 +1,0 @@
-3
-Precipitaciones = Ninguna
-Estacion = Humeda
-Profundidad = 3

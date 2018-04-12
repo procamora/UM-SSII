@@ -1,4 +1,0 @@
-3
-Precipitaciones = Fuertes
-Profundidad = 4
-Prediccion = Nuboso

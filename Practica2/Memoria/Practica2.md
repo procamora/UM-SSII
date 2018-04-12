@@ -4,21 +4,19 @@ subtitle: Practica 2
 author:
     - Pablo José Rocamora Zamora G3.2
 date: Convocatoria de Junio
-header: dsad
-footer: So is this
 geometry:
-    - top=1in
-    - margin=1in
-    - bottom=1in
-    - right=1in
-    - left=1in
+    - top=2.54cm
+    - margin=2.54cm
+    - bottom=2.54cm
+    - right=2.54cm
+    - left=2.54cm
 toc: true
 toc-depth: 1
 fontsize: 11pt # puede ser 10, 11 o 12
 fontfamily: lmodern
 documentclass: scrartcl
 lang: es
-bibliography: bibliografia.bib
+bibliography: bibliografia.bib # necesita pandoc argumento: --filter=pandoc-citeproc
 csl: estilo.csl
 link-citations: true
 lof: false # Añadir lista de figuras
@@ -58,13 +56,6 @@ header-includes:
 --- 
 
 
-acercándonos a la solución final [@split].
-
-acercándonos a la solución final [@regex].
-
-acercándonos a la solución final [@sort].
-
-
 # Explicación breve y completa de la técnica Sistema Basado en Reglas (SBR).
 
 ## Introducción
@@ -73,6 +64,7 @@ Los sistemas basados en reglas (SBR) se inspiran en los sistemas de deducción e
 
 - Utilizan la estructura de inferencia _modus ponens_ para obtener conclusiones lógicas.
 - Interpretan la primera premisa de un _modus ponens_ como una regla de la forma **IF condición THEN acción**.
+
 
 ## Componentes Básicos
 
@@ -91,6 +83,21 @@ Hay dos formas de razonar un MI:
 - Encadenamiento hacia delante o dirigido por datos, se seleccionan las reglas cuyos antecedentes se verifican, dado el contenido de la BH. La particularidad de esta etapa es la equiparación, donde se seleccionan las reglas cuyos antecedentes se verifican, dado el contenido de la BH.
 - Encadenamiento hacia atrás o dirigido por metas, se especifica una meta objetivo y se trata de determinar su la meta se verifica o no, teniendo en cuenta el contenido de la BH.
 
+
+### Ejemplo:
+
+Teniendo estas 2 reglas:
+
+```
+R1: Si A Entonces B
+R2: Si B Entonces C
+```
+
+Si tengo *A* a través de la *R1* podemos inferir *B*, y teniendo *B* a través de *R2* podemos inferir *C*. Por tanto teniendo inicialmente *A* acabamos obteniendo: *A*, *B* y *C*
+
+
+
+
 ## Técnicas de Equiparación
 
 La equiparación del antecedente de las reglas con el estado de la BH no siempre es trivial, puede no describir situaciones particulares sino generales.
@@ -107,7 +114,7 @@ Un método de resolución de conflictos selecciona, a partir del conjunto confli
 
 
 
-# Explicación clara de los elementos siguientes del motor de inferencia diseñado (dado que el diseño es anterior a la implementación, no se debe hacer mención a aspectos de código):
+# Explicación clara de los elementos siguientes del motor de inferencia diseñado.
 
 ## Equiparación-Conjunto conflicto
 
@@ -127,11 +134,8 @@ Tenemos 2 condiciones de parada:
 
 
 # Aplicación del SBR construido a las siguientes situaciones. 
-Incluir y explicar el razonamiento seguido en la resolución de cada base de hechos (fichero Salida1.txt que se indica en el apartado e)) 
-y la solución obtenida y que proporcionaremos al usuario del SBR (fichero Salida2.txt que se indica en el apartado e)). 
-Además, para la Situación 2, explicar claramente todas las decisiones tomadas para la definición del fichero de configuración.
 
-## Situación 1: Identificación de Frutas – Se proporcionan (recursos del Aula Virtual) la BC-F, Config-F, y cuatro bases de hechos (BH-F1, BH-F2, BH-F3 y BH-F4).
+## Situación 1: Identificación de Frutas.
 
 Para la situación 1 tenemos la siguiente BC ya ordenada por criterio estático de orden de prioridad y en caso de empate por orden numérico ascendente
 
@@ -156,7 +160,7 @@ R5: IF Forma = Redonda && Diametro < 10 THEN ClaseFrutal = Arbol; Priority: 0 ; 
 R6: IF NSemillas = 1 THEN TipoSemilla = Hueso; Priority: 0 ; Use: False
 ```
 
-Nuestro objetivo sera encontrar el atributo Fruta, por eso mismo todas las reglas con las que se obtiene una fruta tienen prioridad 10 y las reglas para obtener atributos intermedios tienen prioridad 0. La condición de parada es Fruta en BH. Usaremos Encadenamiento hacia delante.
+Nuestro objetivo sera encontrar el atributo *Fruta*, por eso mismo todas las reglas con las que se obtiene una *fruta* tienen prioridad 10 y las reglas para obtener atributos intermedios tienen prioridad 0. La condición de parada es Fruta en BH o Conjunto Conflicto vacío. Usaremos Encadenamiento hacia delante para llegar a la solución.
 
 ### BH-F1
 
@@ -168,7 +172,7 @@ Diametro = 3 && Forma = Redonda && NSemillas = 1 && Color = Rojo
 
 Las iteraciones del motor de inferencia serán:
 
-**Iteración 1**
+**Iteración 1** (Obtendré: ClaseFrutal = Arbol)
 
 - Conjunto Conflicto = {R5, R6}
 - Resolver Conflicto: R5 
@@ -178,7 +182,7 @@ Las iteraciones del motor de inferencia serán:
 
 
 
-**Iteración 2**
+**Iteración 2** (Obtendré: TipoSemilla = Hueso)
 
 - Resolver Conflicto: R6 
 - BH = BH + {R6} // Aplicar R6 en BH
@@ -187,7 +191,7 @@ Las iteraciones del motor de inferencia serán:
 
 
 
-**Iteración 3**
+**Iteración 3** (Obtendré: Fruta = Cereza)
 
 - Resolver Conflicto: R13 
 - BH = BH + {R13} // Aplicar R13 en BH
@@ -223,7 +227,7 @@ Diametro = 8 && Forma = Redonda && NSemillas = 10 && Color = Verde
 
 Las iteraciones del motor de inferencia serán:
 
-**Iteración 1**
+**Iteración 1** (Obtendré: TipoSemilla = Multiple)
 
 - Conjunto Conflicto = {R1, R5}
 - Resolver Conflicto: R1
@@ -233,7 +237,7 @@ Las iteraciones del motor de inferencia serán:
 
 
 
-**Iteración 2**
+**Iteración 2** (Obtendré: ClaseFrutal = Arbol)
 
 - Resolver Conflicto: R5 
 - BH = BH + {R5} // Aplicar R5 en BH
@@ -242,7 +246,7 @@ Las iteraciones del motor de inferencia serán:
 
 
 
-**Iteración 3**
+**Iteración 3** (Obtendré: Fruta = Manzana)
 
 - Resolver Conflicto: R16
 - BH = BH + {R16} // Aplicar R16 en BH
@@ -278,7 +282,7 @@ Forma = Redonda && NSemillas = 2 && Diametro = 11 && Color = Verde
 
 Las iteraciones del motor de inferencia serán:
 
-**Iteración 1**
+**Iteración 1** (Obtendré: TipoSemilla = Multiple)
 
 - Conjunto Conflicto = {R1, R3}
 - Resolver Conflicto: R1
@@ -288,7 +292,7 @@ Las iteraciones del motor de inferencia serán:
 
 
 
-**Iteración 2**
+**Iteración 2** (Obtendré: ClaseFrutal = Emparrado)
 
 - Resolver Conflicto: R3
 - BH = BH + {R3} // Aplicar R3 en BH
@@ -297,7 +301,7 @@ Las iteraciones del motor de inferencia serán:
 
 
 
-**Iteración 3**
+**Iteración 3** (Obtendré: Fruta = Sandia)
 
 - Resolver Conflicto: R8
 - BH = BH + {R8} // Aplicar R8 en BH
@@ -335,7 +339,7 @@ ClaseFrutal = Arbol && Color = Naranja && Forma = Redonda && NSemillas = 1 && Di
 
 Las iteraciones del motor de inferencia serán:
 
-**Iteración 1**
+**Iteración 1** (Obtendré: ClaseFrutal = Arbol)
 
 - Conjunto Conflicto = {R5, R6}
 - Resolver Conflicto: R5
@@ -345,7 +349,7 @@ Las iteraciones del motor de inferencia serán:
 
 
 
-**Iteración 2**
+**Iteración 2** (Obtendré: TipoSemilla = Hueso)
 
 - Resolver Conflicto: R6
 - BH = BH + {R6} // Aplicar R6 en BH
@@ -354,7 +358,7 @@ Las iteraciones del motor de inferencia serán:
 
 
 
-**Iteración 3**
+**Iteración 3** (Obtendré: Fruta = Albaricoque)
 
 - Resolver Conflicto: R11
 - BH = BH + {R11} // Aplicar R11 en BH
@@ -382,30 +386,299 @@ El resultado objetivo es: **Fruta = Albaricoque**
 > En esta situación cabe destacar que la regla 17 indicaba que el atributo *Fruta = Melocoton*, por lo que si hubiese tenido mayor prioridad que la regla 11 el resultado habría sido *Fruta = Melocoton*
 
 
-Situación 2: Detección de Inundaciones – Se proporciona BC-I (recursos del Aula Virtual). Para la aplicación, deben definirse el fichero de configuración y cuatro bases de hechos.
+## Situación 2: Detección de Inundaciones.
+
+Para la situación 2 tenemos la siguiente BC ya ordenada por criterio estático de orden de prioridad y en caso de empate por orden numérico ascendente
+
+```
+R23: IF Nivel = Bajo THEN Inundacion = No; Priority: 10 ; Use: False
+R24: IF Cambio = Ninguno && Nivel = Normal THEN Inundacion = No; Priority: 10 ; Use: False
+R25: IF Cambio = Ninguno && Nivel = Bajo THEN Inundacion = No; Priority: 10 ; Use: False
+R26: IF Cambio = Subiendo && Nivel = Normal THEN Inundacion = No; Priority: 10 ; Use: False
+R27: IF Cambio = Subiendo && Nivel = Bajo THEN Inundacion = No; Priority: 10 ; Use: False
+R28: IF Cambio = Subiendo && Nivel = Normal && Lluvia = Fuerte THEN Inundacion = Si; Priority: 10 ; Use: False
+R29: IF Cambio = Subiendo && Nivel = Normal && Lluvia = Ligera THEN Inundacion = No; Priority: 10 ; Use: False
+R30: IF Cambio = Subiendo && Nivel = Alto && Lluvia = Ninguna THEN Inundacion = Si; Priority: 10 ; Use: False
+R31: IF Cambio = Subiendo && Nivel = Alto && Lluvia = Ligera THEN Inundacion = Si; Priority: 10 ; Use: False
+R32: IF Cambio = Subiendo && Nivel = Alto && Lluvia = Fuerte THEN Inundacion = Si; Priority: 10 ; Use: False
+R1: IF Mes = Junio THEN Estacion = Seca; Priority: 0 ; Use: False
+R2: IF Mes = Julio THEN Estacion = Seca; Priority: 0 ; Use: False
+R3: IF Mes = Agosto THEN Estacion = Seca; Priority: 0 ; Use: False
+R4: IF Mes = Septiembre THEN Estacion = Humeda; Priority: 0 ; Use: False
+R5: IF Mes = Octubre THEN Estacion = Humeda; Priority: 0 ; Use: False
+R6: IF Mes = Noviembre THEN Estacion = Humeda; Priority: 0 ; Use: False
+R7: IF Mes = Diciembre THEN Estacion = Humeda; Priority: 0 ; Use: False
+R8: IF Mes = Enero THEN Estacion = Humeda; Priority: 0 ; Use: False
+R9: IF Mes = Febrero THEN Estacion = Humeda; Priority: 0 ; Use: False
+R10: IF Mes = Marzo THEN Estacion = Humeda; Priority: 0 ; Use: False
+R11: IF Mes = Abril THEN Estacion = Humeda; Priority: 0 ; Use: False
+R12: IF Mes = Mayo THEN Estacion = Humeda; Priority: 0 ; Use: False
+R13: IF Precipitaciones = Ninguna && Estacion = Seca THEN Cambio = Bajando; Priority: 0 ; Use: False
+R14: IF Precipitaciones = Ninguna && Estacion = Humeda THEN Cambio = Ninguno; Priority: 0 ; Use: False
+R15: IF Precipitaciones = Ligera THEN Cambio = Ninguno; Priority: 0 ; Use: False
+R16: IF Precipitaciones = Fuertes THEN Cambio = Subiendo; Priority: 0 ; Use: False
+R17: IF Profundidad < 3 THEN Nivel = Bajo; Priority: 0 ; Use: False
+R18: IF Profundidad >= 3 && Profundidad <= 5 THEN Nivel = Normal; Priority: 0 ; Use: False
+R19: IF Profundidad > 5 THEN Nivel = Alto; Priority: 0 ; Use: False
+R20: IF Prediccion = Soleado THEN Lluvia = Ninguna; Priority: 0 ; Use: False
+R21: IF Prediccion = Nuboso THEN Lluvia = Ligera; Priority: 0 ; Use: False
+R22: IF Prediccion = Tormenta THEN Lluvia = Fuerte; Priority: 0 ; Use: False
+```
+
+Para crear el fichero de configuración he tenido que observar inicialmente la cantidad de atributos que había, si eran numéricos o nominales y en caso de ser nominales los posibles valores que había en la BC. Posteriormente he tenido que especificar cual es el atributo objetivo, ese dato lo he sacado del dominio de la aplicación, que se llama *Detección de inundaciones*, y por ultimo había que asignar prioridades a las reglas y como nuestro objetivo sera encontrar el atributo *Inundacion*, todas las reglas con las que se obtiene *Inundacion* tienen prioridad 10 y las reglas para obtener atributos intermedios tienen prioridad 0. La condición de parada es *Inundacion* en BH o Conjunto Conflicto vacío. Usaremos Encadenamiento hacia delante para llegar a la solución.
+
+Para crear las siguientes 4 BH he usado encadenamiento hacia detrás, especificaba la meta objetivo e iba calculando los consecuentes necesarios para llegar a ese resultado y esos consecuentes los guardaba en la BH.
 
 ### BH-I1
 
+Inicialmente tenemos la siguiente BH:
+
+```
+Mes = Septiembre && Prediccion = Tormenta && Precipitaciones = Fuertes && Profundidad = 10 
+```
+
+Las iteraciones del motor de inferencia serán:
+
+**Iteración 1** (Obtendré: Estacion = Humeda)
+
+- Conjunto Conflicto = {R4, R16, R19, R22}
+- Resolver Conflicto: R4
+- BH = BH + {R4} // Aplicar R4 en BH
+- Marcada = {R4}
+- Conjunto Conflicto = {~~R4~~, R16, R19, R22} //Marco R4 como usada en BC
+
+
+**Iteración 2** (Obtendré: Cambio = Subiendo)
+
+- Resolver Conflicto: R16
+- BH = BH + {R16} // Aplicar R16 en BH
+- Marcada = {R4, R16}
+- Conjunto Conflicto = {~~R4~~, ~~R16~~, R19, R22} //Marco R16 como usada en BC
+
+
+**Iteración 3** (Obtendré: Nivel = Alto)
+
+- Resolver Conflicto: R19
+- BH = BH + {R19} // Aplicar R19 en BH
+- Marcada = {R4, R16, R19}
+- Conjunto Conflicto = {~~R4~~, ~~R16~~, ~~R19~~, R22} //Marco R19 como usada en BC
+
+
+**Iteración 4** (Obtendré: Lluvia = Fuerte)
+
+- Resolver Conflicto: R22
+- BH = BH + {R22} // Aplicar R22 en BH
+- Marcada = {R4, R16, R19, R22}
+- Conjunto Conflicto = {~~R4~~, ~~R16~~, ~~R19~~, ~~R22~~, R32} //Marco R22 como usada en BC
+
+
+**Iteración 5** (Obtendré: Inundacion = Si)
+
+- Resolver Conflicto: R32
+- BH = BH + {R32} // Aplicar R32 en BH
+- Marcada = {R4, R16, R19, R22, R32}
+- Conjunto Conflicto = {~~R4~~, ~~R16~~, ~~R19~~, ~~R22~~, ~~R32~~} //Marco R32 como usada en BC
+- Condición de fin: Inundacion en BH (FIN)
+
+Estado final de la BH: 
+
+```
+Mes = Septiembre && Prediccion = Tormenta && Precipitaciones = Fuertes && Profundidad = 10 && Estacion = Humeda && Cambio = Subiendo && Nivel = Alto && Lluvia = Fuerte && Inundacion = Si 
+```
+
+
+El orden de las reglas usadas seria:
+
+```
+R4: IF Mes = Septiembre THEN Estacion = Humeda; Priority: 0 ; Use: True
+R16: IF Precipitaciones = Fuertes THEN Cambio = Subiendo; Priority: 0 ; Use: True
+R19: IF Profundidad > 5 THEN Nivel = Alto; Priority: 0 ; Use: True
+R22: IF Prediccion = Tormenta THEN Lluvia = Fuerte; Priority: 0 ; Use: True
+R32: IF Cambio = Subiendo && Nivel = Alto && Lluvia = Fuerte THEN Inundacion = Si; Priority: 10 ; Use: True
+```
+
+El resultado objetivo es: **Inundacion = Si**
+
+
+
 ### BH-I2
+
+
+Inicialmente tenemos la siguiente BH:
+
+```
+Precipitaciones = Fuertes && Profundidad = 4 && Prediccion = Nuboso 
+```
+
+Las iteraciones del motor de inferencia serán:
+
+**Iteración 1** (Obtendré: Cambio = Subiendo)
+
+- Conjunto Conflicto = {R16, R18, R21}
+- Resolver Conflicto: R16
+- BH = BH + {R16} // Aplicar R16 en BH
+- Marcada = {R16}
+- Conjunto Conflicto = {~~R16~~, R18, R21} //Marco R16 como usada en BC
+
+
+**Iteración 2** (Obtendré: Nivel = Normal)
+
+- Resolver Conflicto: R18
+- BH = BH + {R18} // Aplicar R18 en BH
+- Marcada = {R16, R18}
+- Conjunto Conflicto = {~~R16~~, ~~R18~~, R26, R21} //Marco R18 como usada en BC
+
+> Al resolver R18 obtengo la precondición que le faltaba a la regla R26 para poder resolverla y al tener mayor prioridad que R21, R26 se ejecutara antes dando la solución del problema.
+
+
+**Iteración 3** (Obtendré: Inundacion = No)
+
+- Resolver Conflicto: R26
+- BH = BH + {R26} // Aplicar R26 en BH
+- Marcada = {R16, R18, R26}
+- Conjunto Conflicto = {~~R16~~, ~~R18~~, ~~R26~~, R21} //Marco R26 como usada en BC
+
+- Condición de fin: Inundacion en BH (FIN)
+
+Estado final de la BH: 
+
+```
+Precipitaciones = Fuertes && Profundidad = 4 && Prediccion = Nuboso && Cambio = Subiendo && Nivel = Normal && Inundacion = No 
+```
+
+
+El orden de las reglas usadas seria:
+
+```
+R16: IF Precipitaciones = Fuertes THEN Cambio = Subiendo; Priority: 0 ; Use: True
+R18: IF Profundidad >= 3 && Profundidad <= 5 THEN Nivel = Normal; Priority: 0 ; Use: True
+R26: IF Cambio = Subiendo && Nivel = Normal THEN Inundacion = No; Priority: 10 ; Use: True
+```
+
+El resultado objetivo es: **Inundacion = No**
+
+
 
 ### BH-I3
 
+
+Inicialmente tenemos la siguiente BH:
+
+```
+Precipitaciones = Fuertes && Profundidad = 12 && Prediccion = Soleado 
+```
+
+Las iteraciones del motor de inferencia serán:
+
+**Iteración 1** (Obtendré: Cambio = Subiendo)
+
+- Conjunto Conflicto = {R16, R19, R20}
+- Resolver Conflicto: R16
+- BH = BH + {R16} // Aplicar R16 en BH
+- Marcada = {R16}
+- Conjunto Conflicto = {~~R16~~, R19, R20} //Marco R16 como usada en BC
+
+
+**Iteración 2** (Obtendré: Nivel = Alto)
+
+- Resolver Conflicto: R19
+- BH = BH + {R19} // Aplicar R19 en BH
+- Marcada = {R19}
+- Conjunto Conflicto = {~~R16~~, ~~R19~~, R20} //Marco R19 como usada en BC
+
+
+**Iteración 3** (Obtendré: Lluvia = Ninguna)
+
+- Resolver Conflicto: R20
+- BH = BH + {R20} // Aplicar R20 en BH
+- Marcada = {R20}
+- Conjunto Conflicto = {~~R16~~, ~~R19~~, ~~R20~~, R30} //Marco R20 como usada en BC
+
+
+**Iteración 3** (Obtendré: Inundacion = Si)
+
+- Resolver Conflicto: R30
+- BH = BH + {R30} // Aplicar R30 en BH
+- Marcada = {R30}
+- Conjunto Conflicto = {~~R16~~, ~~R19~~, ~~R20~~, ~~R30~~} //Marco R30 como usada en BC
+- Condición de fin: Inundacion en BH (FIN)
+
+Estado final de la BH: 
+
+```
+Precipitaciones = Fuertes && Profundidad = 12 && Prediccion = Soleado && Cambio = Subiendo && Nivel = Alto && Lluvia = Ninguna && Inundacion = Si 
+```
+
+
+El orden de las reglas usadas seria:
+
+```
+R16: IF Precipitaciones = Fuertes THEN Cambio = Subiendo; Priority: 0 ; Use: True
+R19: IF Profundidad > 5 THEN Nivel = Alto; Priority: 0 ; Use: True
+R20: IF Prediccion = Soleado THEN Lluvia = Ninguna; Priority: 0 ; Use: True
+R30: IF Cambio = Subiendo && Nivel = Alto && Lluvia = Ninguna THEN Inundacion = Si; Priority: 10 ; Use: True
+
+```
+
+
+El resultado objetivo es: **Inundacion = Si**
+
+
+
 ### BH-I4
 
+Inicialmente tenemos la siguiente BH:
+
+```
+Precipitaciones = Ninguna && Estacion = Humeda 
+```
+
+Las iteraciones del motor de inferencia serán:
+
+**Iteración 1** (Obtendré: Cambio = Ninguno)
+
+- Conjunto Conflicto = {R14}
+- Resolver Conflicto: R14
+- BH = BH + {R14} // Aplicar R14 en BH
+- Marcada = {R14}
+- Conjunto Conflicto = {~~R14~~} //Marco R14 como usada en BC
+- Condición de fin: Conjunto Conflicto esta vacío (FIN)
+
+Estado final de la BH: 
+
+```
+Precipitaciones = Ninguna && Estacion = Humeda && Cambio = Ninguno 
+```
 
 
-Tanto las BH como las BC proporcionadas no podrán ser modificadas.
+El orden de las reglas usadas seria:
+
+```
+R14: IF Precipitaciones = Ninguna && Estacion = Humeda THEN Cambio = Ninguno; Priority: 0 ; Use: True
+
+```
+
+
+El resultado objetivo **no ha podido ser encontrado**.
+
+> Como podemos observar en esta BH no se han proporcionado suficientes datos para el SBR y por lo tanto no ha sido capaz de hallar una solución a ese problema.
+
 
 
 
 # Bibliografía 
 
+
 La referencia:
 
-- 1: Usado para convertir un string en un int, ya que la función stoi de c++ parece que no esta implementada correctamente en MinGW
+- [@stoi] :  Método para convertir un string en un int, en linux no es necesario pero parece que en windows con mingw si
 
-- : Usado para ver como partir un string a partir de un delimitador especifico
+- [@] : Usado para convertir un string en un int, ya que la función stoi de c++ parece que no esta implementada correctamente en MinGW
 
-- : Usado para convertir un string en un operador y realizar su respectiva operación
+- [@] : Usado para ver como partir un string a partir de un delimitador especifico
 
-- : Usado para ver la forma mas correcta de hacer un return null de un struct cuando nunca debería de ejecutarse, en c++ lo correcto seria enviar una excepción
+- [@] : Usado para convertir un string en un operador y realizar su respectiva operación
+
+- [@] : Usado para ver la forma mas correcta de hacer un return null de un struct cuando nunca debería de ejecutarse, en c++ lo correcto seria enviar una excepción
+
+- [@cpp] : Usado para ver la forma mas correcta de hacer un return null de un struct cuando nunca debería de ejecutarse, en c++ lo correcto seria enviar una excepción

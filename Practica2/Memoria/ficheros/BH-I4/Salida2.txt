@@ -1,36 +1,36 @@
 ################## INICIO BC #################
-R32: IF Cambio = Subiendo && Nivel = Alto && Lluvia = Fuerte THEN Inundacion = Si; Priority: 11 ; Use: False
-R1: IF Mes = Junio THEN Estacion = Seca; Priority: 10 ; Use: False
-R2: IF Mes = Julio THEN Estacion = Seca; Priority: 10 ; Use: False
-R3: IF Mes = Agosto THEN Estacion = Seca; Priority: 10 ; Use: False
-R4: IF Mes = Septiembre THEN Estacion = Humeda; Priority: 10 ; Use: False
-R5: IF Mes = Octubre THEN Estacion = Humeda; Priority: 10 ; Use: False
-R6: IF Mes = Noviembre THEN Estacion = Humeda; Priority: 10 ; Use: False
-R7: IF Mes = Diciembre THEN Estacion = Humeda; Priority: 10 ; Use: False
-R8: IF Mes = Enero THEN Estacion = Humeda; Priority: 10 ; Use: False
-R9: IF Mes = Febrero THEN Estacion = Humeda; Priority: 10 ; Use: False
-R10: IF Mes = Marzo THEN Estacion = Humeda; Priority: 10 ; Use: False
-R11: IF Mes = Abril THEN Estacion = Humeda; Priority: 10 ; Use: False
-R12: IF Mes = Mayo THEN Estacion = Humeda; Priority: 10 ; Use: False
-R15: IF Precipitaciones = Ligera THEN Cambio = Ninguno; Priority: 10 ; Use: False
-R16: IF Precipitaciones = Fuertes THEN Cambio = Subiendo; Priority: 10 ; Use: False
-R17: IF Profundidad < 3 THEN Nivel = Bajo; Priority: 10 ; Use: False
-R18: IF Profundidad >= 3 && Profundidad <= 5 THEN Nivel = Normal; Priority: 10 ; Use: False
-R19: IF Profundidad > 5 THEN Nivel = Alto; Priority: 10 ; Use: False
-R20: IF Prediccion = Soleado THEN Lluvia = Ninguna; Priority: 10 ; Use: False
-R21: IF Prediccion = Nuboso THEN Lluvia = Ligera; Priority: 10 ; Use: False
-R22: IF Prediccion = Tormenta THEN Lluvia = Fuerte; Priority: 10 ; Use: False
 R23: IF Nivel = Bajo THEN Inundacion = No; Priority: 10 ; Use: False
+R24: IF Cambio = Ninguno && Nivel = Normal THEN Inundacion = No; Priority: 10 ; Use: False
+R25: IF Cambio = Ninguno && Nivel = Bajo THEN Inundacion = No; Priority: 10 ; Use: False
+R26: IF Cambio = Subiendo && Nivel = Normal THEN Inundacion = No; Priority: 10 ; Use: False
+R27: IF Cambio = Subiendo && Nivel = Bajo THEN Inundacion = No; Priority: 10 ; Use: False
+R28: IF Cambio = Subiendo && Nivel = Normal && Lluvia = Fuerte THEN Inundacion = Si; Priority: 10 ; Use: False
+R29: IF Cambio = Subiendo && Nivel = Normal && Lluvia = Ligera THEN Inundacion = No; Priority: 10 ; Use: False
+R30: IF Cambio = Subiendo && Nivel = Alto && Lluvia = Ninguna THEN Inundacion = Si; Priority: 10 ; Use: False
+R31: IF Cambio = Subiendo && Nivel = Alto && Lluvia = Ligera THEN Inundacion = Si; Priority: 10 ; Use: False
+R32: IF Cambio = Subiendo && Nivel = Alto && Lluvia = Fuerte THEN Inundacion = Si; Priority: 10 ; Use: False
+R1: IF Mes = Junio THEN Estacion = Seca; Priority: 0 ; Use: False
+R2: IF Mes = Julio THEN Estacion = Seca; Priority: 0 ; Use: False
+R3: IF Mes = Agosto THEN Estacion = Seca; Priority: 0 ; Use: False
+R4: IF Mes = Septiembre THEN Estacion = Humeda; Priority: 0 ; Use: False
+R5: IF Mes = Octubre THEN Estacion = Humeda; Priority: 0 ; Use: False
+R6: IF Mes = Noviembre THEN Estacion = Humeda; Priority: 0 ; Use: False
+R7: IF Mes = Diciembre THEN Estacion = Humeda; Priority: 0 ; Use: False
+R8: IF Mes = Enero THEN Estacion = Humeda; Priority: 0 ; Use: False
+R9: IF Mes = Febrero THEN Estacion = Humeda; Priority: 0 ; Use: False
+R10: IF Mes = Marzo THEN Estacion = Humeda; Priority: 0 ; Use: False
+R11: IF Mes = Abril THEN Estacion = Humeda; Priority: 0 ; Use: False
+R12: IF Mes = Mayo THEN Estacion = Humeda; Priority: 0 ; Use: False
 R13: IF Precipitaciones = Ninguna && Estacion = Seca THEN Cambio = Bajando; Priority: 0 ; Use: False
 R14: IF Precipitaciones = Ninguna && Estacion = Humeda THEN Cambio = Ninguno; Priority: 0 ; Use: True
-R24: IF Cambio = Ninguno && Nivel = Normal THEN Inundacion = No; Priority: 0 ; Use: False
-R25: IF Cambio = Ninguno && Nivel = Bajo THEN Inundacion = No; Priority: 0 ; Use: False
-R26: IF Cambio = Subiendo && Nivel = Normal THEN Inundacion = No; Priority: 0 ; Use: False
-R27: IF Cambio = Subiendo && Nivel = Bajo THEN Inundacion = No; Priority: 0 ; Use: False
-R28: IF Cambio = Subiendo && Nivel = Normal && Lluvia = Fuerte THEN Inundacion = Si; Priority: 0 ; Use: False
-R29: IF Cambio = Subiendo && Nivel = Normal && Lluvia = Ligera THEN Inundacion = No; Priority: 0 ; Use: False
-R30: IF Cambio = Subiendo && Nivel = Alto && Lluvia = Ninguna THEN Inundacion = Si; Priority: 0 ; Use: False
-R31: IF Cambio = Subiendo && Nivel = Alto && Lluvia = Ligera THEN Inundacion = Si; Priority: 0 ; Use: False
+R15: IF Precipitaciones = Ligera THEN Cambio = Ninguno; Priority: 0 ; Use: False
+R16: IF Precipitaciones = Fuertes THEN Cambio = Subiendo; Priority: 0 ; Use: False
+R17: IF Profundidad < 3 THEN Nivel = Bajo; Priority: 0 ; Use: False
+R18: IF Profundidad >= 3 && Profundidad <= 5 THEN Nivel = Normal; Priority: 0 ; Use: False
+R19: IF Profundidad > 5 THEN Nivel = Alto; Priority: 0 ; Use: False
+R20: IF Prediccion = Soleado THEN Lluvia = Ninguna; Priority: 0 ; Use: False
+R21: IF Prediccion = Nuboso THEN Lluvia = Ligera; Priority: 0 ; Use: False
+R22: IF Prediccion = Tormenta THEN Lluvia = Fuerte; Priority: 0 ; Use: False
 ################### FIN BC ##################
 ################## INICIO BH #################
 Precipitaciones = Ninguna && Estacion = Humeda && Cambio = Ninguno 
