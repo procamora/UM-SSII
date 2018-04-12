@@ -18,7 +18,7 @@ fontsize: 11pt # puede ser 10, 11 o 12
 fontfamily: lmodern
 documentclass: scrartcl
 lang: es
-bibliography: bibliografia.bib
+bibliography: bibliografia.bib # necesita pandoc argumento: --filter=pandoc-citeproc
 csl: estilo.csl
 link-citations: true
 lof: false # Añadir lista de figuras
