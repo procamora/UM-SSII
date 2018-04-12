@@ -66,8 +66,15 @@ int main(int argc, char **argv) {
     ga.evolve(1);
 
     // Imprimimos el mejor individuo que encuentra el GA y su valor fitness
-    cout << "El GA encuentra la solucion ( " << ga.statistics().bestIndividual() << ")" << endl;
-    cout << "fitness: " << ga.statistics().minEver() << endl;
+    if (ga.statistics().minEver() == 0) {
+        cout << "El GA encuentra la solucion" << endl;
+        imprimirSudokuResulto(ga.statistics().bestIndividual(), plantillaSudoku->tam);
+        cout << "fitness: " << ga.statistics().minEver() << endl;
+    } else {
+        cout << "El GA NO encuentra la solucion, daremos una aproximacion erronea" << endl;
+        imprimirSudokuResulto(ga.statistics().bestIndividual(), plantillaSudoku->tam);
+        cout << "fitness: " << ga.statistics().minEver() << endl;
+    }
 }
 
 // Funcion objetivo.
@@ -175,6 +182,9 @@ GABoolean termina(GAGeneticAlgorithm & ga) {
         return gaFalse;
 }
 
+/**
+ * Metodo para leer el fichero del sudoku y guardarlo en memoria
+ */
 void leerSudoku(struct plantilla *S, const char *nombreF) {
 
     ifstream f(nombreF);
@@ -191,6 +201,9 @@ void leerSudoku(struct plantilla *S, const char *nombreF) {
     f.close();
 }
 
+/**
+ * Metodo para imprimir el sudoku inicial que leemos del fichero
+ */
 void imprimirSudoku(struct plantilla *S) {
     int contFila = 1;
 
@@ -201,6 +214,26 @@ void imprimirSudoku(struct plantilla *S) {
             contFila++;
         } else {
             cout << S->fijo[i] << endl;
+            contFila = 1;
+        }
+    cout << "---------------------" << endl;
+}
+
+/**
+ * Metodo para imprimir el solucion resuelto con tabulaciones y espacios una vez que lo resuleve el algoritmo genetico
+ */
+void imprimirSudokuResulto(const GAGenome& g, int size) {
+    GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;
+
+    int contFila = 1;
+
+    cout << "++++++++++++++++++++++" << endl;
+    for (int i = 0; i < size * size; i++)
+        if (contFila < size) {
+            cout << genome.gene(i) << " ";
+            contFila++;
+        } else {
+            cout << genome.gene(i) << endl;
             contFila = 1;
         }
     cout << "---------------------" << endl;
@@ -332,8 +365,7 @@ int mutacionSudoku(GAGenome& g, float pmut) {
 
                             bool encontrado = false;
                             for (int j = 0; j < plantilla1->tam && !encontrado; j++)
-                                if ((plantilla1->fijo[j * (plantilla1->tam) + c] == 0)
-                                        && (genome.gene(j * (plantilla1->tam) + c) == v1)) {
+                                if ((plantilla1->fijo[j * (plantilla1->tam) + c] == 0) && (genome.gene(j * (plantilla1->tam) + c) == v1)) {
                                     encontrado = true;
                                     genome.gene((j * plantilla1->tam) + c, v2);
                                     fil = j;

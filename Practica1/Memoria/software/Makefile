@@ -30,7 +30,6 @@ all: $(OBJ)
 	$(CC) -o $(TARGET) $(OBJ_OUT) $(LIB_COMPILED)
 
 $(OBJ):
-	if [ ! -d $(DIR_OUT) ]; then mkdir -p $(DIR_OUT); fi
 	$(CC) $(CFLAGS) $(LDLIBS) -c $(SRC) -o $(OBJ_OUT)
 
 clean:

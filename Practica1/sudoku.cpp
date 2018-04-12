@@ -182,6 +182,9 @@ GABoolean termina(GAGeneticAlgorithm & ga) {
         return gaFalse;
 }
 
+/**
+ * Metodo para leer el fichero del sudoku y guardarlo en memoria
+ */
 void leerSudoku(struct plantilla *S, const char *nombreF) {
 
     ifstream f(nombreF);
@@ -198,6 +201,9 @@ void leerSudoku(struct plantilla *S, const char *nombreF) {
     f.close();
 }
 
+/**
+ * Metodo para imprimir el sudoku inicial que leemos del fichero
+ */
 void imprimirSudoku(struct plantilla *S) {
     int contFila = 1;
 
@@ -214,7 +220,7 @@ void imprimirSudoku(struct plantilla *S) {
 }
 
 /**
- * Metodo para imprimir el solucion resuelto con tabulaciones y espacios
+ * Metodo para imprimir el solucion resuelto con tabulaciones y espacios una vez que lo resuleve el algoritmo genetico
  */
 void imprimirSudokuResulto(const GAGenome& g, int size) {
     GA1DArrayAlleleGenome<int> & genome = (GA1DArrayAlleleGenome<int> &) g;

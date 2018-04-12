@@ -1,6 +1,4 @@
-#!/usr/bin/make -f
-#g++.exe -Wall -fexceptions -g -Igalib247-c2014/galib247-c2014 -c src/sudoku.cpp -o Debug/src/sudoku.o
-#g++.exe -o Debug/UM-SSII.exe Debug/src/sudoku.o galib247-c2014/galib.a
+#!/usr/bin/make
 
 CC = g++
 CFLAGS = -ggdb3 -O2 -Wall -Wunused-variable -fexceptions -g -std=c++11

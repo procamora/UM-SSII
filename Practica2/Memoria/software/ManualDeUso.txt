@@ -8,20 +8,21 @@
                                                                                                          
 
 
-Este programa ha sido compilado para Windows pero puede ser usado en Linux si es recompilado, se proporciona el fichero Makefile para poder compilarlo en ambos sistemas operativos facilmente.
+Este programa ha sido compilado para Windows pero puede ser usado en Linux si es recompilado, se proporciona el fichero Makefile para poder compilarlo en ambos sistemas operativos fácilmente.
 
-Para ejecutar el programa es necesario hacerlo por consola y pasarle como parametros 3 ficheros, fichero con BC, fichero de configuración y fichero con BH. Como resultado imprimira por pantalla si ha tenido exito encontrado el atributo objetivo o no y 2 ficheros que se llamaran Salida1.txt y Salida2.txt
+Para ejecutar el programa es necesario hacerlo por consola y pasarle como parámetros 3 ficheros, fichero con BC, fichero de configuración y fichero con BH. Como resultado imprimirá por pantalla si ha tenido éxito encontrado el atributo objetivo o no y 2 ficheros que se llamaran Salida1.txt y Salida2.txt
 
-Ejemplo de ejecucion: UM-SSII.exe BC-I.txt Config-I.txt BH-I4.txt
+Ejemplo de ejecución: UM-SSII.exe BC-I.txt Config-I.txt BH-I4.txt
 
 Donde:
 	- UM-SSII.exe: Es el binario del SBR.
-	- BC-I.txt: Es el fichero con la base de conocimiento, contiene el conjunto de reglas que codifican el cononimiento, la primera linea contiene el dominio de la aplicacion, la segunda linea el numero de reglas y las siguientes lineas continen las reglas que componen la BC.
-	- Config-I.txt: Es el fichero con la configuracion, contiene los tipos que tienen cada atributo, el atributo meta y las prioridades de reglas. La primera linea tiene la palabra reservada ATRIBUTOS, la siguiente linea contiene el numero de atributos, despues estan los atributos con la estructura: "Atributo Tipo {Valor}" Donde tipo sera "NU" para atributos numericos y "Nom" para atributos nominales, en los que habra que poner un conjunto de valores que tendra ese atributo. En la siguiente linea aparece la palabra reservada OBJETIVO, en la siguiente linea aparece el atributo objetivo, en la siguiente linea la palabra reservada PRIORIDAD-REGLAS, en la siguiente linea el numero de prioridades de reglas y las siguientes lineas seran las prioridades de esas reglas.
+	- BC-I.txt: Es el fichero con la base de conocimiento, contiene el conjunto de reglas que codifican el conocimiento, la primera linea contiene el dominio de la aplicación, la segunda linea el numero de reglas y las siguientes lineas contienen las reglas que componen la BC. Cada regla tendrá la forma: Si Condición/es Entonces Consecuencia.
+	- Config-I.txt: Es el fichero con la configuración, contiene los tipos que tienen cada atributo, el atributo meta y las prioridades de reglas. La primera linea tiene la palabra reservada ATRIBUTOS, la siguiente linea contiene el numero de atributos, después están los atributos con la estructura: "Atributo Tipo {Valor}" Donde tipo sera "NU" para atributos numéricos y "Nom" para atributos nominales, en los que habrá que poner un conjunto de valores que tendrá ese atributo. En la siguiente linea aparece la palabra reservada OBJETIVO, en la siguiente linea aparece el atributo objetivo, en la siguiente linea la palabra reservada PRIORIDAD-REGLAS, en la siguiente linea el numero de prioridades de reglas y las siguientes lineas serán las prioridades de esas reglas.
 	-BH-I4.txt: Contiene las base de hechos que entendemos como verdaderos. La primera linea contiene el numero de hechos que hay y las posteriores lineas los hechos.
 
 
 Un ejemplo de BC seria:
+
 IDENTIFICACION DE FRUTAS
 18
 R1: Si NSemillas > 1 Entonces TipoSemilla = Multiple
@@ -45,6 +46,7 @@ R18: Si ClaseFrutal = Arbol y Color = Morado y TipoSemilla = Hueso Entonces Frut
 
 
 Un ejemplo de Config seria:
+
 ATRIBUTOS
 8
 Forma Nom {Larga,Redonda,Ensanchada}
@@ -80,6 +82,7 @@ PRIORIDADES-REGLAS
 
 
 Un ejemplo de BH seria:
+
 4
 Diametro = 3
 Forma = Redonda
@@ -93,7 +96,7 @@ El fichero Salida1.txt contiene:
 	- Todas las reglas de la BC en las que se ha añadido la prioridad que tiene esa regla y un booleano para indicar si ha sido usada esa regla que inicialmente estara a False.
 	- Atributo objetivo.
 	- BH con el contenido inicial.
-	- Lista de reglas que han sido usadas para obtener la solucion final.
+	- Lista de reglas que han sido usadas para obtener la solución final.
 
 
 El fichero Salida2.txt contiene:

@@ -1,0 +1,105 @@
+                                                                                                         
+ ███╗   ███╗ █████╗ ███╗   ██╗██╗   ██╗ █████╗ ██╗         ██████╗ ███████╗    ██╗   ██╗███████╗ ██████╗ 
+ ████╗ ████║██╔══██╗████╗  ██║██║   ██║██╔══██╗██║         ██╔══██╗██╔════╝    ██║   ██║██╔════╝██╔═══██╗
+ ██╔████╔██║███████║██╔██╗ ██║██║   ██║███████║██║         ██║  ██║█████╗      ██║   ██║███████╗██║   ██║
+ ██║╚██╔╝██║██╔══██║██║╚██╗██║██║   ██║██╔══██║██║         ██║  ██║██╔══╝      ██║   ██║╚════██║██║   ██║
+ ██║ ╚═╝ ██║██║  ██║██║ ╚████║╚██████╔╝██║  ██║███████╗    ██████╔╝███████╗    ╚██████╔╝███████║╚██████╔╝
+ ╚═╝     ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝╚══════╝    ╚═════╝ ╚══════╝     ╚═════╝ ╚══════╝ ╚═════╝ 
+                                                                                                         
+
+Esto es un programa para calcular la solución de un sudoku a través de un algoritmo genético.
+
+Este programa ha sido compilado para Windows pero puede ser usado en Linux si es recompilado, se proporciona el fichero Makefile para poder compilarlo en ambos sistemas operativos fácilmente.
+
+Para ejecutar el programa es necesario hacerlo por consola y pasarle como parámetros ciertos argumentos, a continuación se explican:
+
+- Fichero con el sudoku a resolver, tendrá en la primera linea el tamaño (n) del sudoku y el las siguientes n lineas estarán las filas del sudoku 
+- Tamaño de la población del algoritmo genético. Podemos usar: [100, 150]. 
+- Operador de selección del algoritmo genético. Podemos usar: [RouletteWheelSelector, TournamentSelector].
+- probabilidad de cruce del algoritmo genético. Podemos usar: [0.8, 0.85, 0.9, 0.95].
+- probabilidad de mutación del algoritmo genético. Podemos usar: [0.01, 0.05, 0.1, 0.125, 0.15].
+
+
+EUn ejemplo de fichero con un sudoku a resolver:
+
+```
+9
+0 0 0 0 9 2 0 5 4
+8 0 9 0 0 3 0 0 0
+0 0 0 6 5 0 1 0 0
+4 0 0 7 0 5 0 9 0
+5 0 2 0 0 0 0 0 0
+0 0 7 1 2 0 0 0 3
+0 6 0 0 4 8 9 0 2
+2 4 0 9 0 0 0 0 8
+1 0 8 0 3 6 0 0 0
+```
+
+
+Si el sudoku tiene menos de 30 números iniciales se aconseja usar:
+- Tamaño de la población = 150
+- Operador de selección = GATournamentSelector
+- probabilidad de cruce = 0.85
+- probabilidad de mutación = 0.1
+
+Si el sudoku tiene 30 o mas números iniciales se aconseja usar:
+- Tamaño de la población = 150
+- Operador de selección = GATournamentSelector
+- probabilidad de cruce = 0.95
+- probabilidad de mutación = 0.1
+
+
+
+
+Los parámetros que hay que pasarle al binario son: 
+
+`UM-SSII.exe sudoku.txt población selector pc pm`
+
+Ejemplo de uso siendo Sudoku-1.txt el sudoku visto en el ejemplo de arriba: 
+
+`UM-SSII.exe Sudoku-1.txt 150 GATournamentSelector 1.95 0.1`
+
+
+Obtendremos la siguiente salida:
+- Primero nos informara el tamaño del sudoku y del resto de parámetros introducidos
+- Nos imprimirá el sudoku que le hemos pasado
+- Nos imprimirá el sudoku resuelto si lo ha conseguido resolver o lo mejor que lo haya podido resolver
+- Nos indicara el fitness del problema, si es 0 ha resuelto el sudoku correctamente si es 1 hay 1 fallo y así sucesivamente
+
+
+
+```
+Sudoku de tamaño: 9x9
+Parametros:  - Tamano poblacion: 150
+         - Numero de generaciones: 12000
+         - Probabilidad cruce: 1.95
+         - Probabilidad mutacion: 0.1
+
+++++++++++++++++++++++
+0 0 0 0 9 2 0 5 4
+8 0 9 0 0 3 0 0 0
+0 0 0 6 5 0 1 0 0
+4 0 0 7 0 5 0 9 0
+5 0 2 0 0 0 0 0 0
+0 0 7 1 2 0 0 0 3
+0 6 0 0 4 8 9 0 2
+2 4 0 9 0 0 0 0 8
+1 0 8 0 3 6 0 0 0
+---------------------
+El GA encuentra la solucion
+++++++++++++++++++++++
+6 7 1 8 9 2 3 5 4
+8 5 9 4 1 3 7 2 6
+3 2 4 6 5 7 1 8 9
+4 3 6 7 8 5 2 9 1
+5 1 2 3 6 9 8 4 7
+9 8 7 1 2 4 5 6 3
+7 6 3 5 4 8 9 1 2
+2 4 5 9 7 1 6 3 8
+1 9 8 2 3 6 4 7 5
+---------------------
+fitness: 0
+```
+
+Ademas se acompaña de un pequeño script escrito en Python para generar una batería de pruebas para probar distintos casos y generar un CSV con los resultados obtenidos y así poder calcular cual es la mejor configuración para nuestro problema.
+

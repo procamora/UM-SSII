@@ -37,6 +37,7 @@ header-includes:
     - \lstset{framesep=4pt}
     - \lstset{numbers=left} # Posición de los números de línea (none, left, right).
     - \lstset{numberstyle=\tiny\ttfamily} # Estilo para los números de línea
+    - \lstset{postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}}}
     - \lstset{keywordstyle=\color{mimazul}} # estilo de las palabras clave
     - \lstset{stringstyle=\color{miverde}} # Estilo de las cadenas de texto
     - \lstset{commentstyle=\color{migris}} # Estilo de los comentarios

@@ -4,14 +4,12 @@ subtitle: Practica 1
 author:
     - Pablo José Rocamora Zamora G3.2
 date: Convocatoria de Junio
-header: dsad
-footer: So is this
 geometry:
-    - top=1in
-    - margin=1in
-    - bottom=1in
-    - right=1in
-    - left=1in
+    - top=2.54cm
+    - margin=2.54cm
+    - bottom=2.54cm
+    - right=2.54cm
+    - left=2.54cm
 toc: true
 toc-depth: 1
 fontsize: 11pt # puede ser 10, 11 o 12
@@ -329,6 +327,8 @@ Los parámetros que hay que pasarle al binario son:
 
 Ejemplo de uso: `UM-SSII.exe Sudoku-1.txt 150 GATournamentSelector 1.95 0.1`
 
+
+
 # Casos del Usuario
 
 
@@ -348,24 +348,40 @@ Ejecución: `UM-SSII.exe Sudoku-1.txt 150 GATournamentSelector 1.95 0.1`
 Solución:
 
 ```
-El GA encuentra la solución ( 4 5 8 3 6 7 9 1 2 1 6 3 9 2 5 7 4 8 2 9 7 8 4 1 5 6 3 8 4 5 2 9 6 3 7 1 7 3 2 5 1 8 6 9 4 6 1 9 4 7 3 2 8 5 5 7 1 6 8 2 4 3 9 9 2 6 1 3 4 8 5 7 3 8 4 7 5 9 1 2 6 )
+Sudoku de tamaño: 9x9
+Parametros:  - Tamano poblacion: 150
+         - Numero de generaciones: 12000
+         - Probabilidad cruce: 1.95
+         - Probabilidad mutacion: 0.1
+
+++++++++++++++++++++++
+0 0 8 0 0 7 9 0 0
+0 6 0 9 0 5 0 4 8
+0 0 7 8 0 1 5 0 0
+0 0 5 0 0 0 0 0 0
+0 0 2 0 0 0 6 0 0
+0 0 9 4 0 3 0 0 5
+5 0 0 0 8 2 0 3 0
+9 0 6 0 3 0 0 0 7
+3 0 4 0 5 0 1 2 6
+---------------------
+El GA encuentra la solucion
+++++++++++++++++++++++
+4 5 8 3 6 7 9 1 2
+1 6 3 9 2 5 7 4 8
+2 9 7 8 4 1 5 6 3
+8 4 5 2 9 6 3 7 1
+7 3 2 5 1 8 6 9 4
+6 1 9 4 7 3 2 8 5
+5 7 1 6 8 2 4 3 9
+9 2 6 1 3 4 8 5 7
+3 8 4 7 5 9 1 2 6
+---------------------
 fitness: 0
-```
-
-Como podemos observar, resuelve el sudoku (fitness 0) y ofrece su solución de forma lineal. Si queremos verlo en un formato mas amigable, tendríamos:
 
 ```
-4 5 8 3 6 7 9 1 2 
-1 6 3 9 2 5 7 4 8 
-2 9 7 8 4 1 5 6 3 
-8 4 5 2 9 6 3 7 1 
-7 3 2 5 1 8 6 9 4 
-6 1 9 4 7 3 2 8 5 
-5 7 1 6 8 2 4 3 9 
-9 2 6 1 3 4 8 5 7 
-3 8 4 7 5 9 1 2 6 
-```
 
+Como podemos observar, resuelve el sudoku (fitness 0) y ofrece el sudoku 2 veces, la primera que era el estado original del sudoku y la segunda una vez resuelto.
 
 
 ## Caso 2
@@ -379,26 +395,45 @@ GATournamentSelector | 150 | 0.95 | 0.1
 
 Ejecución: `UM-SSII.exe Sudoku-2.txt 150 GATournamentSelector 1.95 0.1`
 
+\pagebreak
+
 Solución:
 
 ```
-El GA encuentra la solución ( 6 7 1 8 9 2 3 5 4 8 5 9 4 1 3 7 2 6 3 2 4 6 5 7 1 8 9 4 3 6 7 8 5 2 9 1 5 1 2 3 6 9 8 4 7 9 8 7 1 2 4 5 6 3 7 6 3 5 4 8 9 1 2 2 4 5 9 7 1 6 3 8 1 9 8 2 3 6 4 7 5 )
+Sudoku de tamaño: 9x9
+Parametros:  - Tamano poblacion: 150
+         - Numero de generaciones: 12000
+         - Probabilidad cruce: 1.95
+         - Probabilidad mutacion: 0.1
+
+++++++++++++++++++++++
+0 0 0 0 9 2 0 5 4
+8 0 9 0 0 3 0 0 0
+0 0 0 6 5 0 1 0 0
+4 0 0 7 0 5 0 9 0
+5 0 2 0 0 0 0 0 0
+0 0 7 1 2 0 0 0 3
+0 6 0 0 4 8 9 0 2
+2 4 0 9 0 0 0 0 8
+1 0 8 0 3 6 0 0 0
+---------------------
+El GA encuentra la solucion
+++++++++++++++++++++++
+6 7 1 8 9 2 3 5 4
+8 5 9 4 1 3 7 2 6
+3 2 4 6 5 7 1 8 9
+4 3 6 7 8 5 2 9 1
+5 1 2 3 6 9 8 4 7
+9 8 7 1 2 4 5 6 3
+7 6 3 5 4 8 9 1 2
+2 4 5 9 7 1 6 3 8
+1 9 8 2 3 6 4 7 5
+---------------------
 fitness: 0
-```
-
-Como podemos observar, resuelve el sudoku (fitness 0) y ofrece su solución de forma lineal. Si queremos verlo en un formato mas amigable, tendríamos:
 
 ```
-6 7 1 8 9 2 3 5 4 
-8 5 9 4 1 3 7 2 6 
-3 2 4 6 5 7 1 8 9 
-4 3 6 7 8 5 2 9 1 
-5 1 2 3 6 9 8 4 7 
-9 8 7 1 2 4 5 6 3 
-7 6 3 5 4 8 9 1 2 
-2 4 5 9 7 1 6 3 8 
-1 9 8 2 3 6 4 7 5 
-```
+
+Como podemos observar, resuelve el sudoku (fitness 0) y ofrece el sudoku 2 veces, la primera que era el estado original del sudoku y la segunda una vez resuelto.
 
 
 
@@ -413,33 +448,52 @@ GATournamentSelector | 150 | 0.95 | 0.1
 
 Ejecución: `UM-SSII.exe Sudoku-3.txt 150 GATournamentSelector 1.95 0.1`
 
+\pagebreak
+
 Solución:
 
 ```
-El GA encuentra la solución ( 1 5 9 7 2 4 8 6 3 8 2 4 1 3 6 5 9 7 7 6 3 9 8 5 1 2 4 9 4 2 3 6 8 7 1 5 3 7 8 5 1 9 2 4 6 5 1 6 2 4 7 9 3 8 4 8 7 6 9 1 3 5 2 6 3 1 8 5 2 4 7 9 2 9 5 4 7 3 6 8 1 )
+Sudoku de tamaño: 9x9
+Parametros:  - Tamano poblacion: 150
+         - Numero de generaciones: 12000
+         - Probabilidad cruce: 1.95
+         - Probabilidad mutacion: 0.1
+
+++++++++++++++++++++++
+0 5 0 0 2 4 0 6 3
+0 0 4 0 3 6 0 0 0
+0 0 3 0 0 5 0 2 0
+9 0 2 0 0 8 7 0 0
+3 7 8 0 1 9 2 0 0
+0 0 0 0 4 7 0 3 0
+0 8 0 6 0 0 0 0 0
+0 0 0 8 0 2 4 7 9
+0 0 0 0 7 0 0 8 0
+---------------------
+El GA encuentra la solucion
+++++++++++++++++++++++
+1 5 9 7 2 4 8 6 3
+8 2 4 1 3 6 5 9 7
+7 6 3 9 8 5 1 2 4
+9 4 2 3 6 8 7 1 5
+3 7 8 5 1 9 2 4 6
+5 1 6 2 4 7 9 3 8
+4 8 7 6 9 1 3 5 2
+6 3 1 8 5 2 4 7 9
+2 9 5 4 7 3 6 8 1
+---------------------
 fitness: 0
-```
-
-Como podemos observar, resuelve el sudoku (fitness 0) y ofrece su solución de forma lineal. Si queremos verlo en un formato mas amigable, tendríamos:
 
 ```
-1 5 9 7 2 4 8 6 3 
-8 2 4 1 3 6 5 9 7 
-7 6 3 9 8 5 1 2 4 
-9 4 2 3 6 8 7 1 5 
-3 7 8 5 1 9 2 4 6 
-5 1 6 2 4 7 9 3 8 
-4 8 7 6 9 1 3 5 2 
-6 3 1 8 5 2 4 7 9 
-2 9 5 4 7 3 6 8 1 
-```
 
+Como podemos observar, resuelve el sudoku (fitness 0) y ofrece el sudoku 2 veces, la primera que era el estado original del sudoku y la segunda una vez resuelto.
 
 
 
 # Bibliografía 
 
-La referencia:
 
 - 1: Es un video de youtube que explica el funcionamiento de un algoritmo genético, ha sido usado para explicar como funciona un algoritmo genético.
 - 2: Es un manual antiguo de la asignatura, ha sido usado para explicar los operadores de selección y el uso de la librería GA.
+
+## Referencias:
