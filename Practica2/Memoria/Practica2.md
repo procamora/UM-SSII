@@ -53,10 +53,11 @@ header-includes:
     - \lstset{basewidth=0.5em}
     - \lstset{language=C} # Establece el lenguaje por defecto. Se puede cambiar para cada bloque de código insertado
     - \lstset{otherkeywords={}} # Si se quieren añadir otras palabras clave al lenguaje
+    - \lstset{otherkeywords={IF, THEN, &&, Priority, Use}}
 --- 
 
 
-# Explicación breve y completa de la técnica Sistema Basado en Reglas (SBR).
+# Explicación breve y completa de la técnica Sistema Basado en Reglas (SBR)
 
 ## Introducción
 
@@ -68,76 +69,76 @@ Los sistemas basados en reglas (SBR) se inspiran en los sistemas de deducción e
 
 ## Componentes Básicos
 
-- Base de conocimiento (BC): Contiene las reglas que codifican todo el conocimiento. Una regla se consta de 2 partes: izquierda o antecedente y derecha o consecuente. Ejemplo: *IF antecedente THEN consecuente*.
+- Base de conocimiento (BC): Contiene las reglas que codifican todo el conocimiento. Una regla consta de 2 partes: izquierda o antecedente y derecha o consecuente. Ejemplo: *IF antecedente THEN consecuente*.
 
-- Base de Hechos (BH): Son los hechos establecidos como verdaderos, pueden ser tanto datos de entrada como conclusiones inferidas.
+- Base de Hechos (BH): Son los hechos establecidos como verdaderos; pueden ser tanto datos de entrada como conclusiones inferidas.
 
 - Motor de Inferencias (MI): Selecciona las reglas que se pueden ejecutar y las ejecuta con el objetivo de obtener alguna conclusión.
 
-Una diferencia importante entre la BC y la BH es que la BH almacena información puntual sobre un problema concreto mientras  que la BC almacena porciones de cocimiento sobre como resolver el problema genérico.
+Una diferencia importante entre la BC y la BH es que la BH almacena información puntual sobre un problema concreto, mientras  que la BC almacena porciones de cocimiento sobre cómo resolver el problema genérico.
 
 ## Inferencia en un SBR
 
 Hay dos formas de razonar un MI: 
 
-- Encadenamiento hacia delante o dirigido por datos, se seleccionan las reglas cuyos antecedentes se verifican, dado el contenido de la BH. La particularidad de esta etapa es la equiparación, donde se seleccionan las reglas cuyos antecedentes se verifican, dado el contenido de la BH.
-- Encadenamiento hacia atrás o dirigido por metas, se especifica una meta objetivo y se trata de determinar su la meta se verifica o no, teniendo en cuenta el contenido de la BH.
+- Encadenamiento hacia delante o dirigido por datos: se seleccionan las reglas cuyos antecedentes se verifican a partir del contenido de la BH. La particularidad de esta etapa es la equiparación; en ella, se seleccionan las reglas cuyos antecedentes se verifican a partir del contenido de la BH.
+- Encadenamiento hacia atrás o dirigido por metas: se especifica una meta u objetivo y se trata de determinar si se verifica o no, teniendo en cuenta el contenido de la BH.
 
 
 ### Ejemplo:
 
-Teniendo estas 2 reglas:
+Teniendo estas dos reglas:
 
 ```
 R1: Si A Entonces B
 R2: Si B Entonces C
 ```
 
-Si tengo *A* a través de la *R1* podemos inferir *B*, y teniendo *B* a través de *R2* podemos inferir *C*. Por tanto teniendo inicialmente *A* acabamos obteniendo: *A*, *B* y *C*
+Si tengo *A*, a través de la *R1* podemos inferir *B*; y teniendo *B*, a través de *R2* podemos inferir *C*. Por tanto, teniendo inicialmente *A*, acabamos obteniendo: *A*, *B* y *C*.
 
 
 
 
 ## Técnicas de Equiparación
 
-La equiparación del antecedente de las reglas con el estado de la BH no siempre es trivial, puede no describir situaciones particulares sino generales.
-Otro problema es la necesidad de examinar todas las reglas en cada ciclo de inferencias, ya que puede ser poco eficiente si la BC es extensa, puede mejorar con indexado de reglas o el algoritmo *RETE*
+La equiparación del antecedente de las reglas con el estado de la BH no siempre es trivial: puede no describir situaciones particulares sino generales.
+Otro problema es la necesidad de examinar todas las reglas en cada ciclo de inferencias, ya que puede ser poco eficiente si la BC es extensa. El tiempo de ejecución puede mejorar con indexado de reglas o el algoritmo *RETE*.
 
 
 ## Técnicas de resolución de conflictos
 
-Un método de resolución de conflictos selecciona, a partir del conjunto conflicto, la regla a aplicar. Las principales técnicas de resolución son las siguientes:
+Un método de resolución de conflictos selecciona, a partir del conjunto conflicto, la regla que hay que aplicar. Las principales técnicas de resolución son las siguientes:
 
-- Según la BC (Criterios estáticos): Seleccionan las reglas ordenados por un criterio, como puede ser prioridad de reglas.
+- Según la BC (Criterios estáticos): Seleccionan las reglas ordenados por un criterio, como puede ser la prioridad de reglas.
 - Según la BH (Criterios dinámicos): Reglas que usan elementos mas recientes de la BH.
 - Según la ejecución (Criterios dinámicos): Usar reglas no utilizadas previamente.
 
 
 
-# Explicación clara de los elementos siguientes del motor de inferencia diseñado.
+# Explicación clara de los elementos siguientes del motor de inferencia diseñado
 
 ## Equiparación-Conjunto conflicto
 
-La equiparación: El objetivo de la equiparación es seleccionar reglas validas para la BH, se realizara recorriendo regla a regla la BC y comprobando para cada condición de la regla si esta esa misma condición en la BH, si esta y se cumplen todas las condiciones de la regla entonces podremos obtener esa regla para ser usada posteriormente
+La equiparación: El objetivo de la equiparación es seleccionar reglas válidas para la BH. Se realizará recorriendo regla a regla la BC y comprobando, para cada condición de la regla, si está esa misma condición en la BH; si, además, se cumplen todas las condiciones de la regla, entonces podremos obtener esa regla para ser usada posteriormente.
 
-Conjunto conflicto: La equiparación nos retorna una lista de reglas validas para usarse, para resolver que regla tenemos que usar en cada caso cogeremos siempre la primera, ya que la BC esta ordenada primero por prioridad y en caso de empate de prioridad por numero de regla, gracias a eso la equiparación nos retorna la lista ordenada y resolver el conjunto conflicto es una tarea sencilla.
+Conjunto conflicto: La equiparación nos retorna una lista de reglas válidas para usarse. Para averiguar qué regla tenemos que usar en cada caso, cogeremos siempre la primera (ya que la BC está ordenada primero por prioridad y, en caso de empate de prioridad, por número de regla); gracias a eso, la equiparación nos retorna la lista ordenada.
 
 
 ## Condición de parada
 
 Tenemos 2 condiciones de parada:
 
-- Cuando en la BH aparezca el objetivo que buscamos, lo que significara que hemos resuelto el problema.
-- Cuando equiparar no retorna ninguna regla o todas las reglas que retornan ya han sido usadas, lo que significara que no podemos continuar y por tanto resolver el problema por falta de información.
+- Cuando en la BH aparezca el objetivo que buscamos, lo que significará que hemos resuelto el problema.
+- Cuando equiparar no retorna ninguna regla o todas las reglas que retornan ya han sido usadas, lo que significará que no podemos continuar y, por tanto, no se puede resolver el problema por falta de información.
 
 
 
 
-# Aplicación del SBR construido a las siguientes situaciones. 
+# Aplicación del SBR construido a las siguientes situaciones
 
 ## Situación 1: Identificación de Frutas.
 
-Para la situación 1 tenemos la siguiente BC ya ordenada por criterio estático de orden de prioridad y en caso de empate por orden numérico ascendente
+Para la situación 1 tenemos la siguiente BC ya ordenada por criterio estático de orden de prioridad y, en caso de empate, por orden numérico ascendente
 
 ```
 R2: IF Forma = Larga && Color = Amarillo THEN Fruta = Platano; Priority: 10 ; Use: False
@@ -160,7 +161,7 @@ R5: IF Forma = Redonda && Diametro < 10 THEN ClaseFrutal = Arbol; Priority: 0 ; 
 R6: IF NSemillas = 1 THEN TipoSemilla = Hueso; Priority: 0 ; Use: False
 ```
 
-Nuestro objetivo sera encontrar el atributo *Fruta*, por eso mismo todas las reglas con las que se obtiene una *fruta* tienen prioridad 10 y las reglas para obtener atributos intermedios tienen prioridad 0. La condición de parada es Fruta en BH o Conjunto Conflicto vacío. Usaremos Encadenamiento hacia delante para llegar a la solución.
+Nuestro objetivo será encontrar el atributo *Fruta*; por eso, todas las reglas con las que se obtiene una *fruta* tienen prioridad 10, y las reglas para obtener atributos intermedios tienen prioridad 0. La condición de parada es Fruta en BH o Conjunto Conflicto vacío. Usaremos Encadenamiento hacia delante para llegar a la solución.
 
 ### BH-F1
 
@@ -206,7 +207,7 @@ Diametro = 3 && Forma = Redonda && NSemillas = 1 && Color = Rojo && ClaseFrutal 
 ```
 
 
-El orden de las reglas usadas seria:
+El orden de las reglas usadas sería:
 
 ```
 R5: IF Forma = Redonda && Diametro < 10 THEN ClaseFrutal = Arbol; Priority: 0 ; Use: True
@@ -261,7 +262,7 @@ Diametro = 8 && Forma = Redonda && NSemillas = 10 && Color = Verde && TipoSemill
 ```
 
 
-El orden de las reglas usadas seria:
+El orden de las reglas usadas sería:
 
 ```
 R1: IF NSemillas > 1 THEN TipoSemilla = Multiple; Priority: 0 ; Use: True
@@ -316,7 +317,7 @@ Forma = Redonda && NSemillas = 2 && Diametro = 11 && Color = Verde && TipoSemill
 ```
 
 
-El orden de las reglas usadas seria:
+El orden de las reglas usadas sería:
 
 ```
 R1: IF NSemillas > 1 THEN TipoSemilla = Multiple; Priority: 0 ; Use: True
@@ -373,7 +374,7 @@ ClaseFrutal = Arbol && Color = Naranja && Forma = Redonda && NSemillas = 1 && Di
 ```
 
 
-El orden de las reglas usadas seria:
+El orden de las reglas usadas sería:
 
 ```
 R5: IF Forma = Redonda && Diametro < 10 THEN ClaseFrutal = Arbol; Priority: 0 ; Use: True
@@ -383,12 +384,12 @@ R11: IF ClaseFrutal = Arbol && Color = Naranja && TipoSemilla = Hueso THEN Fruta
 
 El resultado objetivo es: **Fruta = Albaricoque**
 
-> En esta situación cabe destacar que la regla 17 indicaba que el atributo *Fruta = Melocoton*, por lo que si hubiese tenido mayor prioridad que la regla 11 el resultado habría sido *Fruta = Melocoton*
+> En esta situación cabe destacar que la regla 17 indicaba que el atributo *Fruta = Melocoton*, por lo que, si hubiese tenido mayor prioridad que la regla 11, el resultado habría sido *Fruta = Melocoton*
 
 
 ## Situación 2: Detección de Inundaciones.
 
-Para la situación 2 tenemos la siguiente BC ya ordenada por criterio estático de orden de prioridad y en caso de empate por orden numérico ascendente
+Para la situación 2 tenemos la siguiente BC ya ordenada por criterio estático de orden de prioridad y, en caso de empate, por orden numérico ascendente
 
 ```
 R23: IF Nivel = Bajo THEN Inundacion = No; Priority: 10 ; Use: False
@@ -425,9 +426,9 @@ R21: IF Prediccion = Nuboso THEN Lluvia = Ligera; Priority: 0 ; Use: False
 R22: IF Prediccion = Tormenta THEN Lluvia = Fuerte; Priority: 0 ; Use: False
 ```
 
-Para crear el fichero de configuración he tenido que observar inicialmente la cantidad de atributos que había, si eran numéricos o nominales y en caso de ser nominales los posibles valores que había en la BC. Posteriormente he tenido que especificar cual es el atributo objetivo, ese dato lo he sacado del dominio de la aplicación, que se llama *Detección de inundaciones*, y por ultimo había que asignar prioridades a las reglas y como nuestro objetivo sera encontrar el atributo *Inundacion*, todas las reglas con las que se obtiene *Inundacion* tienen prioridad 10 y las reglas para obtener atributos intermedios tienen prioridad 0. La condición de parada es *Inundacion* en BH o Conjunto Conflicto vacío. Usaremos Encadenamiento hacia delante para llegar a la solución.
+Para crear el fichero de configuración he tenido que observar inicialmente la cantidad de atributos que había, si eran numéricos o nominales y, en caso de ser nominales, los posibles valores que había en la BC. Posteriormente, he tenido que especificar cuál es el atributo objetivo. Ese dato lo he sacado del dominio de la aplicación, que se llama *Detección de inundaciones* y, por último, había que asignar prioridades a las reglas; como nuestro objetivo es encontrar el atributo *Inundacion*, todas las reglas con las que se obtiene *Inundacion* tienen prioridad 10 y las reglas para obtener atributos intermedios tienen prioridad 0. La condición de parada es *Inundacion* en BH o Conjunto Conflicto vacío. Usaremos Encadenamiento hacia delante para llegar a la solución.
 
-Para crear las siguientes 4 BH he usado encadenamiento hacia detrás, especificaba la meta objetivo e iba calculando los consecuentes necesarios para llegar a ese resultado y esos consecuentes los guardaba en la BH.
+Para crear las siguientes 4 BH he usado encadenamiento hacia atrás, especificaba la meta objetivo e iba calculando los consecuentes necesarios para llegar a ese resultado; esos consecuentes los guardaba en la BH.
 
 ### BH-I1
 
@@ -487,7 +488,7 @@ Mes = Septiembre && Prediccion = Tormenta && Precipitaciones = Fuertes && Profun
 ```
 
 
-El orden de las reglas usadas seria:
+El orden de las reglas usadas sería:
 
 ```
 R4: IF Mes = Septiembre THEN Estacion = Humeda; Priority: 0 ; Use: True
@@ -528,7 +529,7 @@ Las iteraciones del motor de inferencia serán:
 - Marcada = {R16, R18}
 - Conjunto Conflicto = {~~R16~~, ~~R18~~, R26, R21} //Marco R18 como usada en BC
 
-> Al resolver R18 obtengo la precondición que le faltaba a la regla R26 para poder resolverla y al tener mayor prioridad que R21, R26 se ejecutara antes dando la solución del problema.
+> Al resolver R18 obtengo la precondición que le faltaba a la regla R26 para poder resolverla; al tener mayor prioridad que R21, R26 se ejecutará antes, dando la solución del problema.
 
 
 **Iteración 3** (Obtendré: Inundacion = No)
@@ -547,7 +548,7 @@ Precipitaciones = Fuertes && Profundidad = 4 && Prediccion = Nuboso && Cambio = 
 ```
 
 
-El orden de las reglas usadas seria:
+El orden de las reglas usadas sería:
 
 ```
 R16: IF Precipitaciones = Fuertes THEN Cambio = Subiendo; Priority: 0 ; Use: True
@@ -610,7 +611,7 @@ Precipitaciones = Fuertes && Profundidad = 12 && Prediccion = Soleado && Cambio 
 ```
 
 
-El orden de las reglas usadas seria:
+El orden de las reglas usadas sería:
 
 ```
 R16: IF Precipitaciones = Fuertes THEN Cambio = Subiendo; Priority: 0 ; Use: True
@@ -651,7 +652,7 @@ Precipitaciones = Ninguna && Estacion = Humeda && Cambio = Ninguno
 ```
 
 
-El orden de las reglas usadas seria:
+El orden de las reglas usadas sería:
 
 ```
 R14: IF Precipitaciones = Ninguna && Estacion = Humeda THEN Cambio = Ninguno; Priority: 0 ; Use: True
@@ -661,7 +662,7 @@ R14: IF Precipitaciones = Ninguna && Estacion = Humeda THEN Cambio = Ninguno; Pr
 
 El resultado objetivo **no ha podido ser encontrado**.
 
-> Como podemos observar en esta BH no se han proporcionado suficientes datos para el SBR y por lo tanto no ha sido capaz de hallar una solución a ese problema.
+> Como podemos observar en esta BH no se han proporcionado suficientes datos para el SBR y, por lo tanto, no ha sido capaz de hallar una solución a ese problema.
 
 
 
@@ -669,16 +670,12 @@ El resultado objetivo **no ha podido ser encontrado**.
 # Bibliografía 
 
 
-La referencia:
+- [@cpp] : Referencia general de C++, usado para repaso de multitud de referencias sobre el uso de C++.
+- [@stoi] : Método para convertir un string en un int, en Linux no es necesario pero parece que en Windows con MinGw si por un bug que tiene.
+- [@split] :  Usado para partir un string según un delimitador que puede ser una expresión regular, lo he usado para parsear las condiciones de las reglas.
+- [@compare] : Lo he usado para ver la mejor forma de usar los operadores de las condiciones que están guardados como string.
+- [@return] : Referencia usada para ver cual es la forma correcta de hacer un return de un struct cuando nunca se debería llegar a esa situación y si se llega es por un error, buscaba un sinónimo del return null de Java.
+- [@regex] : Referencia usada para ver como usar expresiones regulares en C++ de forma correcta, lo he usado para parsear las reglas.
+- [@sort] : Referencia usada para ver la forma de ordenar un vector por una serie de criterios estáticos, usado para ordenar el vector de reglas por prioridades.
 
-- [@stoi] :  Método para convertir un string en un int, en linux no es necesario pero parece que en windows con mingw si
-
-- [@] : Usado para convertir un string en un int, ya que la función stoi de c++ parece que no esta implementada correctamente en MinGW
-
-- [@] : Usado para ver como partir un string a partir de un delimitador especifico
-
-- [@] : Usado para convertir un string en un operador y realizar su respectiva operación
-
-- [@] : Usado para ver la forma mas correcta de hacer un return null de un struct cuando nunca debería de ejecutarse, en c++ lo correcto seria enviar una excepción
-
-- [@cpp] : Usado para ver la forma mas correcta de hacer un return null de un struct cuando nunca debería de ejecutarse, en c++ lo correcto seria enviar una excepción
+## Referencias:
