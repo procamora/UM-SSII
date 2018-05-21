@@ -1,6 +1,6 @@
 ---
 title: Sistemas Inteligentes
-subtitle: Practica 2
+subtitle: Práctica 2
 author:
     - Pablo José Rocamora Zamora G3.2
 date: Convocatoria de Junio
